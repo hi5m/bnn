@@ -95,6 +95,7 @@ namespace Bnncmd
         public abstract decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0);
         public abstract void EnterShort(string coin, decimal amount);
         public abstract decimal GetMaxLimit(string coin, bool isSpot);
+        public abstract decimal GetMinLimit(string coin, bool isSpot);
         public abstract decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk);
     }
 }

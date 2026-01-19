@@ -21,7 +21,8 @@ using Newtonsoft.Json;
 
 namespace Bnncmd
 {
-    internal class BybitExchange : AbstractExchange
+    internal class 
+        BybitExchange : AbstractExchange
     {
         public BybitExchange() : base()
         {
@@ -270,6 +271,8 @@ namespace Bnncmd
             var filter = symbolInfo.Data.List[0].LotSizeFilter ?? throw new Exception();
             return filter.MaxOrderQuantity;
         }
+
+        public override decimal GetMinLimit(string coin, bool isSpot) => throw new NotImplementedException();
 
         public override void GetFundingRates(List<FundingRate> rates, decimal minRate)
         {

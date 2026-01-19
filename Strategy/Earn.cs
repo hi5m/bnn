@@ -63,14 +63,23 @@ namespace Bnncmd.Strategy
             Console.WriteLine($"{futuresExchange.Name} futures {AbstractExchange.UsdtName} rest: {futuresRest:0.###} => {(futuresRest >= requiredUsdAmount ? "ok" : "not enaugh :(")}");
             if (futuresRest < requiredUsdAmount) futuresReserve = futuresExchange.FindFunds(string.Empty, false);
 
-            // ... and limits
+            // ... max limits
             var maxSpotOrderLimit = spotExchange.GetMaxLimit(coin, true);
             checksAreOk = checksAreOk && maxSpotOrderLimit >= amount;
-            Console.WriteLine($"{spotExchange.Name} spot limit: {maxSpotOrderLimit:0.###} => {(maxSpotOrderLimit >= amount ? "ok" : "too large :(")}");
+            Console.WriteLine($"{spotExchange.Name} spot max limit: {maxSpotOrderLimit:0.###} => {(maxSpotOrderLimit >= requiredUsdAmount ? "ok" : "too large :(")}");
 
             var maxFuturesOrderLimit = futuresExchange.GetMaxLimit(coin, false);
             checksAreOk = checksAreOk && maxFuturesOrderLimit >= amount;
-            Console.WriteLine($"{futuresExchange.Name} futures limit: {maxFuturesOrderLimit:0.###} => {(maxFuturesOrderLimit >= amount ? "ok" : "too large :(")}");
+            Console.WriteLine($"{futuresExchange.Name} futures max limit: {maxFuturesOrderLimit:0.###} => {(maxFuturesOrderLimit >= requiredUsdAmount ? "ok" : "too large :(")}");
+
+            // ... min limits
+            var minSpotOrderLimit = spotExchange.GetMinLimit(coin, true);
+            checksAreOk = checksAreOk && minSpotOrderLimit <= amount;
+            Console.WriteLine($"{spotExchange.Name} spot min limit: {minSpotOrderLimit:0.###} => {(minSpotOrderLimit <= requiredUsdAmount ? "ok" : "too little :(")}");
+
+            var minFuturesOrderLimit = futuresExchange.GetMinLimit(coin, false);
+            checksAreOk = checksAreOk && minFuturesOrderLimit <= amount;
+            Console.WriteLine($"{futuresExchange.Name} futures min limit: {minFuturesOrderLimit:0.###} => {(minFuturesOrderLimit <= requiredUsdAmount ? "ok" : "too little :(")}");
 
             // transfers
             Console.WriteLine();

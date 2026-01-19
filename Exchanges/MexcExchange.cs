@@ -312,14 +312,17 @@ namespace Bnncmd
             return futuresRest;
         }
 
+        private MexcSymbol? _spotSymbolInfo = null;
+
         public override decimal GetMaxLimit(string coin, bool isSpot)
         {
             if (isSpot)
             {
-                var exchangeInfo = _apiClient.SpotApi.ExchangeData.GetExchangeInfoAsync([coin + UsdtName]).Result;
-                if (!exchangeInfo.Success) throw new Exception(exchangeInfo.Error == null ? string.Empty : exchangeInfo.Error.Message);
-                if (exchangeInfo.Data.Symbols.Length == 0) throw new Exception($"{Name} returned no max limit for {coin}");
-                return exchangeInfo.Data.Symbols[0].MaxQuoteQuantity;
+                var exchangeResult = _apiClient.SpotApi.ExchangeData.GetExchangeInfoAsync([coin + UsdtName]).Result;
+                if (!exchangeResult.Success) throw new Exception(exchangeResult.Error == null ? string.Empty : exchangeResult.Error.Message);
+                if (exchangeResult.Data.Symbols.Length == 0) throw new Exception($"{Name} returned no max limit for {coin}");
+                _spotSymbolInfo = exchangeResult.Data.Symbols[0];
+                return _spotSymbolInfo.MaxQuoteQuantity;
             }
             else
             {
@@ -333,6 +336,14 @@ namespace Bnncmd
                 return _contractInfo.MaxVol * _contractInfo.СontractSize;
 
             }
+        }
+
+        public override decimal GetMinLimit(string coin, bool isSpot)
+        {
+            if (!isSpot) throw new NotImplementedException();
+            if (_spotSymbolInfo == null) throw new Exception($"{Name} has no {coin} information");
+            // return _spotSymbolInfo.BaseAssetPrecision;
+            return _spotSymbolInfo.QuoteQuantityPrecision;
         }
 
         public override void GetFundingRates(List<FundingRate> rates, decimal minRate)

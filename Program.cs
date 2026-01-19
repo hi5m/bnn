@@ -142,7 +142,7 @@ internal class Program
                 var spotExchange = Exchange.GetExchangeByName(args[4]) ?? throw new Exception($"exchange not found {args[4]}");
                 var futuresExchange = Exchange.GetExchangeByName(args[5]);
                 if (spotExchange == null) throw new Exception($"exchange not found {args[5]}");
-                if (!int.TryParse(args[6], out int quantity)) throw new Exception($"amount format is wrong: {args[6]}");
+                if (!decimal.TryParse(args[6], out decimal quantity)) throw new Exception($"amount format is wrong: {args[6]}");
                 // Console.WriteLine($"coin: {args[3].ToUpper()}, spot exch: {spotExchange.Name}, futures exch: {futuresExchange.Name}, amount: {quantity}");
                 Earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity);
                 break;
