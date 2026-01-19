@@ -1,3 +1,3 @@
 # bnn
 
-This is a readme file for my fabilous project
+This is a readme file for my fabulous project
