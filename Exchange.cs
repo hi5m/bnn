@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 using Org.BouncyCastle.Asn1.Mozilla;
 
 namespace Bnncmd
@@ -85,6 +87,26 @@ namespace Bnncmd
         protected readonly Dictionary<decimal, DateTime> _bookState = [];
 
         protected decimal _priceStep;
+
+        protected static string DownloadWithCurl(string batchFile)
+        {
+            var batchDir = AppContext.BaseDirectory + "\\cmd\\";
+
+            var psi = new ProcessStartInfo()
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/c \"{batchDir + batchFile}\"",
+                WorkingDirectory = batchDir,
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
+            using var process = Process.Start(psi) ?? throw new Exception("not lounched");
+            process.WaitForExit();
+            return File.ReadAllText(Path.ChangeExtension(batchDir + batchFile, "json"));
+            // return process.StandardOutput.ReadToEnd();
+        }
 
         public abstract decimal GetDayFundingRate(string symbol);
         public abstract void GetEarnProducts(List<EarnProduct> products, decimal minApr);

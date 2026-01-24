@@ -109,7 +109,7 @@ namespace Bnncmd.Strategy
             Console.WriteLine("Do you want to make futures order?");
             var command = Console.ReadLine();
             if ((command == null) || (command.ToLower()[0] != 'y')) return;
-            
+
             Console.WriteLine();
             Console.WriteLine($"{futuresExchange.Name} futures short position opening...");
             futuresExchange.EnterShort(coin, amount);
@@ -120,10 +120,10 @@ namespace Bnncmd.Strategy
         {
             var fundingRateDepth = 1;
             List<EarnProduct> products = [];
-            var minApr = 30;
+            var minApr = 20;
 
-            var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc };
-            // var exchanges = new List<AbstractExchange> { Exchange.Binance };
+            // var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc };
+            var exchanges = new List<AbstractExchange> { Exchange.Mexc };
             foreach (var e in exchanges)
             {
                 e.GetEarnProducts(products, minApr);
