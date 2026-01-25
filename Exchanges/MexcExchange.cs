@@ -208,27 +208,35 @@ namespace Bnncmd
                 var client = CreateMexcClient();
                 client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); // escape slash
 
-                var earnString = client.GetStringAsync("https://www.mexc.com/api/operateactivity/staking").Result;
+            
+                var earnString = client.GetStringAsync("https://www.mexc.com/api/financialactivity/financial/products/list/V2").Result;
+                // var earnString = client.GetStringAsync("https://www.mexc.com/api/operateactivity/staking").Result;
                 dynamic? earnData = JsonConvert.DeserializeObject(earnString.Trim()) ?? throw new Exception("mexc earn returned no data");
                 foreach (var coin in earnData.data)
                 {
-                    if ((coin.lockPosList == null) || (coin.lockPosList[0].joinConditions == "EFTD")) continue;
-                    foreach (var offer in coin.lockPosList)
+                    if (coin.financialProductList == null) continue; // EFTD - new user
+                    // if ((coin.lockPosList == null) || (coin.lockPosList[0].joinConditions == "EFTD")) continue; // EFTD - new user
+                    foreach (var offer in coin.financialProductList)
                     {
-                        decimal apr = offer.profitRate * 100M;
+                        if ((offer.showApr == null) || (offer.memberType == "EFTD")) continue; // EFTD - new user
+                        if (offer.sort == 3260107) continue; // VIP?
+                        decimal apr = offer.showApr;
                         if (apr < minApr) continue;
-                        string currency = coin.currency;
+                        string currency = coin.currency; // explicite type
+
+                        // Console.WriteLine($"{coin.currency}: {apr}");
                         // Console.WriteLine($"{coin.currency}: {offer.profitRate * 100M}%");
                         var product = new EarnProduct(Exchange.Mexc, currency, apr, "from page");
-                        if (offer.limitMax != null) product.LimitMax = offer.limitMax;
-                        if (offer.minLockDays != null) product.Term = offer.minLockDays;
+                        if (offer.perPledgeMaxQuantity != null) product.LimitMax = offer.perPledgeMaxQuantity;
+                        if (offer.fixedInvestPeriodCount == null) product.Term = 1;
+                        else product.Term = offer.fixedInvestPeriodCount;
                         products.Add(product);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Error while process mexc earn products: " + ex.Message);
             }
         }
 

@@ -122,15 +122,18 @@ namespace Bnncmd.Strategy
             List<EarnProduct> products = [];
             var minApr = 20;
 
-            // var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc };
+            // Get earn products from all exchanges
+            // var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; // 
             var exchanges = new List<AbstractExchange> { Exchange.Mexc };
             foreach (var e in exchanges)
             {
                 e.GetEarnProducts(products, minApr);
             }
 
+            // return;
+            // Get funding rates for hedging from available futures
             Console.WriteLine("\r\n===========================\r\n");
-            // exchanges = [Exchange.Binance, Exchange.Bybit, Exchange.Mexc];
+            exchanges = [Exchange.Binance, Exchange.Bybit];
             // exchanges = [Exchange.Mexc];
             foreach (var p in products)
             {
@@ -152,6 +155,7 @@ namespace Bnncmd.Strategy
                 }
             }
 
+            // Out results
             Console.WriteLine("\r\n===========================\r\n");
             var sortedByRealApr = products.OrderByDescending(p => p.RealApr);
             foreach (var p in sortedByRealApr)
