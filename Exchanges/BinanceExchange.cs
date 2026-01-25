@@ -43,30 +43,6 @@ namespace Bnncmd
 
         private readonly BinanceSocketClient _socketClient = new();
 
-        public override decimal GetDayFundingRate(string symbol)
-        {
-            // symbol += "USDC";
-            symbol += "USDT";
-            var futuresClient = new BinanceRestClient();
-            var fundingRates = futuresClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now, 72).Result;
-            if (fundingRates.Data.Length == 0) return decimal.MinValue;
-
-            var fundingInterval = fundingRates.Data[^1].FundingTime.Hour - fundingRates.Data[^2].FundingTime.Hour;
-            // Console.WriteLine($"fundingInterval: {fundingRates.Data[^1].FundingTime} - {fundingRates.Data[^2].FundingTime} = {fundingInterval} * {fundingRates.Data[^1].FundingRate * 100} | {(fundingRates.Data[^1].FundingTime - fundingRates.Data[^2].FundingTime).TotalHours}");
-            // Console.WriteLine($"fundingInterval: {fundingRates.Data[^1].FundingTime} - {fundingRates.Data[^2].FundingTime} = {fundingRates.Data[^1].FundingRate * 100}");
-            var currFundingRate = fundingRates.Data[^1].FundingRate * 100 * 24 / fundingInterval;
-            return currFundingRate;
-
-            /* decimal sumFundingRate = 0;
-            foreach (var r in fundingRates.Data)
-            {
-                Console.WriteLine($"      {r.FundingTime}: {r.FundingRate * 100}");
-                sumFundingRate += r.FundingRate * 100;
-            }
-            return sumFundingRate / (decimal)FundingRateDepth;*/
-            // Console.WriteLine($"3-days binance accumulated funding rate: {sumFundingRate}");
-        }
-
         private void GetLockedProducts(List<EarnProduct> products, decimal minApr)
         {
             Console.WriteLine($"{Exchange.Binance.Name} - Api - Locked...");
@@ -377,6 +353,29 @@ namespace Bnncmd
                 var fr = new FundingRate(this, s.Symbol, s.FundingRate * 100 ?? 0);
                 rates.Add(fr);
             }
+        }
+
+        public override decimal GetDayFundingRate(string coin)
+        {
+            // symbol += "USDC";  too rare pairs(
+            var symbol = coin + UsdtName; //  "USDT";
+            // var futuresClient = new BinanceRestClient(); // чтобы не спалить ключ?
+            var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now, 72).Result;
+            if (fundingRates.Data.Length == 0) return decimal.MinValue;
+
+            var ratesArr = fundingRates.Data.Select(r => r.FundingRate).Reverse().Take(10).ToArray(); // then process EMA
+            return 100 * GetEmaFundingRate(ratesArr);
+
+            /*var fundingInterval = fundingRates.Data[^1].FundingTime.Hour - fundingRates.Data[^2].FundingTime.Hour;
+            var currFundingRate = fundingRates.Data[^1].FundingRate * 100 * 24 / fundingInterval;
+            return currFundingRate;*/
+
+            /* decimal sumFundingRate = 0;
+            foreach (var r in fundingRates.Data)
+            {
+                Console.WriteLine($"      {r.FundingTime}: {r.FundingRate * 100}");
+                sumFundingRate += r.FundingRate * 100;
+            }*/
         }
 
         public override decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk)

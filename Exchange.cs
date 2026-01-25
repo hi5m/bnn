@@ -40,6 +40,10 @@ namespace Bnncmd
         public decimal LimitMax { get; set; } = 0;
 
         public AbstractExchange? FuturesExchange { get; set; }
+        /// <summary>
+        /// For binance USDT / USDC
+        /// </summary>
+        public string FuturesPair { get; set; } = string.Empty;
         public decimal DayFundingRate { get; set; }
         public decimal RealApr { get; set; }
 
@@ -88,6 +92,22 @@ namespace Bnncmd
 
         protected decimal _priceStep;
 
+        /// <summary>
+        /// Get something like a EMA for FR. Last FR by time is the first item in array
+        /// </summary>
+        /// <param name="rates"></param>
+        /// <returns></returns>
+        protected static decimal GetEmaFundingRate(decimal[] rates)
+        {
+            var itemK = 0.3M;
+            var ema = rates.Last();
+            for (int i = rates.Length - 2; i >= 0; i--)
+            {
+                ema = itemK * rates[i] + (1 - itemK) * ema;
+            }
+            return ema;
+        }
+
         protected static string DownloadWithCurl(string batchFile)
         {
             var batchDir = AppContext.BaseDirectory + "\\cmd\\";
@@ -108,7 +128,12 @@ namespace Bnncmd
             // return process.StandardOutput.ReadToEnd();
         }
 
-        public abstract decimal GetDayFundingRate(string symbol);
+        /// <summary>
+        /// Now get last funding rate, later planned to make kind of EMA FR
+        /// </summary>
+        /// <param name="coin"></param>
+        /// <returns></returns>
+        public abstract decimal GetDayFundingRate(string coin);
         public abstract void GetEarnProducts(List<EarnProduct> products, decimal minApr);
         public abstract void GetFundingRates(List<FundingRate> rates, decimal minRate);
         public abstract decimal CheckSpotBalance(string? coin = null);
