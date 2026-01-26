@@ -78,9 +78,11 @@ namespace Bnncmd
         // public override decimal FuturesMakerFee { get; } = 0M;
         public override decimal FuturesMakerFee { get; } = 0.01M; // sometimes 0
 
-        public override decimal GetDayFundingRate(string symbol)
+        public override HedgeInfo[] GetDayFundingRate(string symbol)
         {
-            symbol += "_USDT";
+            throw new NotImplementedException();
+
+            /* symbol += "_USDT";
             using var client = new HttpClient();
             var mexcFundingString = client.GetStringAsync($"https://contract.mexc.com/api/v1/contract/funding_rate/history?symbol={symbol}&page_size=72").Result;
             dynamic? mexcFundingData = JsonConvert.DeserializeObject(mexcFundingString.Trim()) ?? throw new Exception("mexc funding history returned no data");
@@ -113,7 +115,7 @@ namespace Bnncmd
             // Console.WriteLine($"                mexc {symbol} avg 3-days rate: {avg3DaysRate}");
             Console.WriteLine($"   mexc dynamic rate: {avg3DaysRate:0.###} => {lastRate:0.###} => {currRate:0.###}");
 
-            return lastRate; //  Math.Min(minCurrentRate, avg3DaysRate);
+            return lastRate; //  Math.Min(minCurrentRate, avg3DaysRate);*/
         }
 
         private static HttpClient CreateMexcClient()

@@ -1,0 +1,13 @@
+  "C:\Program Files\Git\mingw64\bin\curl.exe" ^"https://www.bybit.com/x-api/s1/byfi/get-easy-earn-product-list^" ^
+  --compressed ^
+  -X POST ^
+  -H ^"Cookie: ttcsid_CMEEMQRC77UBHLCRLFPG=0;^" ^
+  -H ^"Accept-Encoding: gzip, deflate, br, zstd^" ^
+  -H ^"Accept: */*^" ^
+  -H ^"Accept-Language: en-US,en;q=0.9^" ^
+  -H ^"Origin: https://www.bybit.com^" ^
+  -H ^"Sec-Fetch-Site: same-origin^" ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36^" ^
+  -H ^"Content-Type: application/json^" ^
+  --output ^"C:\bnn\Bnncmd\bin\Debug\net8.0-windows\cmd\get-bybit-fixed-earn.json^" ^
+  --data-raw ^"^{^\^"page^\^":1,^\^"limit^\^":50,^\^"sort_type^\^":0,^\^"fixed_saving_version^\^":1^}^"

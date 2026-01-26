@@ -27,7 +27,7 @@ using Microsoft.Extensions.Configuration;
 namespace Bnncmd
 {
     internal class
-        BybitExchange : AbstractExchange
+    BybitExchange : AbstractExchange
     {
         public BybitExchange() : base()
         {
@@ -51,17 +51,22 @@ namespace Bnncmd
 
         private readonly Bybit.Net.Clients.BybitRestClient _client;
 
-        public override decimal GetDayFundingRate(string coin)
+        public override HedgeInfo[] GetDayFundingRate(string coin)
         {
-            coin += "USDT";
+            var symbol = coin + "USDT";
             // var bybitClient = new Bybit.Net.Clients.BybitRestClient();
-            var bybitData = _client.V5Api.ExchangeData.GetFundingRateHistoryAsync(Category.Linear, coin, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now).Result.Data;
-            if (bybitData == null) return decimal.MinValue;
+            var bybitData = _client.V5Api.ExchangeData.GetFundingRateHistoryAsync(Category.Linear, symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now).Result.Data;
+            if (bybitData == null) return [];
             var bybitRates = bybitData.List;
-            if (bybitRates.Length == 0) return decimal.MinValue;
+            if (bybitRates.Length == 0) return [];
 
             var ratesArr = bybitRates.Select(r => r.FundingRate).Take(10).ToArray(); // then process EMA
-            return 100* GetEmaFundingRate(ratesArr);
+            return [new HedgeInfo(this)
+            {
+                Symbol = symbol,
+                EmaFundingRate = 100 * GetEmaFundingRate(ratesArr),
+                Fee = FuturesMakerFee
+            }];
 
             // var fundingInterval = bybitRates[0].Timestamp.Hour - bybitRates[1].Timestamp.Hour;
             // Console.WriteLine($"fundingInterval: {bybitRates[0].Timestamp} - {bybitRates[1].Timestamp} = {fundingInterval} * {bybitRates[0].FundingRate * 100}");

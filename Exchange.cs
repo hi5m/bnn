@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection.Metadata.Ecma335;
+using Bnncmd.Strategy;
 using Org.BouncyCastle.Asn1.Mozilla;
 
 namespace Bnncmd
@@ -82,7 +83,10 @@ namespace Bnncmd
         public abstract int Code { get; }
 
         public static readonly string UsdtName = "USDT";
-        public abstract decimal SpotTakerFee { get; }
+
+        public static readonly string UsdcName = "USDC";
+
+public abstract decimal SpotTakerFee { get; }
         public abstract decimal SpotMakerFee { get; }
         public abstract decimal FuturesTakerFee { get; }
         public abstract decimal FuturesMakerFee { get; }
@@ -133,7 +137,7 @@ namespace Bnncmd
         /// </summary>
         /// <param name="coin"></param>
         /// <returns></returns>
-        public abstract decimal GetDayFundingRate(string coin);
+        public abstract HedgeInfo[] GetDayFundingRate(string coin);
         public abstract void GetEarnProducts(List<EarnProduct> products, decimal minApr);
         public abstract void GetFundingRates(List<FundingRate> rates, decimal minRate);
         public abstract decimal CheckSpotBalance(string? coin = null);

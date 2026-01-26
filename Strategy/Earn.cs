@@ -26,6 +26,16 @@ namespace Bnncmd.Strategy
         public override string GetParamsDesciption() => string.Empty;
     }
 
+    internal class HedgeInfo(AbstractExchange exchanger)
+    {
+        public AbstractExchange Exchanger { get; set; } = exchanger;
+
+        public string Symbol { get; set; } = string.Empty;
+
+        public decimal EmaFundingRate { get; set; }
+
+        public decimal Fee { get; set; }
+    }
 
     internal class Earn : BaseStrategy
     {

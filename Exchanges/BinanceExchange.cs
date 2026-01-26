@@ -355,16 +355,28 @@ namespace Bnncmd
             }
         }
 
-        public override decimal GetDayFundingRate(string coin)
+        private void AddHedge(List<HedgeInfo> hedges, string symbol, decimal fee)
         {
-            // symbol += "USDC";  too rare pairs(
-            var symbol = coin + UsdtName; //  "USDT";
-            // var futuresClient = new BinanceRestClient(); // чтобы не спалить ключ?
             var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now, 72).Result;
-            if (fundingRates.Data.Length == 0) return decimal.MinValue;
+            if (fundingRates.Data.Length != 0)
+            {
+                var ratesArr = fundingRates.Data.Select(r => r.FundingRate).Reverse().Take(10).ToArray(); // then process EMA
+                hedges.Add(new HedgeInfo(this)
+                {
+                    Symbol = symbol,
+                    EmaFundingRate = 100 * GetEmaFundingRate(ratesArr),
+                    Fee = fee
+                });
+            }
+        }
 
-            var ratesArr = fundingRates.Data.Select(r => r.FundingRate).Reverse().Take(10).ToArray(); // then process EMA
-            return 100 * GetEmaFundingRate(ratesArr);
+
+        public override HedgeInfo[] GetDayFundingRate(string coin)
+        {
+            var hedges = new List<HedgeInfo>();
+            AddHedge(hedges, coin + UsdtName, FuturesMakerFee);
+            AddHedge(hedges, coin + UsdcName, 0);
+            return [.. hedges];
 
             /*var fundingInterval = fundingRates.Data[^1].FundingTime.Hour - fundingRates.Data[^2].FundingTime.Hour;
             var currFundingRate = fundingRates.Data[^1].FundingRate * 100 * 24 / fundingInterval;
