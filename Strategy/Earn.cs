@@ -150,8 +150,20 @@ namespace Bnncmd.Strategy
                 foreach (var e in exchanges)
                 {
                     e.FundingRateDepth = fundingRateDepth;
-                    var fr = e.GetDayFundingRate(p.ProductName);
-                    if (fr == decimal.MinValue) continue;
+                    var his = e.GetDayFundingRate(p.ProductName);
+                    foreach (var hi in his)
+                    {
+                        var dayProfit = ((p.Apr / 365 + hi.EmaFundingRate) * p.Term - p.Exchange.SpotMakerFee - hi.Fee) / p.Term / 2;
+                        var realApr = 365 * dayProfit;
+                        Console.WriteLine($"   {e.Name} {hi.Symbol} funding rate: {hi.EmaFundingRate:0.###} => {realApr:0.###}       [ (({p.Apr:0.###} / 365 + {hi.EmaFundingRate:0.###}) * {p.Term} - {p.Exchange.SpotMakerFee} - {hi.Fee}) / {p.Term} / 2 = {dayProfit:0.###} ]");
+                        if ((p.HedgeInfo == null) || (p.RealApr < realApr))
+                        {
+                            p.HedgeInfo = hi;
+                            p.RealApr = realApr;
+                        }
+                    }
+
+                    /*if (fr == decimal.MinValue) continue;
                     var dayProfit = ((p.Apr / 365 + fr) * p.Term - p.Exchange.SpotMakerFee - e.FuturesMakerFee) / p.Term / 2;
                     var realApr = 365 * dayProfit;
                     Console.WriteLine($"   {e.Name.ToLower()} funding rate: {fr:0.###} => {realApr:0.###}       [ (({p.Apr:0.###} / 365 + {fr:0.###}) * {p.Term} - {p.Exchange.SpotMakerFee} - {e.FuturesMakerFee}) / {p.Term} = {dayProfit:0.###} ]");
@@ -160,7 +172,7 @@ namespace Bnncmd.Strategy
                         p.FuturesExchange = e;
                         p.DayFundingRate = fr;
                         p.RealApr = realApr;
-                    }
+                    }*/
                 }
             }
 
@@ -170,7 +182,7 @@ namespace Bnncmd.Strategy
             foreach (var p in sortedByRealApr)
             {
                 var arpStr = $"{p.RealApr:0.###}";
-                var futuresExchange = $"{(p.FuturesExchange == null ? string.Empty : p.FuturesExchange.Name)}";
+                var futuresExchange = $"{(p.HedgeInfo == null ? string.Empty : p.HedgeInfo.Exchanger.Name)}";
                 var term = $"{p.Term:0}";
                 Console.WriteLine($"{p.ProductName,-23} | {arpStr,-9} | {p.Exchange.Name,-9} | {futuresExchange,-9} | {term,-3} | {p.LimitMax}");
             }

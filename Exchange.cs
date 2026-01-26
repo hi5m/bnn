@@ -39,13 +39,14 @@ namespace Bnncmd
         public string Comment { get; set; } = string.Empty;
         public int Term { get; set; } = 1;
         public decimal LimitMax { get; set; } = 0;
+        public HedgeInfo? HedgeInfo { get; set; }
 
-        public AbstractExchange? FuturesExchange { get; set; }
+        // public AbstractExchange? FuturesExchange { get; set; }
         /// <summary>
         /// For binance USDT / USDC
         /// </summary>
-        public string FuturesPair { get; set; } = string.Empty;
-        public decimal DayFundingRate { get; set; }
+        // public string FuturesPair { get; set; } = string.Empty;
+        // public decimal DayFundingRate { get; set; }
         public decimal RealApr { get; set; }
 
         public override string ToString()
