@@ -1,0 +1,15 @@
+"C:\Program Files\Git\mingw64\bin\curl.exe" ^"https://www.mexc.com/api/financialactivity/financial/products/list/V2^" ^
+  --compressed ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0^" ^
+  -H ^"Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8^" ^
+  -H ^"Accept-Language: en-US,en;q=0.9^" ^
+  -H ^"Accept-Encoding: gzip, deflate, br, zstd^" ^
+  -H ^"Sec-GPC: 1^" ^
+  -H ^"Connection: keep-alive^" ^
+  -H ^"Upgrade-Insecure-Requests: 1^" ^
+  -H ^"Sec-Fetch-Dest: document^" ^
+  -H ^"Sec-Fetch-Mode: navigate^" ^
+  -H ^"Sec-Fetch-Site: none^" ^
+  -H ^"Sec-Fetch-User: ?1^" ^
+  -H ^"Priority: u=0, i^" ^
+  --output ^"C:\bnn\Bnncmd\bin\Debug\net8.0-windows\cmd\get-mexct-earn-products.json^"
