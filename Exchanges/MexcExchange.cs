@@ -118,7 +118,7 @@ namespace Bnncmd
             return lastRate; //  Math.Min(minCurrentRate, avg3DaysRate);*/
         }
 
-        private static HttpClient CreateMexcClient()
+        /*private static HttpClient CreateMexcClient()
         {
             var handler = new HttpClientHandler()
             {
@@ -133,7 +133,7 @@ namespace Bnncmd
             client.DefaultRequestHeaders.Add("Connection", "keep-alive");
             client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br, zstd");
             return client;
-        }
+        }*/
 
         private string GetMd5Digest(string utfStr)
         {
@@ -175,7 +175,7 @@ namespace Bnncmd
 
         private void EnterShortWeb(string coin, decimal amount)
         {
-            var bestRealAsk = 0.045;
+            /* var bestRealAsk = 0.045;
             var symbol = "TOWNS_USDT";
             amount = 22;
 
@@ -199,20 +199,22 @@ namespace Bnncmd
             var response = client.PostAsync(orderUrl, content).Result;
 
             Console.WriteLine(response);
-            Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+            Console.WriteLine(response.Content.ReadAsStringAsync().Result); */
         }
 
         public override void GetEarnProducts(List<EarnProduct> products, decimal minApr)
         {
             Console.WriteLine($"{Exchange.Mexc.Name} - Page...");
+
             try
             {
-                var client = CreateMexcClient();
-                client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); // escape slash
+                var earnString = DownloadWithCurl("get-mexc-earn-products.bat");
 
-            
+                /* var client = CreateMexcClient();
+                client.DefaultRequestHeaders.Add("Accept", @"text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"); // escape slash
+
                 var earnString = client.GetStringAsync("https://www.mexc.com/api/financialactivity/financial/products/list/V2").Result;
-                // var earnString = client.GetStringAsync("https://www.mexc.com/api/operateactivity/staking").Result;
+                // var earnString = client.GetStringAsync("https://www.mexc.com/api/operateactivity/staking").Result; */
                 dynamic? earnData = JsonConvert.DeserializeObject(earnString.Trim()) ?? throw new Exception("mexc earn returned no data");
                 foreach (var coin in earnData.data)
                 {

@@ -20,9 +20,6 @@ using System.Runtime.InteropServices;
 
 internal class Program
 {
-    // private string TK = "api-keys_ft
-    // private string apiSecret = "api-secret";
-
     private static bool s_isTerminate = false;
 
     private static readonly AccountManager s_am = new();
@@ -139,10 +136,10 @@ internal class Program
                 break;
             case 'b':
                 var args = Environment.GetCommandLineArgs();
+                if (args.Count() < 7) throw new Exception("wrong params number (example: bnncmd e b ZAMA Mexc Binance 1000)");
                 var spotExchange = Exchange.GetExchangeByName(args[4]) ?? throw new Exception($"exchange not found {args[4]}");
-                var futuresExchange = Exchange.GetExchangeByName(args[5]);
-                if (spotExchange == null) throw new Exception($"exchange not found {args[5]}");
-                if (!decimal.TryParse(args[6], out decimal quantity)) throw new Exception($"amount format is wrong: {args[6]}");
+                var futuresExchange = Exchange.GetExchangeByName(args[5]) ?? throw new Exception($"exchange not found {args[5]}");
+                if (!decimal.TryParse(args[6], out var quantity)) throw new Exception($"amount format is wrong: {args[6]}");
                 // Console.WriteLine($"coin: {args[3].ToUpper()}, spot exch: {spotExchange.Name}, futures exch: {futuresExchange.Name}, amount: {quantity}");
                 Earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity);
                 break;

@@ -86,7 +86,6 @@ namespace Bnncmd
         private void GetPageProducts(int pageNum, List<EarnProduct> products, decimal minApr)
         {
             Console.WriteLine($"{Exchange.Bybit.Name} - Page {pageNum}...");
-
             var bbEarnString = DownloadWithCurl("get-bybit-fixed-earn.bat");
 
             /*var handler = new HttpClientHandler()

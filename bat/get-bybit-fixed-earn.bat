@@ -1,4 +1,4 @@
-  "C:\Program Files\Git\mingw64\bin\curl.exe" ^"https://www.bybit.com/x-api/s1/byfi/get-easy-earn-product-list^" ^
+"C:\Program Files\Git\mingw64\bin\curl.exe" ^"https://www.bybit.com/x-api/s1/byfi/get-easy-earn-product-list^" ^
   --compressed ^
   -X POST ^
   -H ^"Cookie: ttcsid_CMEEMQRC77UBHLCRLFPG=0;^" ^

@@ -130,7 +130,6 @@ public abstract decimal SpotTakerFee { get; }
             using var process = Process.Start(psi) ?? throw new Exception("not lounched");
             process.WaitForExit();
             return File.ReadAllText(Path.ChangeExtension(batchDir + batchFile, "json"));
-            // return process.StandardOutput.ReadToEnd();
         }
 
         /// <summary>
