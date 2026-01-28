@@ -12,4 +12,4 @@
   -H ^"Sec-Fetch-Site: none^" ^
   -H ^"Sec-Fetch-User: ?1^" ^
   -H ^"Priority: u=0, i^" ^
-  --output ^"C:\bnn\Bnncmd\bin\Debug\net8.0-windows\cmd\get-mexct-earn-products.json^"
+  --output ^"%~dp0get-mexc-earn-products.json^"

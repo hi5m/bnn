@@ -87,7 +87,7 @@ namespace Bnncmd
 
         public static readonly string UsdcName = "USDC";
 
-public abstract decimal SpotTakerFee { get; }
+        public abstract decimal SpotTakerFee { get; }
         public abstract decimal SpotMakerFee { get; }
         public abstract decimal FuturesTakerFee { get; }
         public abstract decimal FuturesMakerFee { get; }
