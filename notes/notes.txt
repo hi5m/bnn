@@ -1,0 +1,18 @@
+Requested SENT amount: 10
+
+Mexc SENT spot price: 0.02491 => usd required amount: 0.257
+Mexc spot stable coin rest: 0 => not enaugh :(
+   Futures rest: 0
+   Earn rest: Not available via Api
+Bybit futures USDT rest: 0 => not enaugh :(
+   Unified wallet rest: 0
+   Fund rest: 0.1457
+   Earn rest: 200
+Mexc spot max limit: 2000000 => ok
+Bybit futures max limit: 6000000 => ok
+Mexc spot min limit: 1 => too little :(
+The method or operation is not implemented.
+q
+
+
+C:\bnn\Bnncmd\bin\Debug\net8.0-windows>

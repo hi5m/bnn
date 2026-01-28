@@ -248,23 +248,23 @@ namespace Bnncmd
 
             if (forSpot)
             {
-                assetInfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Contract, UsdtName).Result;
+                assetInfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Contract, UsdtName).Result; // Unified?
                 if ((assetInfo.Error != null) && !assetInfo.Success) throw new Exception(assetInfo.Error.Message);
                 sum += assetInfo.Data.Balances.WalletBalance ?? 0;
-                Console.WriteLine($"   futures rest: {assetInfo.Data.Balances.WalletBalance}");
+                Console.WriteLine($"   Futures rest: {assetInfo.Data.Balances.WalletBalance}");
             }
             else
             {
-                assetInfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Spot, UsdtName).Result;
+                assetInfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Unified, UsdtName).Result;
                 if ((assetInfo.Error != null) && !assetInfo.Success) throw new Exception(assetInfo.Error.Message);
                 sum += assetInfo.Data.Balances.WalletBalance ?? 0;
-                Console.WriteLine($"   spot rest: {assetInfo.Data.Balances.WalletBalance}");
+                Console.WriteLine($"   Unified wallet rest: {assetInfo.Data.Balances.WalletBalance}");
             }
 
             assetInfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Fund, UsdtName).Result;
             if ((assetInfo.Error != null) && !assetInfo.Success) throw new Exception(assetInfo.Error.Message);
             sum += assetInfo.Data.Balances.WalletBalance ?? 0;
-            Console.WriteLine($"   fund rest: {assetInfo.Data.Balances.WalletBalance}");
+            Console.WriteLine($"   Fund rest: {assetInfo.Data.Balances.WalletBalance}");
 
             var earnPositions = _client.V5Api.Earn.GetStakedPositionsAsync(EarnCategory.FlexibleSaving, null, UsdtName).Result;
             if ((earnPositions.Error != null) && !earnPositions.Success) throw new Exception(earnPositions.Error.Message);
@@ -277,19 +277,32 @@ namespace Bnncmd
                 if ((tranferResult.Error != null) && !tranferResult.Success) throw new Exception("error while transfer from earn account: " + tranferResult.Error.Message);
                 else Console.WriteLine($"transfered from earn: {tranferResult.Data.Status}, {tranferResult.Data.TransferId}");
             }
-            else Console.WriteLine($"   earn rest: {earnPositions.Data.List[0].Quantity}");
+            else Console.WriteLine($"   Earn rest: {earnPositions.Data.List[0].Quantity}");
 
             return sum;
         }
 
         public override decimal GetMaxLimit(string coin, bool isSpot)
         {
-            if (!isSpot) throw new NotImplementedException();
-            var symbolInfo = _client.V5Api.ExchangeData.GetSpotSymbolsAsync(coin + UsdtName).Result;
-            if (!symbolInfo.Success && (symbolInfo.Error != null)) throw new Exception(symbolInfo.Error.Message);
-            if ((symbolInfo.Data.List == null) || (symbolInfo.Data.List.Length == 0)) throw new Exception($"{Name} GetMaxLimit return no data");
-            var filter = symbolInfo.Data.List[0].LotSizeFilter ?? throw new Exception();
-            return filter.MaxOrderQuantity;
+            // throw new NotImplementedException();            
+            // Task<WebCallResult<BybitResponse<object>>> symbolInfo = isSpot ? _client.V5Api.ExchangeData.GetSpotSymbolsAsync(coin + UsdtName).Result : _client.V5Api.ExchangeData.GetLinearInverseSymbolsAsync(Category.Linear, coin + UsdtName).Result;
+            // var symbolInfo = isSpot ? _client.V5Api.ExchangeData.GetSpotSymbolsAsync(coin + UsdtName).Result : _client.V5Api.ExchangeData.GetLinearInverseSymbolsAsync(Category.Linear, coin + UsdtName).Result;
+            if (isSpot)
+            {
+                var symbolInfo = _client.V5Api.ExchangeData.GetSpotSymbolsAsync(coin + UsdtName).Result;
+                if (!symbolInfo.Success && (symbolInfo.Error != null)) throw new Exception(symbolInfo.Error.Message);
+                if ((symbolInfo.Data.List == null) || (symbolInfo.Data.List.Length == 0)) throw new Exception($"{Name} GetMaxLimit return no data");
+                var filter = symbolInfo.Data.List[0].LotSizeFilter ?? throw new Exception("GetMaxLimit: LotSizeFilter not fount");
+                return filter.MaxOrderQuantity;
+            }
+            else
+            {
+                var symbolInfo = _client.V5Api.ExchangeData.GetLinearInverseSymbolsAsync(Category.Linear, coin + UsdtName).Result;
+                if (!symbolInfo.Success && (symbolInfo.Error != null)) throw new Exception(symbolInfo.Error.Message);
+                if ((symbolInfo.Data.List == null) || (symbolInfo.Data.List.Length == 0)) throw new Exception($"{Name} GetMaxLimit return no data");
+                var filter = symbolInfo.Data.List[0].LotSizeFilter ?? throw new Exception("GetMaxLimit: LotSizeFilter not fount");
+                return filter.MaxOrderQuantity;
+            }
         }
 
         public override decimal GetMinLimit(string coin, bool isSpot) => throw new NotImplementedException();

@@ -272,10 +272,11 @@ namespace Bnncmd
             var accountData = _apiClient.SpotApi.Account.GetAccountInfoAsync().Result;
             if (accountData == null) throw new Exception($"{Name} returned no data for spot");
             if (!accountData.Success) throw new Exception(accountData.Error == null ? "no data" : accountData.Error.Message);
+            // var rest = 0M;
             foreach (var balance in accountData.Data.Balances)
             {
-                // Console.WriteLine($"{balance.Asset}, Free: {balance.Available}, Locked: {balance.Locked}");
-                if (coin.Equals(balance.Asset, StringComparison.CurrentCultureIgnoreCase)) return balance.Available;
+                // Console.WriteLine($"   Spot {balance.Asset}: Free: {balance.Available}, Locked: {balance.Locked}");
+                if (coin.Equals(balance.Asset, StringComparison.CurrentCultureIgnoreCase)) return balance.Available; // return 
             }
             return 0;
         }
@@ -321,7 +322,18 @@ namespace Bnncmd
         {
             coin ??= UsdtName;
             var futuresRest = CheckFuturesBalance(coin);
-            // Console.WriteLine($"   contract rest: {futuresRest}");
+            Console.WriteLine($"   Futures rest: {futuresRest}");
+            Console.WriteLine($"   Earn rest: Not available via Api");
+
+            /*var assets = _apiClient.SpotApi.Account.GetUserAssetsAsync().Result;
+            if (assets.Success)
+            {
+                foreach (var a in assets.Data)
+                {
+                    Console.WriteLine($"   contract rest: {a.AssetName}: {a.Asset}");
+                }
+            }*/
+
             return futuresRest;
         }
 
