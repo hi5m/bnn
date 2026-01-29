@@ -76,20 +76,20 @@ namespace Bnncmd.Strategy
             // ... max limits
             var maxSpotOrderLimit = spotExchange.GetMaxLimit(coin, true);
             checksAreOk = checksAreOk && maxSpotOrderLimit >= amount;
-            Console.WriteLine($"{spotExchange.Name} spot max limit: {maxSpotOrderLimit:0.###} => {(maxSpotOrderLimit >= requiredUsdAmount ? "ok" : "too large :(")}");
+            Console.WriteLine($"{spotExchange.Name} spot max limit: {maxSpotOrderLimit:0.###} {coin} => {(maxSpotOrderLimit >= requiredUsdAmount ? "ok" : "too large :(")}");
 
             var maxFuturesOrderLimit = futuresExchange.GetMaxLimit(coin, false);
             checksAreOk = checksAreOk && maxFuturesOrderLimit >= amount;
-            Console.WriteLine($"{futuresExchange.Name} futures max limit: {maxFuturesOrderLimit:0.###} => {(maxFuturesOrderLimit >= requiredUsdAmount ? "ok" : "too large :(")}");
+            Console.WriteLine($"{futuresExchange.Name} futures max limit: {maxFuturesOrderLimit:0.###} {coin} => {(maxFuturesOrderLimit >= requiredUsdAmount ? "ok" : "too large :(")}");
 
             // ... min limits
             var minSpotOrderLimit = spotExchange.GetMinLimit(coin, true);
             checksAreOk = checksAreOk && minSpotOrderLimit <= amount;
-            Console.WriteLine($"{spotExchange.Name} spot min limit: {minSpotOrderLimit:0.###} => {(minSpotOrderLimit <= requiredUsdAmount ? "ok" : "too little :(")}");
+            Console.WriteLine($"{spotExchange.Name} spot min limit: {minSpotOrderLimit:0.###} {coin} => {(minSpotOrderLimit <= requiredUsdAmount ? "ok" : "too little :(")}");
 
             var minFuturesOrderLimit = futuresExchange.GetMinLimit(coin, false);
             checksAreOk = checksAreOk && minFuturesOrderLimit <= amount;
-            Console.WriteLine($"{futuresExchange.Name} futures min limit: {minFuturesOrderLimit:0.###} => {(minFuturesOrderLimit <= requiredUsdAmount ? "ok" : "too little :(")}");
+            Console.WriteLine($"{futuresExchange.Name} futures min limit: {minFuturesOrderLimit:0.###} {coin} => {(minFuturesOrderLimit <= requiredUsdAmount ? "ok" : "too little :(")}");
 
             // transfers
             Console.WriteLine();
@@ -99,6 +99,8 @@ namespace Bnncmd.Strategy
                 var commandTrans = Console.ReadLine();
                 if ((commandTrans != null) && (commandTrans.ToLower()[0] == 'y'))
                 {
+                    throw new NotImplementedException();
+                    // Console.WriteLine("Thiw");
                     // ranser
                 }
                 else return;
@@ -109,7 +111,7 @@ namespace Bnncmd.Strategy
                 Console.WriteLine("Do you want to transfer assets to futures wallet?");
                 var commandFutures = Console.ReadLine();
                 Console.WriteLine();
-                if ((commandFutures != null) && (commandFutures.ToLower()[0] == 'y')) futuresRest = futuresExchange.FindFunds(string.Empty, false, 1.015M * requiredUsdAmount - futuresRest);
+                if ((commandFutures != null) && (commandFutures.ToLower()[0] == 'y')) futuresExchange.FindFunds(string.Empty, false, 1.015M * requiredUsdAmount - futuresRest); // futuresRest = 
                 else return;
             }
 

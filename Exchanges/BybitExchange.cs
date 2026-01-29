@@ -58,13 +58,14 @@ namespace Bnncmd
             var bybitData = _client.V5Api.ExchangeData.GetFundingRateHistoryAsync(Category.Linear, symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now).Result.Data;
             if (bybitData == null) return [];
             var bybitRates = bybitData.List;
-            if (bybitRates.Length == 0) return [];
+            if (bybitRates.Length < 2) return [];
 
+            var fundingInterval = bybitRates[0].Timestamp.Hour - bybitRates[1].Timestamp.Hour;
             var ratesArr = bybitRates.Select(r => r.FundingRate).Take(10).ToArray(); // then process EMA
             return [new HedgeInfo(this)
             {
                 Symbol = symbol,
-                EmaFundingRate = 100 * GetEmaFundingRate(ratesArr),
+                EmaFundingRate = 100 * GetEmaFundingRate(ratesArr) * 24 / fundingInterval,
                 Fee = FuturesMakerFee
             }];
 

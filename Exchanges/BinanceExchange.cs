@@ -178,7 +178,7 @@ namespace Bnncmd
             Console.WriteLine($"Notional: {positionResult.Data.First().Notional}");
             return;*/
 
-            SubscribeUserFuturesData();
+            /* SubscribeUserFuturesData();
             symbol = "BTCUSDT";
             Thread.Sleep(500);
 
@@ -191,7 +191,7 @@ namespace Bnncmd
             if (!cancelationResult.Success) throw new Exception($"Error while order cancelation: {cancelationResult.Error}");
             Console.WriteLine($"Cancelation result: {cancelationResult.Data}, quantity: {cancelationResult.Data.CumulativeQuantity}");
 
-            return;
+            return;*/
 
             var _orderBookSubscription = (await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e => // SubscribeToBookTickerUpdatesAsync
             {
@@ -267,6 +267,16 @@ namespace Bnncmd
 
         private readonly string _usdtFlexibleDeposite = "USDT001";
 
+        private decimal TranserFromSpotToFutures(decimal amount)
+        {
+            Console.WriteLine($"Tranfering from spot to futures wallet: {amount} ...");
+            var transferRes = _apiClient.GeneralApi.Futures.TransferFuturesAccountAsync(UsdtName, amount, FuturesTransferType.FromSpotToUsdtFutures).Result;
+            if ((transferRes.Error != null) && !transferRes.Success) throw new Exception(transferRes.Error.Message);
+            var newBalance = CheckFuturesBalance();
+            Console.WriteLine($"New futures balance: {newBalance}");
+            return newBalance;
+        }
+
         public override decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0)
         {
             decimal sum = 0;
@@ -275,23 +285,27 @@ namespace Bnncmd
             {
                 var futuresRest = CheckFuturesBalance(UsdtName);
                 sum += futuresRest;
-                Console.WriteLine($"   futures rest: {futuresRest}");
+                Console.WriteLine($"   Futures rest: {futuresRest}");
             }
             else
             {
                 var spotRest = CheckSpotBalance(UsdtName);
                 sum += spotRest;
 
-                if ((amount > 0) && (spotRest >= amount))
+                if (amount > 0)
                 {
-                    Console.WriteLine($"Tranfering from spot to futures wallet: {amount} ...");
-                    var transferRes = _apiClient.GeneralApi.Futures.TransferFuturesAccountAsync(UsdtName, amount, Binance.Net.Enums.FuturesTransferType.FromSpotToUsdtFutures).Result;
-                    if ((transferRes.Error != null) && !transferRes.Success) throw new Exception(transferRes.Error.Message);
-                    var newBalance = CheckFuturesBalance();
-                    Console.WriteLine($"   new futures balance: {newBalance}");
-                    return newBalance;
+                    if (spotRest >= amount)
+                    {
+                        return TranserFromSpotToFutures(amount);
+                        /* Console.WriteLine($"Tranfering from spot to futures wallet: {amount} ...");
+                        var transferRes = _apiClient.GeneralApi.Futures.TransferFuturesAccountAsync(UsdtName, amount, FuturesTransferType.FromSpotToUsdtFutures).Result;
+                        if ((transferRes.Error != null) && !transferRes.Success) throw new Exception(transferRes.Error.Message);
+                        var newBalance = CheckFuturesBalance();
+                        Console.WriteLine($"New futures balance: {newBalance}");
+                        return newBalance;*/
+                    }
                 }
-                else Console.WriteLine($"   spot rest: {spotRest}");
+                else Console.WriteLine($"   Spot rest: {spotRest}");
             }
 
             var flexiblePositions = _apiClient.GeneralApi.SimpleEarn.GetFlexibleProductPositionsAsync(null, _usdtFlexibleDeposite).Result;
@@ -301,11 +315,14 @@ namespace Bnncmd
             if ((amount > 0) && (earnRest >= amount))
             {
                 Console.WriteLine($"Redeeming earn rest to spot wallet: {amount} ...");
-                var redeemRes = _apiClient.GeneralApi.SimpleEarn.RedeemFlexibleProductAsync(_usdtFlexibleDeposite, false, amount, Binance.Net.Enums.AccountSource.Spot).Result;
+                // var toWallet = forSpot ? AccountSource.Spot : AccountSource.;
+                var redeemRes = _apiClient.GeneralApi.SimpleEarn.RedeemFlexibleProductAsync(_usdtFlexibleDeposite, false, amount, AccountSource.Spot).Result;
                 if ((redeemRes.Error != null) && !redeemRes.Success) throw new Exception(redeemRes.Error.Message);
+                Console.WriteLine($"New spot balance: {CheckSpotBalance(UsdtName)}");
+                if (!forSpot) return TranserFromSpotToFutures(amount);
                 return amount;
             }
-            else Console.WriteLine($"   earn rest: {earnRest}");
+            else Console.WriteLine($"   Earn rest: {earnRest}");
 
             return sum;
         }
@@ -317,7 +334,7 @@ namespace Bnncmd
             if (isSpot) throw new NotImplementedException();
             var symbol = coin + UsdtName;
             if ((_symbolFuturesInfo == null) || (_symbolFuturesInfo.LotSizeFilter == null)) throw new Exception($"{Name} has no {symbol} information");
-            return _symbolFuturesInfo.LotSizeFilter.MinQuantity * GetSpotPrice(coin);
+            return _symbolFuturesInfo.LotSizeFilter.MinQuantity; //  * GetSpotPrice(coin)
         }
 
         public override decimal GetMaxLimit(string coin, bool isSpot)
@@ -340,7 +357,7 @@ namespace Bnncmd
             _symbolFuturesInfo = exchData.Data.Symbols.FirstOrDefault(s => s.Name == symbol) ?? throw new Exception($"{Name} returned not suitable symbol for {coin}");
 
             _priceStep = _symbolFuturesInfo.PriceFilter == null ? 0 : _symbolFuturesInfo.PriceFilter.TickSize;
-            return _symbolFuturesInfo.LotSizeFilter == null ? 0 : _symbolFuturesInfo.LotSizeFilter.MaxQuantity * GetSpotPrice(coin);
+            return _symbolFuturesInfo.LotSizeFilter == null ? 0 : _symbolFuturesInfo.LotSizeFilter.MaxQuantity; //  * GetSpotPrice(coin)
         }
 
         public override void GetFundingRates(List<FundingRate> rates, decimal minRate)
@@ -358,18 +375,16 @@ namespace Bnncmd
         private void AddHedge(List<HedgeInfo> hedges, string symbol, decimal fee)
         {
             var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now, 72).Result;
-            if (fundingRates.Data.Length != 0)
+            if (fundingRates.Data.Length < 2) return;
+            var fundingInterval = fundingRates.Data[^1].FundingTime.Hour - fundingRates.Data[^2].FundingTime.Hour;
+            var ratesArr = fundingRates.Data.Select(r => r.FundingRate).Reverse().Take(10).ToArray(); // then process EMA
+            hedges.Add(new HedgeInfo(this)
             {
-                var ratesArr = fundingRates.Data.Select(r => r.FundingRate).Reverse().Take(10).ToArray(); // then process EMA
-                hedges.Add(new HedgeInfo(this)
-                {
-                    Symbol = symbol,
-                    EmaFundingRate = 100 * GetEmaFundingRate(ratesArr),
-                    Fee = fee
-                });
-            }
+                Symbol = symbol,
+                EmaFundingRate = 100 * GetEmaFundingRate(ratesArr) * 24 / fundingInterval,
+                Fee = fee
+            });
         }
-
 
         public override HedgeInfo[] GetDayFundingRate(string coin)
         {
