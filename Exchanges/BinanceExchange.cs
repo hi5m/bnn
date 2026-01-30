@@ -10,9 +10,11 @@ using Binance.Net.Objects.Options;
 using Bnncmd.Strategy;
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Sockets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.AxHost;
 
 namespace Bnncmd
 {
@@ -148,25 +150,38 @@ namespace Bnncmd
 
         private decimal GetTrueBestAsk(decimal[][] asks)
         {
+            // add the best new price
             foreach (var a in asks)
             {
                 if (!_bookState.ContainsKey(a[0])) _bookState.Add(a[0], DateTime.Now);
             }
 
+            // remove all prices that are out of order book ( blinked prices )
             var keysToRemove = _bookState.Keys.Except(asks.Select(a => a[0]));
             foreach (var k in keysToRemove)
             {
                 _bookState.Remove(k);
             }
 
+            // get orders older than 10 seconds
             var niceAsks = _bookState
                 .Where(a => a.Value < DateTime.Now.AddSeconds(-10))
                 .OrderBy(a => a.Key);
 
+            // best price
             var bestRealAsk = niceAsks.Any() ? niceAsks.First().Key : -1;
             return bestRealAsk;
         }
 
+        private UpdateSubscription? _orderBookSubscription = null;
+        private readonly object _locker = new();  // объект-заглушка
+        private bool _isLock = false;
+
+        /// <summary>
+        ///  Find best persistant ask for 
+        /// </summary>
+        /// <param name="coin"></param>
+        /// <param name="amount"></param>
         public async void ScanFutures(string coin, decimal amount)
         {
             _bookState.Clear();
@@ -193,7 +208,8 @@ namespace Bnncmd
 
             return;*/
 
-            var _orderBookSubscription = (await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e => // SubscribeToBookTickerUpdatesAsync
+            _isLock = false;
+            _orderBookSubscription = (await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, async e => // SubscribeToBookTickerUpdatesAsync
             {
                 var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
                 var bestRealAsk = GetTrueBestAsk(asks);
@@ -203,15 +219,21 @@ namespace Bnncmd
                 BnnUtils.ClearCurrentConsoleLine();
                 Console.Write($"{asks[0][0]} / {asks[0][1]} / {contractSize * asks[0][0] * asks[0][1]:0.###} => {bestRealAsk} [ {_priceStep} ]", false);
 
-                /* if ((bestRealAsk > 0) && (_tradesSubscription != null))
+                if ((bestRealAsk > 0) && (_orderBookSubscription != null))
                 {
-                    await _socketClient.UnsubscribeAsync(_tradesSubscription);
-                    _tradesSubscription = null;
+                    lock (_locker)
+                    {
+                        if (_isLock) return;
+                        _isLock = true;
+                    }
+
+                    await _socketClient.UnsubscribeAsync(_orderBookSubscription);
+                    _orderBookSubscription = null;
                     Console.WriteLine();
 
-                    bestRealAsk = 0.07M;
+                    // bestRealAsk = 0.07M;
                     Console.WriteLine($"placing short order: {symbol}, {bestRealAsk} x {amount}...");
-                }*/
+                }
             })).Data;
         }
 

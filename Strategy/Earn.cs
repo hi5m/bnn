@@ -37,6 +37,19 @@ namespace Bnncmd.Strategy
         public decimal Fee { get; set; }
     }
 
+    /*public enum EarnState
+    {
+        // Updating,
+        Waiting,
+        CollectFuturesInformation,
+        WaitingForNarrowSpread,
+        SpotEnterOrderCreated,
+        FuturesEnterOrderCreated,
+        WaitingForWideSpread,
+        SpotExitOrderCreated,
+        FuturesExitOrderCreated
+    }*/
+
     internal class Earn : BaseStrategy
     {
         public Earn(string symbolName, AccountManager manager) : base(symbolName, manager)
@@ -46,6 +59,8 @@ namespace Bnncmd.Strategy
 
             // FindBestProduct();
         }
+
+        // public EarnState State { get; set; } = EarnState.Waiting;
 
         public static void BuyPair(string coin, AbstractExchange spotExchange, AbstractExchange futuresExchange, decimal amount)
         {
