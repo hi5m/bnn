@@ -62,8 +62,12 @@ namespace Bnncmd.Strategy
 
         // public EarnState State { get; set; } = EarnState.Waiting;
 
-        public static void BuyPair(string coin, AbstractExchange spotExchange, AbstractExchange futuresExchange, decimal amount)
+        public static void BuyPair(string coin, AbstractExchange spotExchange, AbstractExchange futuresExchange, decimal amount, string spotStablecoin = "", string futuresStablecoin = "")
         {
+            spotExchange.IsTest = true;
+            futuresExchange.IsTest = spotExchange.IsTest;
+            if (spotExchange.IsTest) Console.WriteLine($"THE PROGRAM WORKS IN TEST MODE!");
+
             Console.WriteLine($"Requested {coin} amount: {amount}");
             Console.WriteLine();
 
@@ -82,10 +86,10 @@ namespace Bnncmd.Strategy
             if (spotRest < requiredUsdAmount) spotReserve = spotExchange.FindFunds(string.Empty, true);
 
             // futures exchange rests
-            var futuresRest = futuresExchange.CheckFuturesBalance(AbstractExchange.UsdtName);
+            var futuresRest = futuresExchange.CheckFuturesBalance(futuresStablecoin == string.Empty ? StableCoin.USDT : futuresStablecoin);
             checksAreOk = checksAreOk && futuresRest >= requiredUsdAmount;
             decimal futuresReserve = 0;
-            Console.WriteLine($"{futuresExchange.Name} futures {AbstractExchange.UsdtName} rest: {futuresRest:0.###} => {(futuresRest >= requiredUsdAmount ? "ok" : "not enaugh :(")}");
+            Console.WriteLine($"{futuresExchange.Name} futures {futuresStablecoin} rest: {futuresRest:0.###} => {(futuresRest >= requiredUsdAmount ? "ok" : "not enaugh :(")}");
             if (futuresRest < requiredUsdAmount) futuresReserve = futuresExchange.FindFunds(string.Empty, false);
 
             // ... max limits
@@ -93,7 +97,7 @@ namespace Bnncmd.Strategy
             checksAreOk = checksAreOk && maxSpotOrderLimit >= amount;
             Console.WriteLine($"{spotExchange.Name} spot max limit: {maxSpotOrderLimit:0.###} {coin} => {(maxSpotOrderLimit >= requiredUsdAmount ? "ok" : "too large :(")}");
 
-            var maxFuturesOrderLimit = futuresExchange.GetMaxLimit(coin, false);
+            var maxFuturesOrderLimit = futuresExchange.GetMaxLimit(coin, false, futuresStablecoin);
             checksAreOk = checksAreOk && maxFuturesOrderLimit >= amount;
             Console.WriteLine($"{futuresExchange.Name} futures max limit: {maxFuturesOrderLimit:0.###} {coin} => {(maxFuturesOrderLimit >= requiredUsdAmount ? "ok" : "too large :(")}");
 
@@ -102,7 +106,7 @@ namespace Bnncmd.Strategy
             checksAreOk = checksAreOk && minSpotOrderLimit <= amount;
             Console.WriteLine($"{spotExchange.Name} spot min limit: {minSpotOrderLimit:0.###} {coin} => {(minSpotOrderLimit <= requiredUsdAmount ? "ok" : "too little :(")}");
 
-            var minFuturesOrderLimit = futuresExchange.GetMinLimit(coin, false);
+            var minFuturesOrderLimit = futuresExchange.GetMinLimit(coin, false, futuresStablecoin);
             checksAreOk = checksAreOk && minFuturesOrderLimit <= amount;
             Console.WriteLine($"{futuresExchange.Name} futures min limit: {minFuturesOrderLimit:0.###} {coin} => {(minFuturesOrderLimit <= requiredUsdAmount ? "ok" : "too little :(")}");
 
@@ -132,15 +136,19 @@ namespace Bnncmd.Strategy
 
             if (!checksAreOk) return;
 
-            // buy futures
-            Console.WriteLine("Do you want to make futures order?");
+            // buy futures than spot
+            Console.WriteLine("Do you want to start with futures order?");
             var command = Console.ReadLine();
             if ((command == null) || (command.ToLower()[0] != 'y')) return;
 
             Console.WriteLine();
             Console.WriteLine($"{futuresExchange.Name} futures short position opening...");
-            futuresExchange.EnterShort(coin, amount);
-
+            //futuresExchange.ShortEntered += e =>
+            //{
+                Console.WriteLine($"{spotExchange.Name} spot buy order placing...");
+                spotExchange.BuySpot(coin, amount);
+            //};
+            // futuresExchange.EnterShort(coin, amount);
         }
 
         public static void FindBestProduct()
@@ -150,8 +158,8 @@ namespace Bnncmd.Strategy
             var minApr = 20;
 
             // Get earn products from all exchanges
-            // var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; // 
-            var exchanges = new List<AbstractExchange> { Exchange.Mexc };
+            var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; // 
+            // var exchanges = new List<AbstractExchange> { Exchange.Mexc };
             foreach (var e in exchanges)
             {
                 e.GetEarnProducts(products, minApr);

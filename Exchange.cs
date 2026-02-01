@@ -78,25 +78,41 @@ namespace Bnncmd
     }
 
 
+    static class StableCoin
+    {
+        public static readonly string FDUSD = "FDUSD";
+
+        public static readonly string USDC = "USDC";
+
+        public static readonly string USDT = "USDT";
+    }
+
+
     internal abstract class AbstractExchange
     {
+        // Exchange Info
         public abstract string Name { get; }
         public abstract int Code { get; }
-
-        public static readonly string UsdtName = "USDT";
-
-        public static readonly string UsdcName = "USDC";
 
         public abstract decimal SpotTakerFee { get; }
         public abstract decimal SpotMakerFee { get; }
         public abstract decimal FuturesTakerFee { get; }
         public abstract decimal FuturesMakerFee { get; }
+        public bool IsTest { get; set; }
+
         public double FundingRateDepth { get; set; } = 3;
 
         protected readonly Dictionary<decimal, DateTime> _bookState = [];
 
         protected decimal _priceStep;
 
+        protected readonly object _locker = new();
+
+        protected bool _isLock = false;
+
+        public const string EmptyString = "";
+
+        // Utils
         /// <summary>
         /// Get something like a EMA for FR. Last FR by time is the first item in array
         /// </summary>
@@ -112,7 +128,6 @@ namespace Bnncmd
             }
             return ema;
         }
-
         protected static string DownloadWithCurl(string batchFile)
         {
             var batchDir = AppContext.BaseDirectory + "\\cmd\\";
@@ -142,11 +157,18 @@ namespace Bnncmd
         public abstract void GetFundingRates(List<FundingRate> rates, decimal minRate);
         public abstract decimal CheckSpotBalance(string? coin = null);
         public abstract decimal CheckFuturesBalance(string? coin = null);
+
+        // Exchange Info
         public abstract decimal GetSpotPrice(string coin);
         public abstract decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0);
-        public abstract void EnterShort(string coin, decimal amount);
-        public abstract decimal GetMaxLimit(string coin, bool isSpot);
-        public abstract decimal GetMinLimit(string coin, bool isSpot);
+        public abstract decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString);
+        public abstract decimal GetMinLimit(string coin, bool isSpot, string stablecoin = EmptyString);
         public abstract decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk);
+
+        // Order routines
+        public event Action<AbstractExchange>? ShortEntered;
+        protected void FireShortEntered() => this.ShortEntered?.Invoke(this);
+        public abstract void EnterShort(string coin, decimal amount, string stableCoin = "");
+        public abstract void BuySpot(string coin, decimal amount);
     }
 }

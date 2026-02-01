@@ -1,14 +1,13 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
-
-using Binance.Spot.Models;
 using Bnncmd.Strategy;
 using Bybit.Net.Objects.Models.V5;
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Objects.Sockets;
 using Mexc.Net.Clients;
+using Mexc.Net.Enums;
 using Mexc.Net.Objects.Models.Futures;
 using Mexc.Net.Objects.Models.Spot;
 using Mexc.Net.Objects.Options;
@@ -16,13 +15,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+using Org.BouncyCastle.Asn1.X509;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Bnncmd
 {
@@ -244,7 +242,7 @@ namespace Bnncmd
             }
         }
 
-        public override void EnterShort(string coin, decimal amount)
+        public override void EnterShort(string coin, decimal amount, string stableCoin = EmptyString)
         {
             EnterShortWeb(coin, amount);
 
@@ -268,7 +266,7 @@ namespace Bnncmd
 
         public override decimal CheckSpotBalance(string? coin = null)
         {
-            coin ??= UsdtName;
+            coin ??= StableCoin.USDT;
             var accountData = _apiClient.SpotApi.Account.GetAccountInfoAsync().Result;
             if (accountData == null) throw new Exception($"{Name} returned no data for spot");
             if (!accountData.Success) throw new Exception(accountData.Error == null ? "no data" : accountData.Error.Message);
@@ -312,7 +310,7 @@ namespace Bnncmd
                 if (!tickerInfo.Success) throw new Exception(tickerInfo.Error == null ? string.Empty : tickerInfo.Error.Message);
                 _prices = tickerInfo.Data;
             }
-            var ourSymbol = _prices.FirstOrDefault(s => s.Symbol == coin.ToUpper() + UsdtName);
+            var ourSymbol = _prices.FirstOrDefault(s => s.Symbol == coin.ToUpper() + StableCoin.USDT);
             // if (tickerInfo.Data.Length == 0) throw new Exception($"{Name} returned no data for {coin}");
             if (ourSymbol == null) return 0;
             else return ourSymbol.Price;
@@ -320,7 +318,7 @@ namespace Bnncmd
 
         public override decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0)
         {
-            coin ??= UsdtName;
+            coin ??= StableCoin.USDT;
             var futuresRest = CheckFuturesBalance(coin);
             Console.WriteLine($"   Futures rest: {futuresRest}");
             Console.WriteLine($"   Earn rest: Not available via Api");
@@ -339,11 +337,11 @@ namespace Bnncmd
 
         private MexcSymbol? _spotSymbolInfo = null;
 
-        public override decimal GetMaxLimit(string coin, bool isSpot)
+        public override decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString)
         {
             if (isSpot)
             {
-                var exchangeResult = _apiClient.SpotApi.ExchangeData.GetExchangeInfoAsync([coin + UsdtName]).Result;
+                var exchangeResult = _apiClient.SpotApi.ExchangeData.GetExchangeInfoAsync([coin + StableCoin.USDT]).Result;
                 if (!exchangeResult.Success) throw new Exception(exchangeResult.Error == null ? string.Empty : exchangeResult.Error.Message);
                 if (exchangeResult.Data.Symbols.Length == 0) throw new Exception($"{Name} returned no max limit for {coin}");
                 _spotSymbolInfo = exchangeResult.Data.Symbols[0];
@@ -353,7 +351,7 @@ namespace Bnncmd
             {
                 if (_contractInfo == null)
                 {
-                    var contractInfo = _apiClient.FuturesApi.ExchangeData.GetContractInformationAsync(coin + '_' + UsdtName).Result;
+                    var contractInfo = _apiClient.FuturesApi.ExchangeData.GetContractInformationAsync(coin + '_' + StableCoin.USDT).Result;
                     if (!contractInfo.Success) throw new Exception(contractInfo.Error == null ? string.Empty : contractInfo.Error.Message);
                     if (contractInfo.Data.Data == null) return 0;
                     _contractInfo = contractInfo.Data.Data;
@@ -363,7 +361,7 @@ namespace Bnncmd
             }
         }
 
-        public override decimal GetMinLimit(string coin, bool isSpot)
+        public override decimal GetMinLimit(string coin, bool isSpot, string stablecoin = EmptyString)
         {
             if (!isSpot) throw new NotImplementedException();
             if (_spotSymbolInfo == null) throw new Exception($"{Name} has no {coin} information");
@@ -379,7 +377,7 @@ namespace Bnncmd
             foreach (var s in ratesData.Data.Data)
             {
                 if ((s == null) || (s.Symbol == null)) continue;
-                if (!s.Symbol.EndsWith(UsdtName) || (s.FundingRate <= minRate / 100)) continue;
+                if (!s.Symbol.EndsWith(StableCoin.USDT) || (s.FundingRate <= minRate / 100)) continue;
                 var fr = new FundingRate(this, s.Symbol, s.FundingRate * 100 ?? 0);
                 fr.Interval = s.CollectCycle ?? 0;
                 if (fr.Interval == 4) fr.CurrRate *= 2;
@@ -393,7 +391,7 @@ namespace Bnncmd
             WebCallResult<decimal?> priceInfo;
             if (isSpot)
             {
-                var spotTicker = _apiClient.SpotApi.ExchangeData.GetBookPricesAsync(coin + UsdtName).Result;
+                var spotTicker = _apiClient.SpotApi.ExchangeData.GetBookPricesAsync(coin + StableCoin.USDT).Result;
                 // Console.WriteLine($"mexc: {spotTicker}");
                 decimal? bestSpotPrice = 0;
                 if (spotTicker.Data != null) bestSpotPrice = isAsk ? spotTicker.Data.BestAskPrice : spotTicker.Data.BestBidPrice;
@@ -401,7 +399,7 @@ namespace Bnncmd
             }
             else
             {
-                var futuresTicker = _apiClient.FuturesApi.ExchangeData.GetOrderBookAsync(coin + '_' + UsdtName).Result;
+                var futuresTicker = _apiClient.FuturesApi.ExchangeData.GetOrderBookAsync(coin + '_' + StableCoin.USDT).Result;
                 decimal? bestFuturesPrice = 0;
                 // return 0;
                 if (futuresTicker.Data.Data != null) bestFuturesPrice = isAsk ? futuresTicker.Data.Data.Asks[0].Price : futuresTicker.Data.Data.Bids[0].Price;
@@ -419,7 +417,7 @@ namespace Bnncmd
         public async void ScanFutures(string coin, decimal amount)
         {
             _bookState.Clear();
-            var symbol = coin + '_' + UsdtName;
+            var symbol = coin + '_' + StableCoin.USDT;
 
             _orderBookSubscription = (await _socketClient.FuturesApi.SubscribeToOrderBookUpdatesAsync(symbol, async e =>
             {
@@ -462,6 +460,91 @@ namespace Bnncmd
                     else Console.WriteLine($"Order error: {GetErrorText(orderResult.Data.Code)} ({orderResult.Data.Code})");*/
                 }
             })).Data;
+        }
+
+        private async void SubscribeUserSpotData()
+        {
+            var listenKeyResult = _apiClient.SpotApi.Account.StartUserStreamAsync().Result;
+            if (!listenKeyResult.Success) throw new Exception($"Error while getting listenKey: {listenKeyResult.Error}");
+            var listenKey = listenKeyResult.Data;
+            Console.WriteLine($"mexc listenKey: {listenKey}");
+
+            var subscribeResult = await _socketClient.SpotApi.SubscribeToOrderUpdatesAsync(listenKey, data =>
+            {
+                Console.WriteLine($"Order updated: {data.Data}, ID: {data.Data.OrderId}, Status: {data.Data.Status}");
+                Console.Beep();
+            });
+        }
+
+        // private string _orderId = string.Empty;
+        // private decimal _orderPrice = -1;
+        private MexcOrder? _order = null;
+
+        private MexcOrder PlaceOrder(string symbol, decimal amount, decimal price)
+        {
+            Console.WriteLine($"Placing spot buy order: {symbol}, {price} x {amount}...");
+            // WebCallResult orderResult;
+            if (IsTest)
+            {
+                var testOrderResult = _apiClient.SpotApi.Trading.PlaceTestOrderAsync(symbol, OrderSide.Buy, OrderType.LimitMaker, amount, null, price).Result;
+                if (!testOrderResult.Success) throw new Exception($"Error while placing {Name} spot order: {testOrderResult.Error}");
+                Console.WriteLine($"Test order is placed");
+                return new MexcOrder()
+                {
+                    Symbol = symbol,
+                    Price = price,
+                    Quantity = amount
+                };
+            }
+            else
+            {
+                var orderResult = _apiClient.SpotApi.Trading.PlaceOrderAsync(symbol, OrderSide.Buy, OrderType.LimitMaker, amount, null, price).Result;
+                if (!orderResult.Success) throw new Exception($"Error while placing {Name} spot order: {orderResult.Error}");
+                Console.WriteLine($"Order Status: {orderResult.Data.Status}; id: {orderResult.Data.OrderId}");
+                return orderResult.Data;
+            }
+        }
+
+        public override void BuySpot(string coin, decimal amount)
+        {
+            SubscribeUserSpotData();
+
+            var symbol = coin + '_' + StableCoin.USDT;
+            _isLock = false;
+            _order = null;
+            _orderBookSubscription = _socketClient.SpotApi.SubscribeToBookTickerUpdatesAsync($"{symbol}", update =>
+            {
+                lock (_locker)
+                {
+                    if (_isLock) return;
+                    if ((_order != null) && (_order.Price == update.Data.BestBidPrice)) return;
+                    _isLock = true;
+                }
+
+                if (_order == null) _order = PlaceOrder(symbol, amount, update.Data.BestBidPrice);
+                else
+                {
+                    if (update.Data.BestBidPrice > _order.Price)
+                    { 
+                        if (IsTest) Console.WriteLine($"Price incresed {update.Data.BestBidPrice}, the order should be cancelled");
+                        else
+                        {
+                            var cancelResult = _apiClient.SpotApi.Trading.CancelOrderAsync(symbol, _order.OrderId).Result;
+                            if (!cancelResult.Success) throw new Exception($"Error while cancelling the spot order: {cancelResult.Error}");
+                            Console.WriteLine($"Price incresed {update.Data.BestBidPrice}, the order is cancelled ({cancelResult.Data.Status})");
+                        }
+                        _order = PlaceOrder(symbol, amount, update.Data.BestBidPrice);
+                    }
+
+                    if (update.Data.BestBidPrice < _order.Price)
+                    {
+                        Console.WriteLine($"Price dropped ({update.Data.BestBidPrice}), it seems the order is filled ({_order})");
+                        if (_orderBookSubscription != null)  _ = _socketClient.UnsubscribeAsync(_orderBookSubscription);
+                    }
+                };
+
+                _isLock = false;
+            }).Result.Data;
         }
     }
 }

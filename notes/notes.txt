@@ -1,18 +1,19 @@
-Requested SENT amount: 10
+Requested IP amount: 30
 
-Mexc SENT spot price: 0.02491 => usd required amount: 0.257
-Mexc spot stable coin rest: 0 => not enaugh :(
-   Futures rest: 0
-   Earn rest: Not available via Api
-Bybit futures USDT rest: 0 => not enaugh :(
-   Unified wallet rest: 0
-   Fund rest: 0.1457
-   Earn rest: 200
-Mexc spot max limit: 2000000 => ok
-Bybit futures max limit: 6000000 => ok
-Mexc spot min limit: 1 => too little :(
-The method or operation is not implemented.
-q
+Mexc IP spot price: 1.818 => usd required amount: 56.176
+Mexc spot stable coin rest: 69.625 => ok
+Binance futures USDT rest: 63.605 => ok
+Mexc spot max limit: 2000000 IP => ok
+Binance futures max limit: 600000 IP => ok
+Mexc spot min limit: 1 IP => ok
+Binance futures min limit: 0.1 IP => ok
 
+Do you want to make futures order?
+y
 
-C:\bnn\Bnncmd\bin\Debug\net8.0-windows>
+Binance futures short position opening...
+1.822000 / 330.4 / 601.989 => 1.822000 [ 0.001000 ]
+placing short order: IPUSDT, 1.823000 x 30...
+Order updated: IPUSDT, ID: 3813825455, Status: New
+Order Status: New
+Order updated: IPUSDT, ID: 3813825455, Status: Filled

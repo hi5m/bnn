@@ -136,12 +136,16 @@ internal class Program
                 break;
             case 'b':
                 var args = Environment.GetCommandLineArgs();
-                if (args.Count() < 7) throw new Exception("wrong params number (example: bnncmd e b ZAMA Mexc Binance 1000)");
+                if (args.Length < 7) throw new Exception("wrong params number (example: bnncmd e b ZAMA Mexc Binance 1000)");
                 var spotExchange = Exchange.GetExchangeByName(args[4]) ?? throw new Exception($"exchange not found {args[4]}");
                 var futuresExchange = Exchange.GetExchangeByName(args[5]) ?? throw new Exception($"exchange not found {args[5]}");
                 if (!decimal.TryParse(args[6], out var quantity)) throw new Exception($"amount format is wrong: {args[6]}");
+
+                var spotStablecoin = args[6] == '-'.ToString() ? string.Empty : args[6];
+                var futuresStablecoin = args[7] == '-'.ToString() ? string.Empty : args[6];
+
                 // Console.WriteLine($"coin: {args[3].ToUpper()}, spot exch: {spotExchange.Name}, futures exch: {futuresExchange.Name}, amount: {quantity}");
-                Earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity);
+                Earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity, spotStablecoin, futuresStablecoin);
                 break;
             default: throw new Exception($"Unknown operation: {operation}");
         }
