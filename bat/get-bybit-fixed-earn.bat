@@ -1,13 +1,21 @@
 "C:\Program Files\Git\mingw64\bin\curl.exe" ^"https://www.bybit.com/x-api/s1/byfi/get-easy-earn-product-list^" ^
-  --compressed ^
-  -X POST ^
-  -H ^"Cookie: ttcsid_CMEEMQRC77UBHLCRLFPG=0;^" ^
-  -H ^"Accept-Encoding: gzip, deflate, br, zstd^" ^
-  -H ^"Accept: */*^" ^
-  -H ^"Accept-Language: en-US,en;q=0.9^" ^
-  -H ^"Origin: https://www.bybit.com^" ^
-  -H ^"Sec-Fetch-Site: same-origin^" ^
-  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36^" ^
-  -H ^"Content-Type: application/json^" ^
+  -H ^"accept: */*^" ^
+  -H ^"accept-language: en-US,en;q=0.9,ru;q=0.8^" ^
+  -H ^"content-type: application/json^" ^
+  -b ^"ttcsid_CMEEMQRC77UBHLCRLFPG=0^" ^
+  -H ^"lang: en^" ^
+  -H ^"origin: https://www.bybit.com^" ^
+  -H ^"platform: pc^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://www.bybit.com/en/earn/easy-earn/?homeRef=1^" ^
+  -H ^"sec-ch-ua: ^\^"Not(A:Brand^\^";v=^\^"8^\^", ^\^"Chromium^\^";v=^\^"144^\^", ^\^"Google Chrome^\^";v=^\^"144^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36^" ^
+  -H ^"usertoken;^" ^
+  -H ^"x-user-agent: undefined^" ^
   --output ^"%~dp0get-bybit-fixed-earn.json^" ^
-  --data-raw ^"^{^\^"page^\^":1,^\^"limit^\^":50,^\^"sort_type^\^":0,^\^"fixed_saving_version^\^":1^}^"
+  --data-raw ^"^{^\^"tab^\^":^\^"2^\^",^\^"page^\^":1,^\^"limit^\^":30,^\^"fuzzy_coin_name^\^":^\^"^\^",^\^"sort_type^\^":2,^\^"match_user_asset^\^":false,^\^"eligible_only^\^":false,^\^"fixed_saving_version^\^":1^}^"
