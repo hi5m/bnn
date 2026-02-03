@@ -128,6 +128,7 @@ internal class Program
     private static void SimpleEarn()
     {
         var operation = s_secondParam[0];
+        var args = Environment.GetCommandLineArgs();
         switch (operation)
         {
             case 'f':
@@ -135,7 +136,6 @@ internal class Program
                 Environment.Exit(0);
                 break;
             case 'b':
-                var args = Environment.GetCommandLineArgs();
                 if (args.Length < 7) throw new Exception("wrong params number (example: bnncmd e b ZAMA Mexc Binance 1000)");
                 var spotExchange = Exchange.GetExchangeByName(args[4]) ?? throw new Exception($"exchange not found {args[4]}");
                 var futuresExchange = Exchange.GetExchangeByName(args[5]) ?? throw new Exception($"exchange not found {args[5]}");
@@ -146,6 +146,9 @@ internal class Program
 
                 // Console.WriteLine($"coin: {args[3].ToUpper()}, spot exch: {spotExchange.Name}, futures exch: {futuresExchange.Name}, amount: {quantity}");
                 Earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity, spotStablecoin, futuresStablecoin);
+                break;
+            case 'r':
+                Exchange.Binance.GetFundingRateStat(args[3], int.Parse(args[4]));
                 break;
             default: throw new Exception($"Unknown operation: {operation}");
         }
