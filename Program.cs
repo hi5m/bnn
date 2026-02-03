@@ -37,7 +37,10 @@ internal class Program
 
         Console.WriteLine("a                       - account information");
         Console.WriteLine("c                       - candlesticks");
-        Console.WriteLine("e                       - earn: b - buy pair (b xo spotExch futExch 10000), f - find best offers");
+        Console.WriteLine("e                       - earn: ");
+        Console.WriteLine("                                b - buy pair (b xo spotExch futExch 10000)");
+        Console.WriteLine("                                f - find best offers");
+        Console.WriteLine("                                r - get funding rate statisctics (r coin daysCount)");
         Console.WriteLine();
 
         Console.WriteLine("q                       - quit");

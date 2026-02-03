@@ -1,7 +1,7 @@
 "C:\Program Files\Git\mingw64\bin\curl.exe" ^"https://www.bybit.com/x-api/s1/byfi/get-easy-earn-product-list^" ^
-  --compressed ^
   -H ^"accept: */*^" ^
   -H ^"accept-language: en-US,en;q=0.9,ru;q=0.8^" ^
+  -H ^"Accept-Encoding: identity^" ^
   -H ^"content-type: application/json^" ^
   -b ^"ttcsid_CMEEMQRC77UBHLCRLFPG=0^" ^
   -H ^"lang: en^" ^
