@@ -151,7 +151,13 @@ internal class Program
                 Earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity, spotStablecoin, futuresStablecoin);
                 break;
             case 'r':
-                Exchange.Binance.GetFundingRateStat(args[3], int.Parse(args[4]));
+                var symbols = args[3].Split(',');
+                foreach(var s in symbols)
+                {
+                    Exchange.Binance.GetFundingRateStat(s, int.Parse(args[4]));
+                    Console.WriteLine();
+                }
+                Environment.Exit(0);
                 break;
             default: throw new Exception($"Unknown operation: {operation}");
         }

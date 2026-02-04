@@ -418,35 +418,42 @@ namespace Bnncmd
 
         public void GetFundingRateStat(string symbol, int daysCount)
         {
+            Console.WriteLine($" * {symbol.ToUpper()} statistics on {Name} for {daysCount} last days *");
+            Console.WriteLine();
+
             // ema, avg, min, max, first date, last value, sum, interval, ...
             var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-daysCount), DateTime.Now, 1000).Result.Data;
             if (fundingRates.Length < 2) throw new Exception($"There are no values for this symbol on {Name}");
-            var firstDate = fundingRates.Last().FundingTime;
-            var lastValue = fundingRates.First().FundingRate;
+            var firstDate = fundingRates.First().FundingTime;
+            var lastValue = fundingRates.Last().FundingRate * 100;
             var interval = fundingRates[^1].FundingTime.Hour - fundingRates[^2].FundingTime.Hour;
             var minValue = decimal.MaxValue;
             var maxValue = decimal.MinValue;
+            var minValueDay = DateTime.MinValue;
             var sum = 0M;
-            var ema = fundingRates.Last().FundingRate;
+            var ema = fundingRates.First().FundingRate;
             var emaKoef = 0.3M;
-            foreach (var f in fundingRates.Reverse())
+            foreach (var f in fundingRates) // .Reverse()
             {
                 if (f.FundingRate > maxValue) maxValue = f.FundingRate;
-                if (f.FundingRate < minValue) minValue = f.FundingRate;
+                if (f.FundingRate < minValue)
+                {
+                    minValue = f.FundingRate;
+                    minValueDay = f.FundingTime;
+                }
                 sum += f.FundingRate;
                 ema = ema * (1 - emaKoef) + emaKoef * f.FundingRate;
             }
 
-            Console.WriteLine($" *** {symbol} statistics on {Name} for {daysCount} last days ***");
-            Console.WriteLine();
-            Console.WriteLine($"first date: {firstDate}");
-            Console.WriteLine($"last value: {lastValue}");
-            Console.WriteLine($"interval: {interval} hours");
-            Console.WriteLine($"min value: {minValue}");
-            Console.WriteLine($"max value: {maxValue}");
-            Console.WriteLine($"sum: {sum}");
-            Console.WriteLine($"avg: {sum / fundingRates.Length}");
-            Console.WriteLine($"ema: {ema}");
+            Console.WriteLine($"First date: {firstDate:dd.MM.yyyy}");
+            Console.WriteLine($"Interval: {interval} hours");
+            Console.WriteLine($"Last value: {lastValue:0.###}");
+            Console.WriteLine($"Max value: {maxValue * 100:0.###}%");
+            Console.WriteLine($"Min value: {minValue * 100:0.###}%");
+            Console.WriteLine($"Min value day: {minValueDay:dd.MM.yyyy}");
+            Console.WriteLine($"Sum: {sum * 100:0.###}%");
+            Console.WriteLine($"Avg: {sum * 100 / (decimal)fundingRates.Length:0.#####}%");
+            Console.WriteLine($"Ema: {ema * 100:0.###}%");
         }
 
         private void AddHedge(List<HedgeInfo> hedges, string symbol, decimal fee)
