@@ -6,6 +6,7 @@ using Binance.Net.Clients;
 using Binance.Net.Enums;
 using Binance.Net.Objects.Models;
 using Binance.Net.Objects.Models.Futures;
+using Binance.Net.Objects.Models.Spot;
 using Binance.Net.Objects.Options;
 using Bnncmd.Strategy;
 using CryptoExchange.Net.Authentication;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic;
 using Org.BouncyCastle.Asn1.X509;
+using System.Runtime.CompilerServices;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static System.Windows.Forms.AxHost;
 
@@ -381,27 +383,43 @@ namespace Bnncmd
             return _symbolFuturesInfo.LotSizeFilter.MinQuantity; //  * GetSpotPrice(coin)
         }
 
+        private BinanceSymbol[]? _spotSymbols = null;
+
         public override decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString)
         {
-            if (isSpot) throw new NotImplementedException();
-            var symbol = coin + StableCoin.USDT;
+            var symbol = coin + (stablecoin == EmptyString ? StableCoin.USDT : stablecoin);
 
-            var positionInfo = _apiClient.UsdFuturesApi.Account.GetPositionInformationAsync(symbol).Result.Data.First();
-            if (positionInfo.Leverage != 1)
+            if (isSpot)
             {
-                Console.WriteLine($"{Name} current position size: {positionInfo.Quantity}, leverage: {positionInfo.Leverage}x");
-                var leverageResult = _apiClient.UsdFuturesApi.Account.ChangeInitialLeverageAsync(symbol, 1).Result;
-                if ((leverageResult.Error != null) && !leverageResult.Success) throw new Exception(leverageResult.Error.Message);
-                Console.WriteLine($"{Name} new leverage: {leverageResult.Data.Leverage}");
-            };
+                if (_spotSymbols == null)
+                {
+                    var exchangeInfoResult = _apiClient.SpotApi.ExchangeData.GetExchangeInfoAsync().Result;
+                    if ((exchangeInfoResult.Error != null) && !exchangeInfoResult.Success) throw new Exception(exchangeInfoResult.Error.Message);
+                    _spotSymbols = exchangeInfoResult.Data.Symbols;
+                }
 
-            var exchData = _apiClient.UsdFuturesApi.ExchangeData.GetExchangeInfoAsync().Result;
-            if ((exchData.Error != null) && !exchData.Success) throw new Exception(exchData.Error.Message);
-            if ((exchData.Data.Symbols == null) || (exchData.Data.Symbols.Length == 0)) throw new Exception($"{Name} returned not data for {coin}");
-            _symbolFuturesInfo = exchData.Data.Symbols.FirstOrDefault(s => s.Name == symbol) ?? throw new Exception($"{Name} returned not suitable symbol for {coin}");
+                var symbolInfo = _spotSymbols.FirstOrDefault(s => s.Name.Equals(symbol, StringComparison.OrdinalIgnoreCase)) ?? throw new Exception($"{symbol} info not found on {Name}");
+                return symbolInfo.LotSizeFilter == null ? 0 : symbolInfo.LotSizeFilter.MaxQuantity; //  * GetSpotPrice(coin)
+            }
+            else
+            {
+                var positionInfo = _apiClient.UsdFuturesApi.Account.GetPositionInformationAsync(symbol).Result.Data.First();
+                if (positionInfo.Leverage != 1)
+                {
+                    Console.WriteLine($"{Name} current position size: {positionInfo.Quantity}, leverage: {positionInfo.Leverage}x");
+                    var leverageResult = _apiClient.UsdFuturesApi.Account.ChangeInitialLeverageAsync(symbol, 1).Result;
+                    if ((leverageResult.Error != null) && !leverageResult.Success) throw new Exception(leverageResult.Error.Message);
+                    Console.WriteLine($"{Name} new leverage: {leverageResult.Data.Leverage}");
+                };
 
-            _priceStep = _symbolFuturesInfo.PriceFilter == null ? 0 : _symbolFuturesInfo.PriceFilter.TickSize;
-            return _symbolFuturesInfo.LotSizeFilter == null ? 0 : _symbolFuturesInfo.LotSizeFilter.MaxQuantity; //  * GetSpotPrice(coin)
+                var exchData = _apiClient.UsdFuturesApi.ExchangeData.GetExchangeInfoAsync().Result;
+                if ((exchData.Error != null) && !exchData.Success) throw new Exception(exchData.Error.Message);
+                if ((exchData.Data.Symbols == null) || (exchData.Data.Symbols.Length == 0)) throw new Exception($"{Name} returned not data for {coin}");
+                _symbolFuturesInfo = exchData.Data.Symbols.FirstOrDefault(s => s.Name == symbol) ?? throw new Exception($"{Name} returned not suitable symbol for {coin}");
+
+                _priceStep = _symbolFuturesInfo.PriceFilter == null ? 0 : _symbolFuturesInfo.PriceFilter.TickSize;
+                return _symbolFuturesInfo.LotSizeFilter == null ? 0 : _symbolFuturesInfo.LotSizeFilter.MaxQuantity; //  * GetSpotPrice(coin)
+            }
         }
 
         public override void GetFundingRates(List<FundingRate> rates, decimal minRate)

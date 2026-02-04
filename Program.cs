@@ -144,8 +144,8 @@ internal class Program
                 var futuresExchange = Exchange.GetExchangeByName(args[5]) ?? throw new Exception($"exchange not found {args[5]}");
                 if (!decimal.TryParse(args[6], out var quantity)) throw new Exception($"amount format is wrong: {args[6]}");
 
-                var spotStablecoin = args[6] == '-'.ToString() ? string.Empty : args[6];
-                var futuresStablecoin = args[7] == '-'.ToString() ? string.Empty : args[6];
+                var spotStablecoin = ((args.Length < 8) || args[7] == '-'.ToString()) ? string.Empty : args[6];
+                var futuresStablecoin = ((args.Length < 9) || args[8] == '-'.ToString()) ? string.Empty : args[6];
 
                 // Console.WriteLine($"coin: {args[3].ToUpper()}, spot exch: {spotExchange.Name}, futures exch: {futuresExchange.Name}, amount: {quantity}");
                 Earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity, spotStablecoin, futuresStablecoin);
