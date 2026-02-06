@@ -102,7 +102,6 @@ namespace Bnncmd
         public abstract decimal FuturesTakerFee { get; }
         public abstract decimal FuturesMakerFee { get; }
         public bool IsTest { get; set; }
-
         public double FundingRateDepth { get; set; } = 3;
 
         protected readonly Dictionary<decimal, DateTime> _bookState = [];
@@ -163,7 +162,7 @@ namespace Bnncmd
 
         // Exchange Info
         public abstract decimal GetSpotPrice(string coin);
-        public abstract decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0);
+        public abstract decimal FindFunds(string stableCoin, bool forSpot = true, decimal amount = 0);
         public abstract decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString);
         public abstract decimal GetMinLimit(string coin, bool isSpot, string stablecoin = EmptyString);
         public abstract decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk);
@@ -171,7 +170,7 @@ namespace Bnncmd
         // Order routines
         public event Action<AbstractExchange>? ShortEntered;
         protected void FireShortEntered() => this.ShortEntered?.Invoke(this);
-        public abstract void EnterShort(string coin, decimal amount, string stableCoin = "");
+        public abstract void EnterShort(string coin, decimal amount, string stableCoin = EmptyString);
         public abstract void BuySpot(string coin, decimal amount);
     }
 }

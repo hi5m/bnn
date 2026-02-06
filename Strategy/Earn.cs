@@ -117,7 +117,7 @@ namespace Bnncmd.Strategy
             {
                 Console.WriteLine($"Do you want to transfer assets to {spotExchange.Name} spot wallet?");
                 var commandTrans = Console.ReadLine();
-                if ((commandTrans != null) && (commandTrans.ToLower()[0] == 'y')) spotExchange.FindFunds(string.Empty, true, 1.015M * requiredUsdAmount - spotRest);
+                if ((commandTrans != null) && (commandTrans.ToLower()[0] == 'y')) spotExchange.FindFunds(spotStablecoin, true, 1.015M * requiredUsdAmount - spotRest);
                 else return;
             }
 

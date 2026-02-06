@@ -339,35 +339,37 @@ namespace Bnncmd
             return newBalance;
         }
 
-        public override decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0)
+        private decimal TranserFromFuturesToSpot(decimal amount)
+        {
+            Console.WriteLine($"Tranfering from futures to spot wallet: {amount} ...");
+            var transferRes = _apiClient.GeneralApi.Futures.TransferFuturesAccountAsync(StableCoin.USDT, amount, FuturesTransferType.FromUsdtFuturesToSpot).Result;
+            if ((transferRes.Error != null) && !transferRes.Success) throw new Exception(transferRes.Error.Message);
+            var newBalance = CheckSpotBalance();
+            Console.WriteLine($"New spot balance: {newBalance}");
+            return newBalance;
+        }
+
+        public override decimal FindFunds(string stableCoin, bool forSpot = true, decimal amount = 0)
         {
             decimal sum = 0;
 
             if (forSpot)
             {
+                if (stableCoin == string.Empty) stableCoin = StableCoin.FDUSD;
                 var futuresRest = CheckFuturesBalance(StableCoin.USDT);
                 sum += futuresRest;
-                if(amount > 0) throw new Exception($"Futures rest is {futuresRest:0.###}{StableCoin.USDT}, but you probably want some {StableCoin.FDUSD}?");
+                if (amount > 0)
+                {
+                    if (stableCoin.Equals(StableCoin.USDT, StringComparison.OrdinalIgnoreCase)) return TranserFromFuturesToSpot(futuresRest > amount ? amount : futuresRest);
+                    else throw new Exception($"Futures rest is in {futuresRest:0.###}{StableCoin.USDT}, but you probably want some {StableCoin.FDUSD}?");
+                }
                 else Console.WriteLine($"   Futures rest: {futuresRest}");
             }
             else
             {
                 var spotRest = CheckSpotBalance(StableCoin.USDT);
                 sum += spotRest;
-
-                if (amount > 0)
-                {
-                    if (spotRest >= amount)
-                    {
-                        return TranserFromSpotToFutures(amount);
-                        /* Console.WriteLine($"Tranfering from spot to futures wallet: {amount} ...");
-                        var transferRes = _apiClient.GeneralApi.Futures.TransferFuturesAccountAsync(UsdtName, amount, FuturesTransferType.FromSpotToUsdtFutures).Result;
-                        if ((transferRes.Error != null) && !transferRes.Success) throw new Exception(transferRes.Error.Message);
-                        var newBalance = CheckFuturesBalance();
-                        Console.WriteLine($"New futures balance: {newBalance}");
-                        return newBalance;*/
-                    }
-                }
+                if (amount > 0) return TranserFromSpotToFutures(spotRest > amount ? amount : spotRest);
                 else Console.WriteLine($"   Spot rest: {spotRest}");
             }
 
