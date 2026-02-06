@@ -89,7 +89,8 @@ namespace Bnncmd.Strategy
             var futuresRest = futuresExchange.CheckFuturesBalance(futuresStablecoin == string.Empty ? StableCoin.USDT : futuresStablecoin);
             checksAreOk = checksAreOk && futuresRest >= requiredUsdAmount;
             decimal futuresReserve = 0;
-            Console.WriteLine($"{futuresExchange.Name} futures {futuresStablecoin} rest: {futuresRest:0.###} => {(futuresRest >= requiredUsdAmount ? "ok" : "not enaugh :(")}");
+            var futureCoinName = futuresStablecoin == string.Empty ? string.Empty : futuresStablecoin + ' ';
+            Console.WriteLine($"{futuresExchange.Name} futures {futureCoinName}rest: {futuresRest:0.###} => {(futuresRest >= requiredUsdAmount ? "ok" : "not enaugh :(")}");
             if (futuresRest < requiredUsdAmount) futuresReserve = futuresExchange.FindFunds(string.Empty, false);
 
             // ... max limits
@@ -114,14 +115,9 @@ namespace Bnncmd.Strategy
             Console.WriteLine();
             if ((spotReserve >= requiredUsdAmount) && (spotRest < requiredUsdAmount))
             {
-                Console.WriteLine("Do you want to transfer assets to spot wallet?");
+                Console.WriteLine($"Do you want to transfer assets to {spotExchange.Name} spot wallet?");
                 var commandTrans = Console.ReadLine();
-                if ((commandTrans != null) && (commandTrans.ToLower()[0] == 'y'))
-                {
-                    throw new NotImplementedException();
-                    // Console.WriteLine("Thiw");
-                    // ranser
-                }
+                if ((commandTrans != null) && (commandTrans.ToLower()[0] == 'y')) spotExchange.FindFunds(string.Empty, true, 1.015M * requiredUsdAmount - spotRest);
                 else return;
             }
 
@@ -158,8 +154,8 @@ namespace Bnncmd.Strategy
             var minApr = 20;
 
             // Get earn products from all exchanges
-            var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; // 
-            // var exchanges = new List<AbstractExchange> { Exchange.Mexc };
+            // var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; // 
+            var exchanges = new List<AbstractExchange> { Exchange.Binance };
             foreach (var e in exchanges)
             {
                 e.GetEarnProducts(products, minApr);
@@ -167,8 +163,8 @@ namespace Bnncmd.Strategy
 
             // Get funding rates for hedging from available futures
             Console.WriteLine("\r\n===========================\r\n");
-            exchanges = [Exchange.Binance, Exchange.Bybit];
-            // exchanges = [Exchange.Mexc];
+            /// exchanges = [Exchange.Binance, Exchange.Bybit];
+            exchanges = [Exchange.Bybit];
             foreach (var p in products)
             {
                 Console.WriteLine($"{p}");
@@ -209,7 +205,7 @@ namespace Bnncmd.Strategy
                 var arpStr = $"{p.RealApr:0.###}";
                 var futuresExchange = $"{(p.HedgeInfo == null ? string.Empty : p.HedgeInfo.Exchanger.Name)}";
                 var term = $"{p.Term:0}";
-                Console.WriteLine($"{p.ProductName,-23} | {arpStr,-9} | {p.Exchange.Name,-9} | {futuresExchange,-9} | {term,-3} | {p.LimitMax}");
+                Console.WriteLine($"{p.ProductName,-23} | {arpStr,-9} | {p.Exchange.Name,-9} | {p.StableCoin,-5} | {futuresExchange,-9} | {term,-3} | {p.LimitMax}");
             }
             // Environment.Exit(0);
         }

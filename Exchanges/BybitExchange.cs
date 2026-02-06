@@ -285,12 +285,13 @@ namespace Bnncmd
 
         public override decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString)
         {
+            var symbol = coin + StableCoin.USDT;
             // throw new NotImplementedException();            
             // Task<WebCallResult<BybitResponse<object>>> symbolInfo = isSpot ? _client.V5Api.ExchangeData.GetSpotSymbolsAsync(coin + UsdtName).Result : _client.V5Api.ExchangeData.GetLinearInverseSymbolsAsync(Category.Linear, coin + UsdtName).Result;
             // var symbolInfo = isSpot ? _client.V5Api.ExchangeData.GetSpotSymbolsAsync(coin + UsdtName).Result : _client.V5Api.ExchangeData.GetLinearInverseSymbolsAsync(Category.Linear, coin + UsdtName).Result;
             if (isSpot)
             {
-                var symbolInfo = _client.V5Api.ExchangeData.GetSpotSymbolsAsync(coin + StableCoin.USDT).Result;
+                var symbolInfo = _client.V5Api.ExchangeData.GetSpotSymbolsAsync(symbol).Result;
                 if (!symbolInfo.Success && (symbolInfo.Error != null)) throw new Exception(symbolInfo.Error.Message);
                 if ((symbolInfo.Data.List == null) || (symbolInfo.Data.List.Length == 0)) throw new Exception($"{Name} GetMaxLimit return no data");
                 var filter = symbolInfo.Data.List[0].LotSizeFilter ?? throw new Exception("GetMaxLimit: LotSizeFilter not fount");
@@ -298,7 +299,7 @@ namespace Bnncmd
             }
             else
             {
-                var symbolInfo = _client.V5Api.ExchangeData.GetLinearInverseSymbolsAsync(Category.Linear, coin + StableCoin.USDT).Result;
+                var symbolInfo = _client.V5Api.ExchangeData.GetLinearInverseSymbolsAsync(Category.Linear, symbol).Result;
                 if (!symbolInfo.Success && (symbolInfo.Error != null)) throw new Exception(symbolInfo.Error.Message);
                 if ((symbolInfo.Data.List == null) || (symbolInfo.Data.List.Length == 0)) throw new Exception($"{Name} GetMaxLimit return no data");
                 var filter = symbolInfo.Data.List[0].LotSizeFilter ?? throw new Exception("GetMaxLimit: LotSizeFilter not fount");
@@ -306,7 +307,37 @@ namespace Bnncmd
             }
         }
 
-        public override decimal GetMinLimit(string coin, bool isSpot, string stablecoin = EmptyString) => throw new NotImplementedException();
+        private BybitLinearInverseSymbol[]? _futuresSymbols = null;
+
+        private BybitLinearInverseSymbol[] GetFuturesSymbols()
+        {
+            if (_futuresSymbols != null) return _futuresSymbols;
+            var symbolsInfoAnswer = _client.V5Api.ExchangeData.GetLinearInverseSymbolsAsync(Category.Linear).Result; // , coin + StableCoin.USDT
+            if (!symbolsInfoAnswer.Success && (symbolsInfoAnswer.Error != null)) throw new Exception(symbolsInfoAnswer.Error.Message);
+            _futuresSymbols = symbolsInfoAnswer.Data.List;
+            return _futuresSymbols;
+        }
+
+        public override decimal GetMinLimit(string coin, bool isSpot, string stablecoin = EmptyString)
+        {
+            var symbol = coin + StableCoin.USDT;
+            if (isSpot)
+            {
+                /* var symbolInfo = _client.V5Api.ExchangeData.GetSpotSymbolsAsync(coin + StableCoin.USDT).Result;
+                if (!symbolInfo.Success && (symbolInfo.Error != null)) throw new Exception(symbolInfo.Error.Message);
+                if ((symbolInfo.Data.List == null) || (symbolInfo.Data.List.Length == 0)) throw new Exception($"{Name} GetMaxLimit return no data");
+                var filter = symbolInfo.Data.List[0].LotSizeFilter ?? throw new Exception("GetMaxLimit: LotSizeFilter not fount");
+                return filter.MaxOrderQuantity;*/
+                throw new NotImplementedException();
+            }
+            else
+            {
+                _futuresSymbols = GetFuturesSymbols();
+                var symbolInfo = _futuresSymbols.FirstOrDefault(s => s.Name.Equals(symbol, StringComparison.OrdinalIgnoreCase)) ?? throw new Exception($"{symbol} info not found on {Name}");
+                if (symbolInfo.LotSizeFilter == null) throw new Exception($"{symbol} GetMinLimit: LotSizeFilter not fount on {Name}");
+                return symbolInfo.LotSizeFilter.MinOrderQuantity;
+            }
+        }
 
         public override void GetFundingRates(List<FundingRate> rates, decimal minRate)
         {

@@ -36,6 +36,7 @@ namespace Bnncmd
         public AbstractExchange Exchange { get; set; } = exchange;
         public string ProductName { get; set; } = productName;
         public decimal Apr { get; set; } = apr;
+        public string StableCoin { get; set; } = string.Empty;
         public string Comment { get; set; } = string.Empty;
         public int Term { get; set; } = 1;
         public decimal LimitMax { get; set; } = 0;
@@ -52,7 +53,7 @@ namespace Bnncmd
         public override string ToString()
         {
             var apr = $"{Apr:0.##}%";
-            return $"{ProductName,-19} | {apr,-7} | {Exchange.Name,-11} | {Term} | {Comment}";
+            return $"{ProductName,-19} | {apr,-7} | {Exchange.Name,-11} | {StableCoin,-5} | {Term} | {Comment}";
         }
     }
 
@@ -85,6 +86,8 @@ namespace Bnncmd
         public static readonly string USDC = "USDC";
 
         public static readonly string USDT = "USDT";
+
+        public static readonly string None = "-";
     }
 
 

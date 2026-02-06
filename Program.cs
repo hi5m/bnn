@@ -79,7 +79,7 @@ internal class Program
         /* Console.WriteLine("Please enter a string:");
         var plaintext = Console.ReadLine();
         Console.WriteLine("");*/
-        var plaintext = "EAAAADbZbzlav3iwXrrnCj+Zkw3X83xFZZvjE7kPBf+f9OmDN5grTPzYY3mjxTFKsR2lzkQWy6BqSIK2ML1ZbBYFyIriazeuSKh6mLsU9JVAPbNRDF2BSqKBp5YMjL8g/a4Deg==";
+        var plaintext = "...=";
 
         Console.WriteLine("Result:");
         var encryptedstring = Crypto.DecryptStringAES(plaintext, "1" + "11111");
@@ -148,25 +148,26 @@ internal class Program
                 var futuresStablecoin = ((args.Length < 9) || args[8] == '-'.ToString()) ? string.Empty : args[6];
 
                 // Console.WriteLine($"coin: {args[3].ToUpper()}, spot exch: {spotExchange.Name}, futures exch: {futuresExchange.Name}, amount: {quantity}");
-                Earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity, spotStablecoin, futuresStablecoin);
+                try
+                {
+                    Earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity, spotStablecoin, futuresStablecoin);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Environment.Exit(0);
+                }
                 break;
             case 'r':
                 var symbols = args[3].Split(',');
-                foreach(var s in symbols)
+                foreach (var s in symbols)
                 {
                     Exchange.Binance.GetFundingRateStat(s, int.Parse(args[4]));
                     Console.WriteLine();
                 }
-                Environment.Exit(0);
                 break;
             default: throw new Exception($"Unknown operation: {operation}");
         }
-
-
-        // s_am.UpdateSystemTime(null);
-        // var earn = new Earn(string.Empty, s_am);
-        // 
-
     }
 
     [DllImport("user32.dll", SetLastError = true)]

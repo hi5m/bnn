@@ -49,6 +49,16 @@ namespace Bnncmd
 
         private readonly BinanceSocketClient _socketClient = new();
 
+        private string GetChipSymbol(string coin)
+        {
+            if (_spotSymbols == null) throw new Exception("Coins sotre not found");
+            var symbolInfo = _spotSymbols.FirstOrDefault(s => s.Name.Equals($"{coin}{StableCoin.FDUSD}", StringComparison.OrdinalIgnoreCase));
+            if ((symbolInfo != null) && (symbolInfo.Status == SymbolStatus.Trading)) return StableCoin.FDUSD;
+            symbolInfo = _spotSymbols.FirstOrDefault(s => s.Name.Equals($"{coin}{StableCoin.USDT}", StringComparison.OrdinalIgnoreCase));
+            if ((symbolInfo != null) && (symbolInfo.Status == SymbolStatus.Trading)) return StableCoin.USDT;
+            return StableCoin.None;
+        }
+
         private void GetLockedProducts(List<EarnProduct> products, decimal minApr)
         {
             Console.WriteLine($"{Exchange.Binance.Name} - Api - Locked...");
@@ -80,9 +90,11 @@ namespace Bnncmd
                     var apr = r.Details.Apr * 100;
                     if (apr > minApr)
                     {
-                        // Console.WriteLine($"{r.Details.Asset}: {apr}%");
-                        var lockedProduct = new EarnProduct(Exchange.Binance, r.Details.Asset, apr, "locked - api");
-                        lockedProduct.Term = r.Details.Duration;
+                        var lockedProduct = new EarnProduct(Exchange.Binance, r.Details.Asset, apr, "locked - api")
+                        {
+                            Term = r.Details.Duration,
+                            StableCoin = GetChipSymbol(r.Details.Asset)
+                        };
                         products.Add(lockedProduct);
                     }
                 }
@@ -108,7 +120,10 @@ namespace Bnncmd
                     if (apr > minApr)
                     {
                         // Console.WriteLine($"{r.Asset}: {apr}%");
-                        var flexibleProduct = new EarnProduct(Exchange.Binance, r.Asset, apr, "flexible - api");
+                        var flexibleProduct = new EarnProduct(Exchange.Binance, r.Asset, apr, "flexible - api")
+                        {
+                            StableCoin = GetChipSymbol(r.Asset)
+                        };
                         products.Add(flexibleProduct);
                     }
                 }
@@ -119,6 +134,7 @@ namespace Bnncmd
 
         public override void GetEarnProducts(List<EarnProduct> products, decimal minApr)
         {
+            _spotSymbols = LoadSpotSymbols();
             GetLockedProducts(products, minApr);
             GetFlexibleProducts(products, minApr);
         }
@@ -329,9 +345,10 @@ namespace Bnncmd
 
             if (forSpot)
             {
-                var futuresRest = CheckFuturesBalance(StableCoin.FDUSD);
+                var futuresRest = CheckFuturesBalance(StableCoin.USDT);
                 sum += futuresRest;
-                Console.WriteLine($"   Futures rest: {futuresRest}");
+                if(amount > 0) throw new Exception($"Futures rest is {futuresRest:0.###}{StableCoin.USDT}, but you probably want some {StableCoin.FDUSD}?");
+                else Console.WriteLine($"   Futures rest: {futuresRest}");
             }
             else
             {
@@ -377,13 +394,30 @@ namespace Bnncmd
 
         public override decimal GetMinLimit(string coin, bool isSpot, string stablecoin = EmptyString)
         {
-            if (isSpot) throw new NotImplementedException();
-            var symbol = coin + stablecoin == string.Empty ? StableCoin.USDT : stablecoin;
-            if ((_symbolFuturesInfo == null) || (_symbolFuturesInfo.LotSizeFilter == null)) throw new Exception($"{Name} has no {symbol} information");
-            return _symbolFuturesInfo.LotSizeFilter.MinQuantity; //  * GetSpotPrice(coin)
+            var symbol = coin + (stablecoin == EmptyString ? StableCoin.USDT : stablecoin);
+            if (isSpot)
+            {
+                _spotSymbols = LoadSpotSymbols();
+                var symbolInfo = _spotSymbols.FirstOrDefault(s => s.Name.Equals(symbol, StringComparison.OrdinalIgnoreCase)) ?? throw new Exception($"MinLimit: {symbol} info not found on {Name}");
+                return symbolInfo.LotSizeFilter == null ? 0 : symbolInfo.LotSizeFilter.MinQuantity;
+            }
+            else
+            {
+                if ((_symbolFuturesInfo == null) || (_symbolFuturesInfo.LotSizeFilter == null)) throw new Exception($"MinLimit: {Name} has no {symbol} information");
+                return _symbolFuturesInfo.LotSizeFilter.MinQuantity; //  * GetSpotPrice(coin)
+            }
         }
 
         private BinanceSymbol[]? _spotSymbols = null;
+
+        private BinanceSymbol[] LoadSpotSymbols()
+        {
+            if (_spotSymbols != null) return _spotSymbols;
+            var exchangeInfoResult = _apiClient.SpotApi.ExchangeData.GetExchangeInfoAsync().Result;
+            if ((exchangeInfoResult.Error != null) && !exchangeInfoResult.Success) throw new Exception(exchangeInfoResult.Error.Message);
+            _spotSymbols = exchangeInfoResult.Data.Symbols;
+            return _spotSymbols;
+        }
 
         public override decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString)
         {
@@ -391,13 +425,7 @@ namespace Bnncmd
 
             if (isSpot)
             {
-                if (_spotSymbols == null)
-                {
-                    var exchangeInfoResult = _apiClient.SpotApi.ExchangeData.GetExchangeInfoAsync().Result;
-                    if ((exchangeInfoResult.Error != null) && !exchangeInfoResult.Success) throw new Exception(exchangeInfoResult.Error.Message);
-                    _spotSymbols = exchangeInfoResult.Data.Symbols;
-                }
-
+                _spotSymbols = LoadSpotSymbols();
                 var symbolInfo = _spotSymbols.FirstOrDefault(s => s.Name.Equals(symbol, StringComparison.OrdinalIgnoreCase)) ?? throw new Exception($"{symbol} info not found on {Name}");
                 return symbolInfo.LotSizeFilter == null ? 0 : symbolInfo.LotSizeFilter.MaxQuantity; //  * GetSpotPrice(coin)
             }
