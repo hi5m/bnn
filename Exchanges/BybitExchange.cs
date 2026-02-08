@@ -44,8 +44,9 @@ namespace Bnncmd
 
         public override string Name { get; } = "Bybit";
         public override int Code { get; } = 1;
-        public override decimal SpotTakerFee { get; } = 0.1M; // 00
-        public override decimal SpotMakerFee { get; } = 0.1M;
+        // public override decimal SpotTakerFee { get; } = 0.1M; // 00
+        // public override decimal SpotMakerFee { get; } = 0.1M;
+        private static readonly decimal _spotFee = 0.1M;
         public override decimal FuturesTakerFee { get; } = 0.055M;
         public override decimal FuturesMakerFee { get; } = 0.02M;
 
@@ -84,7 +85,7 @@ namespace Bnncmd
             // Console.WriteLine($"3-days bybit accumulated funding rate: {sumFundingRate}");
         }
 
-        private void GetPageProducts(int pageNum, List<EarnProduct> products, decimal minApr)
+        private static void GetPageProducts(int pageNum, List<EarnProduct> products, decimal minApr)
         {
             Console.WriteLine($"{Exchange.Bybit.Name} - Page {pageNum}...");
             var bbEarnString = DownloadWithCurl("get-bybit-fixed-earn.bat");
@@ -131,19 +132,23 @@ namespace Bnncmd
                     var apr = decimal.Parse(aprStr);
                     if (apr < minApr) continue;
 
-                    string staking_term = sp.staking_term;
-                    // var term = int.Parse(staking_term);
+                    /* string staking_term = sp.staking_term;
+                    var term = int.Parse(staking_term);
 
                     string dateStartStr = sp.subscribe_start_at + "000";
                     var startDate = BnnUtils.FormatUnixTime(long.Parse(dateStartStr), false);
                     string dateEndStr = sp.subscribe_end_at + "000";
                     var endDate = BnnUtils.FormatUnixTime(long.Parse(dateEndStr), false);
-                    decimal share = sp.total_deposit_share;
+                    decimal share = sp.total_deposit_share;*/
                     // Console.WriteLine($"coin: {sp.coin}, apr: {apr}, term: {term}, tag: [{sp.product_tag_info.display_tag_key}], status: {sp.display_status}, period: {startDate} - {endDate}, share: {share:0.###}");
 
                     string productName = sp.product_tag_info.display_tag_key ?? sp.coin;
                     productName = productName.Replace("_Tag", string.Empty);
-                    var product = new EarnProduct(Exchange.Bybit, productName, apr, "from page - locked");
+                    var product = new EarnProduct(Exchange.Bybit, productName, apr, "from page - locked")
+                    {
+                        StableCoin = StableCoin.USDT,
+                        SpotFee = _spotFee
+                    };
                     if (sp.staking_term != null) product.Term = sp.staking_term;
                     products.Add(product);
                 }
@@ -169,7 +174,11 @@ namespace Bnncmd
             {
                 var apr = decimal.Parse(p.EstimateApr.Substring(0, p.EstimateApr.Length - 1));// / 100; // 	"4.79%"
                 if (apr < minApr) continue;
-                var product = new EarnProduct(Exchange.Bybit, p.Asset, apr, "from api - on-chain");
+                var product = new EarnProduct(Exchange.Bybit, p.Asset, apr, "from api - on-chain")
+                {
+                    StableCoin = StableCoin.USDT,
+                    SpotFee = _spotFee
+                };
                 products.Add(product);
             }
         }
@@ -200,7 +209,7 @@ namespace Bnncmd
             return 0;
         }*/
 
-        public override decimal CheckSpotBalance(string? coin = null)
+        public override decimal GetSpotBalance(string? coin = null)
         {
             coin ??= StableCoin.USDT;
             var assetIfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Unified, coin).Result;
@@ -222,11 +231,12 @@ namespace Bnncmd
             return 0;*/
         }
 
-        public override decimal CheckFuturesBalance(string? coin = null)
+        public override decimal GetFuturesBalance(string? coin = null)
         {
-            coin ??= StableCoin.USDT;
+            return GetSpotBalance(coin);
+            /*coin ??= StableCoin.USDT;
             var assetIfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Contract, coin).Result;
-            return assetIfo.Data.Balances.WalletBalance ?? 0;
+            return assetIfo.Data.Balances.WalletBalance ?? 0;*/
         }
 
         public override decimal GetSpotPrice(string coin)
@@ -244,10 +254,11 @@ namespace Bnncmd
 
         public override decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0)
         {
-            decimal sum = 0;
+            // decimal sum = 0;
             WebCallResult<BybitSingleAssetBalance> assetInfo;
 
-            if (forSpot)
+            // get rests
+            /*if (forSpot)
             {
                 assetInfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Contract, StableCoin.USDT).Result; // Unified?
                 if ((assetInfo.Error != null) && !assetInfo.Success) throw new Exception(assetInfo.Error.Message);
@@ -259,24 +270,41 @@ namespace Bnncmd
                 assetInfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Unified, StableCoin.USDT).Result;
                 if ((assetInfo.Error != null) && !assetInfo.Success) throw new Exception(assetInfo.Error.Message);
                 sum += assetInfo.Data.Balances.WalletBalance ?? 0;
-                Console.WriteLine($"   Unified wallet rest: {assetInfo.Data.Balances.WalletBalance}");
-            }
+                if (amount == 0) Console.WriteLine($"   Unified wallet rest: {assetInfo.Data.Balances.WalletBalance}");
+            // }*/
+            var sum = GetSpotBalance(StableCoin.USDT);
+            if (amount == 0) Console.WriteLine($"   Unified wallet rest: {sum}");
 
+            // fund
             assetInfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Fund, StableCoin.USDT).Result;
             if ((assetInfo.Error != null) && !assetInfo.Success) throw new Exception(assetInfo.Error.Message);
             sum += assetInfo.Data.Balances.WalletBalance ?? 0;
-            Console.WriteLine($"   Fund rest: {assetInfo.Data.Balances.WalletBalance}");
+            if (amount == 0) Console.WriteLine($"   Fund rest: {assetInfo.Data.Balances.WalletBalance}");
 
+            if ((amount > 0) && (assetInfo.Data.Balances.WalletBalance > 1))
+            {
+                var tranferResult = _client.V5Api.Account.CreateInternalTransferAsync(StableCoin.USDT, amount, AccountType.Fund, AccountType.Unified).Result;
+                if ((tranferResult.Error != null) && !tranferResult.Success) throw new Exception("error while transfer from earn account: " + tranferResult.Error.Message);
+                else Console.WriteLine($"transfered from earn: {tranferResult.Data.Status}, {tranferResult.Data.TransferId}");
+            }
+
+            // earn
             var earnPositions = _client.V5Api.Earn.GetStakedPositionsAsync(EarnCategory.FlexibleSaving, null, StableCoin.USDT).Result;
             if ((earnPositions.Error != null) && !earnPositions.Success) throw new Exception(earnPositions.Error.Message);
             var earnRest = earnPositions.Data.List.Length > 0 ? earnPositions.Data.List[0].Quantity : 0;
             sum += earnRest;
-            var toAccount = forSpot ? AccountType.Spot : AccountType.Contract;
+
+            // transfer earn
             if (amount > 0)
             {
-                var tranferResult = _client.V5Api.Account.CreateInternalTransferAsync(StableCoin.USDT, amount, AccountType.Fund, toAccount).Result;
-                if ((tranferResult.Error != null) && !tranferResult.Success) throw new Exception("error while transfer from earn account: " + tranferResult.Error.Message);
-                else Console.WriteLine($"transfered from earn: {tranferResult.Data.Status}, {tranferResult.Data.TransferId}");
+                foreach (var e in earnPositions.Data.List)
+                {
+                    var am = BnnUtils.FormatQuantity(amount, 0.01);
+                    var redeemResult = _client.V5Api.Earn.PlaceOrderAsync(EarnCategory.FlexibleSaving, e.ProductId, AccountType.Unified, StableCoin.USDT, EarnOrderType.Redeem, am).Result;
+                    if ((redeemResult.Error != null) && !redeemResult.Success) throw new Exception(redeemResult.Error.Message);
+                    Console.WriteLine($"New unified balance: {GetSpotBalance()}");
+                    break;
+                }
             }
             else Console.WriteLine($"   Earn rest: {earnPositions.Data.List[0].Quantity}");
 

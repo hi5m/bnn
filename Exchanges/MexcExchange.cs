@@ -70,8 +70,8 @@ namespace Bnncmd
 
         public override string Name { get; } = "Mexc";
         public override int Code { get; } = 2;
-        public override decimal SpotTakerFee { get; } = 0.05M;
-        public override decimal SpotMakerFee { get; } = 0;
+        // public override decimal SpotTakerFee { get; } = 0.05M;
+        // public override decimal SpotMakerFee { get; } = 0;
         public override decimal FuturesTakerFee { get; } = 0.02M;
         // public override decimal FuturesMakerFee { get; } = 0M;
         public override decimal FuturesMakerFee { get; } = 0.01M; // sometimes 0
@@ -133,7 +133,7 @@ namespace Bnncmd
             return client;
         }*/
 
-        private string GetMd5Digest(string utfStr)
+        private static string GetMd5Digest(string utfStr)
         {
             byte[] inputBytes = Encoding.UTF8.GetBytes(utfStr);
             byte[] hashBytes = MD5.HashData(inputBytes);
@@ -145,7 +145,7 @@ namespace Bnncmd
             return sb.ToString();
         }
 
-        private void EnterShortBrowser()
+        private static void EnterShortBrowser()
         {
             /* var chromePageXOffset = -1;
             var chromePageYOffset = 85;
@@ -171,7 +171,7 @@ namespace Bnncmd
             // Exchange.Mexc.ScanFutures("GORK");*/
         }
 
-        private void EnterShortWeb(string coin, decimal amount)
+        private static void EnterShortWeb(string coin, decimal amount)
         {
             /* var bestRealAsk = 0.045;
             var symbol = "TOWNS_USDT";
@@ -228,7 +228,11 @@ namespace Bnncmd
 
                         // Console.WriteLine($"{coin.currency}: {apr}");
                         // Console.WriteLine($"{coin.currency}: {offer.profitRate * 100M}%");
-                        var product = new EarnProduct(Exchange.Mexc, currency, apr, "from page");
+                        var product = new EarnProduct(Exchange.Mexc, currency, apr, "from page")
+                        {
+                            StableCoin = StableCoin.USDT,
+                            SpotFee = 0
+                        };
                         if (offer.perPledgeMaxQuantity != null) product.LimitMax = offer.perPledgeMaxQuantity;
                         if (offer.fixedInvestPeriodCount == null) product.Term = 1;
                         else product.Term = offer.fixedInvestPeriodCount;
@@ -264,7 +268,7 @@ namespace Bnncmd
             // ScanFutures(coin, amount);
         }
 
-        public override decimal CheckSpotBalance(string? coin = null)
+        public override decimal GetSpotBalance(string? coin = null)
         {
             coin ??= StableCoin.USDT;
             var accountData = _apiClient.SpotApi.Account.GetAccountInfoAsync().Result;
@@ -279,7 +283,7 @@ namespace Bnncmd
             return 0;
         }
 
-        public override decimal CheckFuturesBalance(string? coin = null)
+        public override decimal GetFuturesBalance(string? coin = null)
         {
             var result = _apiClient.FuturesApi.Account.GetAccountInfoAsync().Result;
             if (!result.Success && (result.Error != null)) throw new Exception(result.Error.Message);
@@ -319,7 +323,7 @@ namespace Bnncmd
         public override decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0)
         {
             coin ??= StableCoin.USDT;
-            var futuresRest = CheckFuturesBalance(coin);
+            var futuresRest = GetFuturesBalance(coin);
             Console.WriteLine($"   Futures rest: {futuresRest}");
             Console.WriteLine($"   Earn rest: Not available via Api");
 

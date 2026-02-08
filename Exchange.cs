@@ -37,6 +37,7 @@ namespace Bnncmd
         public string ProductName { get; set; } = productName;
         public decimal Apr { get; set; } = apr;
         public string StableCoin { get; set; } = string.Empty;
+        public decimal SpotFee { get; set; } = 0;
         public string Comment { get; set; } = string.Empty;
         public int Term { get; set; } = 1;
         public decimal LimitMax { get; set; } = 0;
@@ -97,8 +98,8 @@ namespace Bnncmd
         public abstract string Name { get; }
         public abstract int Code { get; }
 
-        public abstract decimal SpotTakerFee { get; }
-        public abstract decimal SpotMakerFee { get; }
+        // public abstract decimal SpotTakerFee { get; }
+        // public abstract decimal SpotMakerFee { get; }
         public abstract decimal FuturesTakerFee { get; }
         public abstract decimal FuturesMakerFee { get; }
         public bool IsTest { get; set; }
@@ -157,8 +158,8 @@ namespace Bnncmd
         public abstract HedgeInfo[] GetDayFundingRate(string coin);
         public abstract void GetEarnProducts(List<EarnProduct> products, decimal minApr);
         public abstract void GetFundingRates(List<FundingRate> rates, decimal minRate);
-        public abstract decimal CheckSpotBalance(string? coin = null);
-        public abstract decimal CheckFuturesBalance(string? coin = null);
+        public abstract decimal GetSpotBalance(string? coin = null);
+        public abstract decimal GetFuturesBalance(string? coin = null);
 
         // Exchange Info
         public abstract decimal GetSpotPrice(string coin);

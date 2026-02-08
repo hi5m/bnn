@@ -17,6 +17,13 @@ namespace Bnncmd
     {
         public static bool IsTest { get; set; }
 
+        public static decimal FormatQuantity(decimal availableSum, double precise)
+        {
+            var log10 = Math.Log10(precise);
+            double power = Math.Pow(10, -log10);			
+            return (decimal)(Math.Floor((double)availableSum * power) / power); // to prevent LOT_SIZE error
+        }
+
         public static HttpClient BuildLoggingClient()
         {
             ILoggerFactory loggerFactory;

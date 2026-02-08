@@ -86,9 +86,9 @@ namespace bnncmd.Strategy
                     if (spread > 10) continue; // ARCUSDT on MEXC and Binance are different
                     // Console.WriteLine($"   {e.Name} best spot bid: {bestBidPrice}");
                     Console.WriteLine($"   {e.Name} spread: {spread:0.###}% [ {bestFuturesAsk} / {bestBidPrice}]");
-                    var realProfit = fr.CurrRate / 2 - fr.Exchange.FuturesMakerFee - e.SpotMakerFee;
+                    var realProfit = fr.CurrRate / 2 - fr.Exchange.FuturesMakerFee - 100; //  e.SpotMakerFee; should be dynamic
                     // var dayProfit = ((p.Apr / 365 + fr) * p.Term - p.Exchange.SpotMakerFee - e.FuturesMakerFee) / p.Term / 2;
-                    Console.WriteLine($"   {e.Name} real one interval profit: {realProfit:0.###}       [ = {fr.CurrRate:0.###} / 2 - {fr.Exchange.FuturesMakerFee} - {e.SpotMakerFee} ]"); //  + {spread:0.###}
+                    Console.WriteLine($"   {e.Name} real one interval profit: {realProfit:0.###}       [ = {fr.CurrRate:0.###} / 2 - {fr.Exchange.FuturesMakerFee} - should be dynamic !!!]"); //  + {spread:0.###}
                     if ((fr.SpotExchange == null) || (fr.RealSingleRate < realProfit))
                     {
                         fr.SpotExchange = e;

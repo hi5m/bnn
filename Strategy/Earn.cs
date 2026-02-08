@@ -79,14 +79,14 @@ namespace Bnncmd.Strategy
             var checksAreOk = true;
 
             // spot exchange rests 
-            var spotRest = spotExchange.CheckSpotBalance();
+            var spotRest = spotExchange.GetSpotBalance();
             checksAreOk = checksAreOk && spotRest >= requiredUsdAmount;
             Console.WriteLine($"{spotExchange.Name} spot stable coin rest: {spotRest:0.###} => {(spotRest >= requiredUsdAmount ? "ok" : "not enaugh :(")}");
             decimal spotReserve = 0;
             if (spotRest < requiredUsdAmount) spotReserve = spotExchange.FindFunds(string.Empty, true);
 
             // futures exchange rests
-            var futuresRest = futuresExchange.CheckFuturesBalance(futuresStablecoin == string.Empty ? StableCoin.USDT : futuresStablecoin);
+            var futuresRest = futuresExchange.GetFuturesBalance(futuresStablecoin == string.Empty ? StableCoin.USDT : futuresStablecoin);
             checksAreOk = checksAreOk && futuresRest >= requiredUsdAmount;
             decimal futuresReserve = 0;
             var futureCoinName = futuresStablecoin == string.Empty ? string.Empty : futuresStablecoin + ' ';
@@ -115,7 +115,7 @@ namespace Bnncmd.Strategy
             Console.WriteLine();
             if ((spotReserve >= requiredUsdAmount) && (spotRest < requiredUsdAmount))
             {
-                Console.WriteLine($"Do you want to transfer assets to {spotExchange.Name} spot wallet?");
+                Console.WriteLine($"Do you want to transfer some {(spotStablecoin == "" ? "assets" : spotStablecoin.ToUpper())} to {spotExchange.Name} spot wallet?");
                 var commandTrans = Console.ReadLine();
                 if ((commandTrans != null) && (commandTrans.ToLower()[0] == 'y')) spotExchange.FindFunds(spotStablecoin, true, 1.015M * requiredUsdAmount - spotRest);
                 else return;
@@ -154,8 +154,8 @@ namespace Bnncmd.Strategy
             var minApr = 20;
 
             // Get earn products from all exchanges
-            // var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; // 
-            var exchanges = new List<AbstractExchange> { Exchange.Binance };
+            var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; // 
+            // var exchanges = new List<AbstractExchange> { Exchange.Binance };
             foreach (var e in exchanges)
             {
                 e.GetEarnProducts(products, minApr);
@@ -163,8 +163,8 @@ namespace Bnncmd.Strategy
 
             // Get funding rates for hedging from available futures
             Console.WriteLine("\r\n===========================\r\n");
-            /// exchanges = [Exchange.Binance, Exchange.Bybit];
-            exchanges = [Exchange.Bybit];
+            exchanges = [Exchange.Binance, Exchange.Bybit];
+            // exchanges = [Exchange.Bybit];
             foreach (var p in products)
             {
                 Console.WriteLine($"{p}");
@@ -174,9 +174,9 @@ namespace Bnncmd.Strategy
                     var his = e.GetDayFundingRate(p.ProductName);
                     foreach (var hi in his)
                     {
-                        var dayProfit = ((p.Apr / 365 + hi.EmaFundingRate) * p.Term - p.Exchange.SpotMakerFee - hi.Fee) / p.Term / 2;
+                        var dayProfit = ((p.Apr / 365 + hi.EmaFundingRate) * p.Term - p.SpotFee - hi.Fee) / p.Term / 2;
                         var realApr = 365 * dayProfit;
-                        Console.WriteLine($"   {e.Name} {hi.Symbol} funding rate: {hi.EmaFundingRate:0.###} => {realApr:0.###}       [ (({p.Apr:0.###} / 365 + {hi.EmaFundingRate:0.###}) * {p.Term} - {p.Exchange.SpotMakerFee} - {hi.Fee}) / {p.Term} / 2 = {dayProfit:0.###} ]");
+                        Console.WriteLine($"   {e.Name} {hi.Symbol} funding rate: {hi.EmaFundingRate:0.###} => {realApr:0.###}       [ (({p.Apr:0.###} / 365 + {hi.EmaFundingRate:0.###}) * {p.Term} - {p.SpotFee} - {hi.Fee}) / {p.Term} / 2 = {dayProfit:0.###} ]");
                         if ((p.HedgeInfo == null) || (p.RealApr < realApr))
                         {
                             p.HedgeInfo = hi;
