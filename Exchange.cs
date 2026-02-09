@@ -4,9 +4,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
 using Bnncmd.Strategy;
-using Org.BouncyCastle.Asn1.Mozilla;
 
 namespace Bnncmd
 {
@@ -19,7 +17,6 @@ namespace Bnncmd
         public AbstractExchange? SpotExchange { get; set; }
         public decimal RealSingleRate { get; set; } = 0;
         public decimal RealRateWithSpread { get; set; }
-
         public override string ToString()
         {
             var rate = $"{CurrRate:0.###}%";
@@ -175,10 +172,24 @@ namespace Bnncmd
         protected void FireShortEntered() => this.ShortEntered?.Invoke(this);
         public abstract void EnterShort(string coin, decimal amount, string stableCoin = EmptyString);
         public abstract void BuySpot(string coin, decimal amount);
-        protected abstract Object PlaceFuturesOrder(string symbol, decimal amount, decimal price);
+        protected abstract Order PlaceFuturesOrder(string symbol, decimal amount, decimal price);
 
+        protected Order? _futuresOrder = null;
 
-        /*protected async void ProcessFuturesOrderBook(string symbol, decimal amount, decimal[][] asks, decimal[][] bids)
+        protected abstract void SubscribeOrderBookData(string symbol);
+
+        protected abstract void UnsubscribeOrderBookData();
+
+        private decimal _currAmount = 0;
+
+        /// <summary>
+        /// Get constant price
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="amount"></param>
+        /// <param name="asks">array of [price, quontity]</param>
+        /// <param name="bids"></param>
+        protected void ProcessFuturesOrderBook(string symbol, decimal[][] asks, decimal[][] bids)
         {
             var contractSize = 1; //  _contractInfo == null ? 1M : _contractInfo.ContractSize; // 0.0001M; // btc
             var bestAsk = asks[0][0];
@@ -196,14 +207,12 @@ namespace Bnncmd
                 }
 
                 // bestRealAsk = 0.07M;
-                if (_futuresOrder == null) _futuresOrder = PlaceFuturesOrder(symbol, amount, bestRealAsk);
+                if (_futuresOrder == null) _futuresOrder = PlaceFuturesOrder(symbol, _currAmount, bestRealAsk);
                 else
                 {
                     if (bestAsk > _futuresOrder.Price)
                     {
-                        await _socketClient.UnsubscribeAsync(_orderBookSubscription);
-                        _orderBookSubscription = null;
-
+                        UnsubscribeOrderBookData();
                         Console.WriteLine($"Price raised ({bestAsk}), it seems the order is filled ({_futuresOrder})");
                         Console.WriteLine();
                         if (IsTest) FireShortEntered(); // in real environment fired via subsription
@@ -220,6 +229,45 @@ namespace Bnncmd
 
                 _isLock = false;
             }
-        }*/
+        }
+
+        protected decimal GetTrueBestAsk(decimal[] asks)
+        {
+            // add the best new price
+            foreach (var a in asks)
+            {
+                if (!_bookState.ContainsKey(a)) _bookState.Add(a, DateTime.Now);
+            }
+
+            // remove all prices that are out of order book ( blinked prices )
+            var keysToRemove = _bookState.Keys.Except(asks); // .Select(a => a[0]))
+            foreach (var k in keysToRemove)
+            {
+                _bookState.Remove(k);
+            }
+
+            // get orders older than 10 seconds
+            var niceAsks = _bookState
+                .Where(a => a.Value < DateTime.Now.AddSeconds(-10))
+                .OrderBy(a => a.Key);
+
+            // best price
+            var bestRealAsk = niceAsks.Any() ? niceAsks.First().Key : -1;
+            return bestRealAsk;
+        }
+
+        /// <summary>
+        ///  Find best persistant ask for 
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="amount"></param>
+        public void ScanFutures(string symbol, decimal amount)
+        {
+            _currAmount = amount;
+            _bookState.Clear();
+            _isLock = false;
+            _futuresOrder = null;
+            SubscribeOrderBookData(symbol);
+        }
     }
 }

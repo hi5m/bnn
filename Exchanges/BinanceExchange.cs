@@ -146,158 +146,6 @@ namespace Bnncmd
             GetFlexibleProducts(products, minApr);
         }
 
-        private async void SubscribeUserFuturesData()
-        {
-            var listenKeyResult = _apiClient.UsdFuturesApi.Account.StartUserStreamAsync().Result;
-            if (!listenKeyResult.Success) throw new Exception($"Error while getting listenKey: {listenKeyResult.Error}");
-            var listenKey = listenKeyResult.Data;
-            // Console.WriteLine($"listenKey: {listenKey}");
-
-            var subscribeResult = await _socketClient.UsdFuturesApi.Account.SubscribeToUserDataUpdatesAsync(
-                listenKey,
-                /* onAccountUpdate: data =>
-                {
-                    Console.WriteLine("💼 Обновление аккаунта:");
-                    foreach (var balance in data.Data.Balances)
-                    {
-                        Console.WriteLine($"- {balance.Asset}: свободно {balance.Free}, заблокировано {balance.Locked}");
-                    }
-                },*/
-                onOrderUpdate: data => {
-                    if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.New) return;
-                    Console.WriteLine($"Order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
-                    Console.Beep();
-                    FireShortEntered();
-                }
-            );
-
-            // return listenKey;
-        }
-
-        public override void EnterShort(string coin, decimal amount, string stableCoin = EmptyString)
-        {
-            var symbol = coin + (stableCoin == string.Empty ? StableCoin.USDT : stableCoin);
-            ScanFutures(symbol, amount);
-            // throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///  Find best persistant ask for 
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="amount"></param>
-        public async void ScanFutures(string symbol, decimal amount)
-        {
-            /*var positionResult = _apiClient.UsdFuturesApi.Account.GetPositionInformationAsync(symbol).Result;
-            Console.WriteLine($"Position: {positionResult.Data.First()}");
-            Console.WriteLine($"Leverage: {positionResult.Data.First().Leverage}");
-            Console.WriteLine($"Notional: {positionResult.Data.First().Notional}");
-            // return;*/
-
-            SubscribeUserFuturesData();
-            _bookState.Clear();
-            _isLock = false;
-
-            _futuresOrder = null;
-
-            _orderBookSubscription = (await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e =>
-            {
-                var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
-                var bids = e.Data.Bids.Select(b => new[] { b.Price, b.Quantity }).ToArray();
-
-                ProcessFuturesOrderBook(symbol, amount, asks, bids);
-            })).Data;
-        }
-        /// <summary>
-        /// Get constant price
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="amount"></param>
-        /// <param name="asks">array of [price, quontity]</param>
-        /// <param name="bids"></param>
-        protected async void ProcessFuturesOrderBook(string symbol, decimal amount, decimal[][] asks, decimal[][] bids)
-        {
-            var contractSize = 1; //  _contractInfo == null ? 1M : _contractInfo.ContractSize; // 0.0001M; // btc
-            var bestAsk = asks[0][0];
-            var bestRealAsk = GetTrueBestAsk([.. asks.Select(a => a[0])]);
-            if ((bestRealAsk > 0) && (bestRealAsk - _priceStep > bids.First()[0])) bestRealAsk -= _priceStep;
-            BnnUtils.ClearCurrentConsoleLine();
-            Console.Write($"{bestAsk} / {asks[0][1]} / {contractSize * bestAsk * asks[0][1]:0.###} => {bestRealAsk} [ {_priceStep} ]", false);
-
-            if ((bestRealAsk > 0) && (_orderBookSubscription != null))
-            {
-                lock (_locker)
-                {
-                    if (_isLock) return;
-                    _isLock = true;
-                }
-
-                // bestRealAsk = 0.07M;
-                if (_futuresOrder == null) _futuresOrder = PlaceFuturesOrder(symbol, amount, bestRealAsk);
-                else
-                {
-                    if (bestAsk > _futuresOrder.Price)
-                    {
-                        await _socketClient.UnsubscribeAsync(_orderBookSubscription);
-                        _orderBookSubscription = null;
-
-                        Console.WriteLine($"Price raised ({bestAsk}), it seems the order is filled ({_futuresOrder})");
-                        Console.WriteLine();
-                        if (IsTest) FireShortEntered(); // in real environment fired via subsription
-                    }
-
-                    if (bestRealAsk < _futuresOrder.Price)
-                    {
-                        Console.WriteLine($"Price dropped {bestAsk}, the order should be cancelled (...)");
-                        // var cancelationResult = _apiClient.UsdFuturesApi.Trading.CancelOrderAsync(symbol).Result;
-                        // if (!cancelationResult.Success) throw new Exception($"Error while order cancelation: {cancelationResult.Error}");
-                        // Console.WriteLine($"Cancelation result: {cancelationResult.Data}, quantity: {cancelationResult.Data.CumulativeQuantity}");
-                    }
-                }
-
-                _isLock = false;
-            }
-        }
-
-        private decimal GetTrueBestAsk(decimal[] asks) // decimal[][] 
-        {
-            // add the best new price
-            foreach (var a in asks)
-            {
-                if (!_bookState.ContainsKey(a)) _bookState.Add(a, DateTime.Now);
-            }
-
-            // remove all prices that are out of order book ( blinked prices )
-            var keysToRemove = _bookState.Keys.Except(asks); // .Select(a => a[0]))
-            foreach (var k in keysToRemove)
-            {
-                _bookState.Remove(k);
-            }
-
-            // get orders older than 10 seconds
-            var niceAsks = _bookState
-                .Where(a => a.Value < DateTime.Now.AddSeconds(-10))
-                .OrderBy(a => a.Key);
-
-            // best price
-            var bestRealAsk = niceAsks.Any() ? niceAsks.First().Key : -1;
-            return bestRealAsk;
-        }
-
-        // private UpdateSubscription? _orderBookSubscription = null;
-
-        private BinanceUsdFuturesOrder? _futuresOrder = null;
-
-        protected override BinanceUsdFuturesOrder PlaceFuturesOrder(string symbol, decimal amount, decimal price)
-        {
-            Console.WriteLine($"Placing short order: {symbol}, {price} x {amount}...");
-            var orderResult = _apiClient.UsdFuturesApi.Trading.PlaceOrderAsync(symbol, OrderSide.Sell, FuturesOrderType.Limit, amount, price, null, TimeInForce.GoodTillCanceled).Result; // , PositionSide.Short
-            if (!orderResult.Success) throw new Exception($"Error while placing order: {orderResult.Error}");
-            Console.WriteLine($"New {Name} futures order status: {orderResult.Data.Status}");
-            _futuresOrder = orderResult.Data;
-            return _futuresOrder;
-        }
-
         public override decimal GetSpotBalance(string? coin = null)
         {
             if (coin == null) coin = StableCoin.USDT;
@@ -573,5 +421,82 @@ namespace Bnncmd
         }
 
         public override void BuySpot(string coin, decimal amount) => throw new NotImplementedException();
+
+        // Futures Routines
+        private async void SubscribeUserFuturesData()
+        {
+            var listenKeyResult = _apiClient.UsdFuturesApi.Account.StartUserStreamAsync().Result;
+            if (!listenKeyResult.Success) throw new Exception($"Error while getting listenKey: {listenKeyResult.Error}");
+            var listenKey = listenKeyResult.Data;
+            // Console.WriteLine($"listenKey: {listenKey}");
+
+            var subscribeResult = await _socketClient.UsdFuturesApi.Account.SubscribeToUserDataUpdatesAsync(
+                listenKey,
+                /* onAccountUpdate: data =>
+                {
+                    Console.WriteLine("💼 Обновление аккаунта:");
+                    foreach (var balance in data.Data.Balances)
+                    {
+                        Console.WriteLine($"- {balance.Asset}: свободно {balance.Free}, заблокировано {balance.Locked}");
+                    }
+                },*/
+                onOrderUpdate: data => {
+                    if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.New) return;
+                    Console.WriteLine($"Order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
+                    Console.Beep();
+                    FireShortEntered();
+                }
+            );
+
+            // return listenKey;
+        }
+
+        public override void EnterShort(string coin, decimal amount, string stableCoin = EmptyString)
+        {
+            var symbol = coin + (stableCoin == string.Empty ? StableCoin.USDT : stableCoin);
+            ScanFutures(symbol, amount);
+        }
+
+        protected override async void SubscribeOrderBookData(string symbol)
+        {
+            /*var positionResult = _apiClient.UsdFuturesApi.Account.GetPositionInformationAsync(symbol).Result;
+            Console.WriteLine($"Position: {positionResult.Data.First()}");
+            Console.WriteLine($"Leverage: {positionResult.Data.First().Leverage}");
+            Console.WriteLine($"Notional: {positionResult.Data.First().Notional}");
+            // return;*/
+
+            SubscribeUserFuturesData();
+
+            _orderBookSubscription = (await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e =>
+            {
+                var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
+                var bids = e.Data.Bids.Select(b => new[] { b.Price, b.Quantity }).ToArray();
+
+                ProcessFuturesOrderBook(symbol, asks, bids);
+            })).Data;
+        }
+
+        protected override async void UnsubscribeOrderBookData()
+        {
+            if (_orderBookSubscription == null) return;
+            await _socketClient.UnsubscribeAsync(_orderBookSubscription);
+            _orderBookSubscription = null;
+        }
+
+        protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
+        {
+            Console.WriteLine($"Placing short order: {symbol}, {price} x {amount}...");
+            var orderResult = _apiClient.UsdFuturesApi.Trading.PlaceOrderAsync(symbol, OrderSide.Sell, FuturesOrderType.Limit, amount, price, null, TimeInForce.GoodTillCanceled).Result; // , PositionSide.Short
+            if (!orderResult.Success) throw new Exception($"Error while placing order: {orderResult.Error}");
+            Console.WriteLine($"New {Name} futures order status: {orderResult.Data.Status}");
+            _futuresOrder = new Order()
+            {
+                Id = orderResult.Data.Id,
+                Price = orderResult.Data.Price,
+                Amount = orderResult.Data.Quantity
+            };
+            return _futuresOrder;
+        }
+
     }
 }
