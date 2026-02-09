@@ -196,51 +196,67 @@ namespace Bnncmd
 
             SubscribeUserFuturesData();
             _bookState.Clear();
-            _futuresOrder = null;
             _isLock = false;
-            var contractSize = 1; //  _contractInfo == null ? 1M : _contractInfo.ContractSize; // 0.0001M; // btc
-            _orderBookSubscription = (await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, async e => // SubscribeToBookTickerUpdatesAsync
+
+            _futuresOrder = null;
+
+            _orderBookSubscription = (await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e =>
             {
                 var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
-                var bestAsk = asks[0][0];
-                var bestRealAsk = GetTrueBestAsk([.. asks.Select(a => a[0])]);
-                if ((bestRealAsk > 0) && (bestRealAsk - _priceStep > e.Data.Bids.First().Price)) bestRealAsk -= _priceStep;
-                BnnUtils.ClearCurrentConsoleLine();
-                Console.Write($"{bestAsk} / {asks[0][1]} / {contractSize * bestAsk * asks[0][1]:0.###} => {bestRealAsk} [ {_priceStep} ]", false);
+                var bids = e.Data.Bids.Select(b => new[] { b.Price, b.Quantity }).ToArray();
 
-                if ((bestRealAsk > 0) && (_orderBookSubscription != null))
-                {
-                    lock (_locker)
-                    {
-                        if (_isLock) return;
-                        _isLock = true;
-                    }
-
-                    // bestRealAsk = 0.07M;
-                    if (_futuresOrder == null) _futuresOrder = PlaceFuturesOrder(symbol, amount, bestRealAsk);
-                    else
-                    {
-                        if (bestAsk > _futuresOrder.Price)
-                        {
-                            await _socketClient.UnsubscribeAsync(_orderBookSubscription);
-                            _orderBookSubscription = null;
-                            Console.WriteLine($"Price raised ({bestAsk}), it seems the order is filled ({_futuresOrder})");
-                            Console.WriteLine();
-                            if (IsTest) FireShortEntered(); // in real environment fired via subsription
-                        }
-
-                        if (bestRealAsk < _futuresOrder.Price)
-                        {
-                            Console.WriteLine($"Price dropped {bestAsk}, the order should be cancelled (...)");
-                            /* var cancelationResult = _apiClient.UsdFuturesApi.Trading.CancelOrderAsync(symbol).Result;
-                            if (!cancelationResult.Success) throw new Exception($"Error while order cancelation: {cancelationResult.Error}");
-                            Console.WriteLine($"Cancelation result: {cancelationResult.Data}, quantity: {cancelationResult.Data.CumulativeQuantity}");*/
-                        }
-                    }
-
-                    _isLock = false;
-                }
+                ProcessFuturesOrderBook(symbol, amount, asks, bids);
             })).Data;
+        }
+        /// <summary>
+        /// Get constant price
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="amount"></param>
+        /// <param name="asks">array of [price, quontity]</param>
+        /// <param name="bids"></param>
+        protected async void ProcessFuturesOrderBook(string symbol, decimal amount, decimal[][] asks, decimal[][] bids)
+        {
+            var contractSize = 1; //  _contractInfo == null ? 1M : _contractInfo.ContractSize; // 0.0001M; // btc
+            var bestAsk = asks[0][0];
+            var bestRealAsk = GetTrueBestAsk([.. asks.Select(a => a[0])]);
+            if ((bestRealAsk > 0) && (bestRealAsk - _priceStep > bids.First()[0])) bestRealAsk -= _priceStep;
+            BnnUtils.ClearCurrentConsoleLine();
+            Console.Write($"{bestAsk} / {asks[0][1]} / {contractSize * bestAsk * asks[0][1]:0.###} => {bestRealAsk} [ {_priceStep} ]", false);
+
+            if ((bestRealAsk > 0) && (_orderBookSubscription != null))
+            {
+                lock (_locker)
+                {
+                    if (_isLock) return;
+                    _isLock = true;
+                }
+
+                // bestRealAsk = 0.07M;
+                if (_futuresOrder == null) _futuresOrder = PlaceFuturesOrder(symbol, amount, bestRealAsk);
+                else
+                {
+                    if (bestAsk > _futuresOrder.Price)
+                    {
+                        await _socketClient.UnsubscribeAsync(_orderBookSubscription);
+                        _orderBookSubscription = null;
+
+                        Console.WriteLine($"Price raised ({bestAsk}), it seems the order is filled ({_futuresOrder})");
+                        Console.WriteLine();
+                        if (IsTest) FireShortEntered(); // in real environment fired via subsription
+                    }
+
+                    if (bestRealAsk < _futuresOrder.Price)
+                    {
+                        Console.WriteLine($"Price dropped {bestAsk}, the order should be cancelled (...)");
+                        // var cancelationResult = _apiClient.UsdFuturesApi.Trading.CancelOrderAsync(symbol).Result;
+                        // if (!cancelationResult.Success) throw new Exception($"Error while order cancelation: {cancelationResult.Error}");
+                        // Console.WriteLine($"Cancelation result: {cancelationResult.Data}, quantity: {cancelationResult.Data.CumulativeQuantity}");
+                    }
+                }
+
+                _isLock = false;
+            }
         }
 
         private decimal GetTrueBestAsk(decimal[] asks) // decimal[][] 
@@ -268,17 +284,18 @@ namespace Bnncmd
             return bestRealAsk;
         }
 
-        private UpdateSubscription? _orderBookSubscription = null;
+        // private UpdateSubscription? _orderBookSubscription = null;
 
         private BinanceUsdFuturesOrder? _futuresOrder = null;
 
-        private BinanceUsdFuturesOrder PlaceFuturesOrder(string symbol, decimal amount, decimal price)
+        protected override BinanceUsdFuturesOrder PlaceFuturesOrder(string symbol, decimal amount, decimal price)
         {
             Console.WriteLine($"Placing short order: {symbol}, {price} x {amount}...");
             var orderResult = _apiClient.UsdFuturesApi.Trading.PlaceOrderAsync(symbol, OrderSide.Sell, FuturesOrderType.Limit, amount, price, null, TimeInForce.GoodTillCanceled).Result; // , PositionSide.Short
             if (!orderResult.Success) throw new Exception($"Error while placing order: {orderResult.Error}");
             Console.WriteLine($"New {Name} futures order status: {orderResult.Data.Status}");
-            return orderResult.Data;
+            _futuresOrder = orderResult.Data;
+            return _futuresOrder;
         }
 
         public override decimal GetSpotBalance(string? coin = null)

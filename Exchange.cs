@@ -109,6 +109,8 @@ namespace Bnncmd
 
         protected decimal _priceStep;
 
+        protected CryptoExchange.Net.Objects.Sockets.UpdateSubscription? _orderBookSubscription = null;
+
         protected readonly object _locker = new();
 
         protected bool _isLock = false;
@@ -173,5 +175,51 @@ namespace Bnncmd
         protected void FireShortEntered() => this.ShortEntered?.Invoke(this);
         public abstract void EnterShort(string coin, decimal amount, string stableCoin = EmptyString);
         public abstract void BuySpot(string coin, decimal amount);
+        protected abstract Object PlaceFuturesOrder(string symbol, decimal amount, decimal price);
+
+
+        /*protected async void ProcessFuturesOrderBook(string symbol, decimal amount, decimal[][] asks, decimal[][] bids)
+        {
+            var contractSize = 1; //  _contractInfo == null ? 1M : _contractInfo.ContractSize; // 0.0001M; // btc
+            var bestAsk = asks[0][0];
+            var bestRealAsk = GetTrueBestAsk([.. asks.Select(a => a[0])]);
+            if ((bestRealAsk > 0) && (bestRealAsk - _priceStep > bids.First()[0])) bestRealAsk -= _priceStep;
+            BnnUtils.ClearCurrentConsoleLine();
+            Console.Write($"{bestAsk} / {asks[0][1]} / {contractSize * bestAsk * asks[0][1]:0.###} => {bestRealAsk} [ {_priceStep} ]", false);
+
+            if ((bestRealAsk > 0) && (_orderBookSubscription != null))
+            {
+                lock (_locker)
+                {
+                    if (_isLock) return;
+                    _isLock = true;
+                }
+
+                // bestRealAsk = 0.07M;
+                if (_futuresOrder == null) _futuresOrder = PlaceFuturesOrder(symbol, amount, bestRealAsk);
+                else
+                {
+                    if (bestAsk > _futuresOrder.Price)
+                    {
+                        await _socketClient.UnsubscribeAsync(_orderBookSubscription);
+                        _orderBookSubscription = null;
+
+                        Console.WriteLine($"Price raised ({bestAsk}), it seems the order is filled ({_futuresOrder})");
+                        Console.WriteLine();
+                        if (IsTest) FireShortEntered(); // in real environment fired via subsription
+                    }
+
+                    if (bestRealAsk < _futuresOrder.Price)
+                    {
+                        Console.WriteLine($"Price dropped {bestAsk}, the order should be cancelled (...)");
+                        // var cancelationResult = _apiClient.UsdFuturesApi.Trading.CancelOrderAsync(symbol).Result;
+                        // if (!cancelationResult.Success) throw new Exception($"Error while order cancelation: {cancelationResult.Error}");
+                        // Console.WriteLine($"Cancelation result: {cancelationResult.Data}, quantity: {cancelationResult.Data.CumulativeQuantity}");
+                    }
+                }
+
+                _isLock = false;
+            }
+        }*/
     }
 }
