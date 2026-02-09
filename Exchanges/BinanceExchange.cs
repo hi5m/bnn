@@ -485,18 +485,28 @@ namespace Bnncmd
 
         protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
         {
-            Console.WriteLine($"Placing short order: {symbol}, {price} x {amount}...");
-            var orderResult = _apiClient.UsdFuturesApi.Trading.PlaceOrderAsync(symbol, OrderSide.Sell, FuturesOrderType.Limit, amount, price, null, TimeInForce.GoodTillCanceled).Result; // , PositionSide.Short
-            if (!orderResult.Success) throw new Exception($"Error while placing order: {orderResult.Error}");
-            Console.WriteLine($"New {Name} futures order status: {orderResult.Data.Status}");
-            _futuresOrder = new Order()
+            if (IsTest)
             {
-                Id = orderResult.Data.Id,
-                Price = orderResult.Data.Price,
-                Amount = orderResult.Data.Quantity
-            };
-            return _futuresOrder;
+                return new Order()
+                {
+                    Id = $"test_order_{Name}",
+                    Price = price,
+                    Amount = amount
+                };
+            }
+            else
+            {
+                var orderResult = _apiClient.UsdFuturesApi.Trading.PlaceOrderAsync(symbol, OrderSide.Sell, FuturesOrderType.Limit, amount, price, null, TimeInForce.GoodTillCanceled).Result;
+                if (!orderResult.Success) throw new Exception($"Error while placing order: {orderResult.Error}");
+                Console.WriteLine($"New {Name} futures order status: {orderResult.Data.Status}");
+                return new Order()
+                {
+                    Id = orderResult.Data.Id.ToString(),
+                    Price = orderResult.Data.Price,
+                    Amount = orderResult.Data.Quantity
+                };
+                // return _futuresOrder;
+            }
         }
-
     }
 }

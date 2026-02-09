@@ -557,7 +557,7 @@ namespace Bnncmd.Strategy
             var orderID = _manager.SpotLimitOrder(SymbolName, isBuyer ? Side.BUY : Side.SELL, quantity, price);
             var newOrder = new Order()
             {
-                Id = orderID,
+                LongId = orderID,
                 Price = price,
                 Amount = quantity,
                 DateTime = BnnUtils.GetUnixNow(),
@@ -607,9 +607,9 @@ namespace Bnncmd.Strategy
 
             try
             {
-                var newId = _manager.ReplaceOrder(order.Id, SymbolName, order.IsBuyer ? Side.BUY : Side.SELL, newQuantity, price);
-                ChangeOrderData(order.Id, newId, order.Amount, order.Price);
-                order.Id = newId;
+                var newId = _manager.ReplaceOrder(order.LongId, SymbolName, order.IsBuyer ? Side.BUY : Side.SELL, newQuantity, price);
+                ChangeOrderData(order.LongId, newId, order.Amount, order.Price);
+                order.LongId = newId;
             }
             catch
             {
@@ -626,7 +626,7 @@ namespace Bnncmd.Strategy
 
         private bool CheckOrderStatus(Order order)
         {
-            var status = _manager.CheckOrder(this, order.Id);
+            var status = _manager.CheckOrder(this, order.LongId);
             var result = status == OrderStatus.Filled || status == OrderStatus.Canceled;
             if (result)
             {

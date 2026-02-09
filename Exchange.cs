@@ -175,9 +175,7 @@ namespace Bnncmd
         protected abstract Order PlaceFuturesOrder(string symbol, decimal amount, decimal price);
 
         protected Order? _futuresOrder = null;
-
         protected abstract void SubscribeOrderBookData(string symbol);
-
         protected abstract void UnsubscribeOrderBookData();
 
         private decimal _currAmount = 0;
@@ -207,7 +205,12 @@ namespace Bnncmd
                 }
 
                 // bestRealAsk = 0.07M;
-                if (_futuresOrder == null) _futuresOrder = PlaceFuturesOrder(symbol, _currAmount, bestRealAsk);
+                if (_futuresOrder == null)
+                {
+                    Console.WriteLine($"Placing short order: {symbol}, {bestRealAsk} x {_currAmount}...");
+                    _futuresOrder = PlaceFuturesOrder(symbol, _currAmount, bestRealAsk);
+                    if (IsTest) Console.WriteLine($"Test order placed: {_futuresOrder.Id}");
+                }
                 else
                 {
                     if (bestAsk > _futuresOrder.Price)

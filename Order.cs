@@ -10,7 +10,9 @@ namespace Bnncmd
     {
         public static int DefaultInitialQueue = 100000000;
 
-        public long Id { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public long LongId { get; set; }
+
         public decimal Price { get; set; }
         public decimal StopLossPrice { get; set; }
         public decimal Amount { get; set; }

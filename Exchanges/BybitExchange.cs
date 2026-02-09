@@ -193,45 +193,6 @@ namespace Bnncmd
             GetBybitApiProducts(products, minApr);
         }
 
-        protected override object PlaceFuturesOrder(string symbol, decimal amount, decimal price)
-        {
-            /*Console.WriteLine($"Placing short order: {symbol}, {price} x {amount}...");
-            var orderResult = _apiClient.UsdFuturesApi.Trading.PlaceOrderAsync(symbol, OrderSide.Sell, FuturesOrderType.Limit, amount, price, null, TimeInForce.GoodTillCanceled).Result; // , PositionSide.Short
-            if (!orderResult.Success) throw new Exception($"Error while placing order: {orderResult.Error}");
-            Console.WriteLine($"New {Name} futures order status: {orderResult.Data.Status}");
-            _futuresOrder = orderResult.Data;*/
-            return new object();
-        }
-
-        public override async void EnterShort(string coin, decimal amount, string stableCoin = EmptyString)
-        {
-            var symbol = coin + (stableCoin == string.Empty ? StableCoin.USDT : stableCoin);
-            // throw new NotImplementedException();
-
-            // SubscribeUserFuturesData();
-            _bookState.Clear();
-            _isLock = false;
-
-            _orderBookSubscription = (await _socketClient.V5LinearApi.SubscribeToOrderbookUpdatesAsync(symbol, 20, async e =>
-            {
-
-            })).Data;
-        }
-
-        /*private decimal CheckBalance(string coin, AccountType accountType)
-        {
-            var accInfo = _bybitClient.V5Api.Account.GetAllAssetBalancesAsync(accountType, null, coin).Result; // "USDT,USDC,BTC,ETH,BOMB,XO,LA"
-            if ((accInfo.Error != null) && (!accInfo.Success)) throw new Exception(accInfo.Error.Message);
-            if (accInfo.Data == null) throw new Exception("AccountInfo returned no data");
-
-            foreach (var b in accInfo.Data.Balances)
-            {
-                // Console.WriteLine($"{b.Asset}, WalletBalance: {b.WalletBalance}, TransferBalance: {b.TransferBalance}, b: {b}");
-                return b.WalletBalance ?? 0;
-            }
-            return 0;
-        }*/
-
         public override decimal GetSpotBalance(string? coin = null)
         {
             coin ??= StableCoin.USDT;
@@ -428,5 +389,49 @@ namespace Bnncmd
         }
 
         public override void BuySpot(string coin, decimal amount) => throw new NotImplementedException();
+
+        // Futures Routines
+        protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
+        {
+            if (IsTest)
+            {
+                return new Order()
+                {
+                    Id = $"test_order_{Name}",
+                    Price = price,
+                    Amount = amount
+                };
+            }
+            else
+            {
+                var orderResult = _apiClient.V5Api.Trading.PlaceOrderAsync(Category.Linear, symbol, OrderSide.Sell, NewOrderType.Limit, amount, price, false).Result;
+                if (!orderResult.Success) throw new Exception($"Error while placing order: {orderResult.Error}");
+                Console.WriteLine($"New {Name} futures order id: {orderResult.Data.OrderId}");
+                return new Order()
+                {
+                    Id = orderResult.Data.OrderId,
+                    Price = price,
+                    Amount = amount
+                };
+            }
+        }
+
+        public override void EnterShort(string coin, decimal amount, string stableCoin = EmptyString)
+        {
+            var symbol = coin + (stableCoin == string.Empty ? StableCoin.USDT : stableCoin);
+            ScanFutures(symbol, amount);
+        }
+
+        protected override async void SubscribeOrderBookData(string symbol)
+        {
+            // SubscribeUserFuturesData();
+
+            _orderBookSubscription = (await _socketClient.V5LinearApi.SubscribeToOrderbookUpdatesAsync(symbol, 20, e =>
+            {
+                var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
+                var bids = e.Data.Bids.Select(b => new[] { b.Price, b.Quantity }).ToArray();
+                ProcessFuturesOrderBook(symbol, asks, bids);
+            })).Data;
+        }
     }
 }

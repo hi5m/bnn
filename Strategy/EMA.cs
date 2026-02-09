@@ -381,15 +381,15 @@ namespace Bnncmd.Strategy
 
             try
             {
-                var newId = _manager.ReplaceOrder(_order.Id, SymbolName, _order.IsBuyer ? Side.BUY : Side.SELL, _order.Amount, _order.Price, _priceStep);
+                var newId = _manager.ReplaceOrder(_order.LongId, SymbolName, _order.IsBuyer ? Side.BUY : Side.SELL, _order.Amount, _order.Price, _priceStep);
                 if (AccountManager.IsTest)
                 {
                     var ap = GetActualPrice();
                     if (_order.IsBuyer && ap > _order.Price || !_order.IsBuyer && ap < _order.Price) throw new BnnException(string.Empty, BnnException.StopPriceWouldTrigger);
                     if (AccountManager.LogLevel > 1) Log($"{CurrPrice}: stop loss changed: {_order}");
                 }
-                else ChangeOrderData(_order.Id, newId, _order.Amount, _order.Price);
-                _order.Id = newId;
+                else ChangeOrderData(_order.LongId, newId, _order.Amount, _order.Price);
+                _order.LongId = newId;
             }
             catch (BnnException ex)
             {
@@ -420,7 +420,7 @@ namespace Bnncmd.Strategy
                 {
                     if (!AccountManager.IsTest)
                     {
-                        var status = isWick ? OrderStatus.Filled : _manager.CheckOrder(this, _order.Id);
+                        var status = isWick ? OrderStatus.Filled : _manager.CheckOrder(this, _order.LongId);
                         if (status != OrderStatus.Filled) return;
                     }
                     _order.Filled = _order.Amount;
@@ -551,7 +551,7 @@ namespace Bnncmd.Strategy
             if (_order == null) return Task.CompletedTask;
             dynamic? userData = JsonConvert.DeserializeObject(message.Trim()) ?? throw new Exception("user data message returned no data");
             if (userData.e != "executionReport" || userData.X != OrderStatus.Filled) return Task.CompletedTask;
-            if (userData.i == _order.Id) CheckDeal(true);
+            if (userData.i == _order.LongId) CheckDeal(true);
             else BnnUtils.Log($"message from user data stream: unknown order {userData.i} was {userData.X} ({userData.s}, {userData.S}, {userData.q} x {userData.p})");
             return Task.CompletedTask;
         }
@@ -569,7 +569,7 @@ namespace Bnncmd.Strategy
             LoadOrders();
             foreach (var o in _orders)
             {
-                var orderStatus = _manager.CheckOrder(this, o.Id);
+                var orderStatus = _manager.CheckOrder(this, o.LongId);
                 BnnUtils.Log($"loaded order: {o} - {orderStatus}", false);
                 if (new[] { OrderStatus.Canceled, OrderStatus.Filled }.Contains(orderStatus)) continue;
                 _order = o;

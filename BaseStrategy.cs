@@ -319,7 +319,7 @@ namespace Bnncmd
         protected void SaveNewOrder(Order order)
         {
             var script = "INSERT INTO exchanger (OrderId, SymbolId, Time, IsBuyer, Price, Amount, Filled) VALUES " +
-                    $"({order.Id}, {SymbolId}, {order.DateTime}, {order.IsBuyer}, {order.Price}, {order.Amount}, 0);";
+                    $"({order.LongId}, {SymbolId}, {order.DateTime}, {order.IsBuyer}, {order.Price}, {order.Amount}, 0);";
             DB.ExecQuery(_manager.DbConnection, script, null);
         }
 
@@ -333,7 +333,7 @@ namespace Bnncmd
                 decimal price = (decimal)dr["Price"]; // dr["Price"] is decimal op ? (decimal)op : (decimal)								
                 var o = new Order()
                 {
-                    Id = (long)dr["OrderId"], // BnnUtils.GetUnixNow(), // (long)dr["OrderId"],
+                    LongId = (long)dr["OrderId"], // BnnUtils.GetUnixNow(), // (long)dr["OrderId"],
                                               // CurrencyToSell = isBuyer ? _manager.QuoteCurrencyName : GetCurrencyName(),
                                               // CurrencyToBuy = isBuyer ? GetCurrencyName() : _manager.QuoteCurrencyName,
 
@@ -376,7 +376,7 @@ namespace Bnncmd
 
         protected void UpdateFilledOrder(Order order)
         {
-            DB.ExecQuery(_manager.DbConnection, $"UPDATE exchanger set Filled = Amount where OrderId = {order.Id};", null);
+            DB.ExecQuery(_manager.DbConnection, $"UPDATE exchanger set Filled = Amount where OrderId = {order.LongId};", null);
         }
         #endregion
 
@@ -464,7 +464,7 @@ namespace Bnncmd
 
             var newOrder = new Order()
             {
-                Id = orderID,
+                LongId = orderID,
                 Price = price,
                 Amount = quantity,
                 DateTime = BnnUtils.GetUnixNow(),
@@ -508,7 +508,7 @@ namespace Bnncmd
 
             var newOrder = new Order()
             {
-                Id = orderID,
+                LongId = orderID,
                 Price = price,
                 Amount = quantity,
                 DateTime = BnnUtils.GetUnixNow(),
