@@ -223,7 +223,7 @@ namespace Bnncmd
             return assetIfo.Data.Balances.WalletBalance ?? 0;*/
         }
 
-        public override decimal GetSpotPrice(string coin)
+        public override decimal GetSpotPrice(string coin, string stablecoin = EmptyString)
         {
             var priceInfo = _apiClient.V5Api.ExchangeData.GetSpotTickersAsync(coin + StableCoin.USDT).Result;
             if (!priceInfo.Success && (priceInfo.Error != null))
@@ -425,13 +425,26 @@ namespace Bnncmd
         protected override async void SubscribeOrderBookData(string symbol)
         {
             // SubscribeUserFuturesData();
+            // Console.WriteLine($"Bybit SubscribeOrderBookData: {symbol}");
 
-            _orderBookSubscription = (await _socketClient.V5LinearApi.SubscribeToOrderbookUpdatesAsync(symbol, 20, e =>
+            var subsResult = (await _socketClient.V5LinearApi.SubscribeToOrderbookUpdatesAsync(symbol, 50, e =>
             {
                 var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
                 var bids = e.Data.Bids.Select(b => new[] { b.Price, b.Quantity }).ToArray();
+
+                // Console.WriteLine($"asks: {asks.First()[0]}");
+
                 ProcessFuturesOrderBook(symbol, asks, bids);
-            })).Data;
+            }));
+            if (!subsResult.Success && (subsResult.Error != null)) throw new Exception(subsResult.Error.Message);
+            _orderBookSubscription = subsResult.Data;
+        }
+
+        protected override async void UnsubscribeOrderBookData()
+        {
+            if (_orderBookSubscription == null) return;
+            await _socketClient.UnsubscribeAsync(_orderBookSubscription);
+            _orderBookSubscription = null;
         }
     }
 }

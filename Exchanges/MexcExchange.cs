@@ -304,9 +304,9 @@ namespace Bnncmd
 
         private MexcContractInfo? _contractInfo = null;
 
-        private UpdateSubscription? _orderBookSubscription = null;
+        // private UpdateSubscription? _orderBookSubscription = null;
 
-        public override decimal GetSpotPrice(string coin)
+        public override decimal GetSpotPrice(string coin, string stablecoin = EmptyString)
         {
             if (_prices == null)
             {
@@ -412,58 +412,10 @@ namespace Bnncmd
 
             if ((priceInfo.Error != null) && !priceInfo.Success)
             {
-                if (priceInfo.Error.Code == -1121) return 0;
+                // if (priceInfo.Error.Code == -1121) return 0;
                 throw new Exception($"{Name} best spot price returned error: {priceInfo.Error.Message} / {priceInfo.Error.Code}");
             }
             return priceInfo.Data ?? 0;
-        }
-
-        public async void ScanFutures(string coin, decimal amount)
-        {
-            _bookState.Clear();
-            var symbol = coin + '_' + StableCoin.USDT;
-
-            _orderBookSubscription = (await _socketClient.FuturesApi.SubscribeToOrderBookUpdatesAsync(symbol, async e =>
-            {
-                var obEntries = e.Data.Asks;
-
-                ///////////////////////////////
-                foreach (var a in obEntries)
-                {
-                    if (!_bookState.ContainsKey(a[0])) _bookState.Add(a[0], DateTime.Now);
-                }
-
-                var keysToRemove = _bookState.Keys.Except(obEntries.Select(a => a[0]));
-                foreach (var k in keysToRemove)
-                {
-                    _bookState.Remove(k);
-                }
-
-                var niceAsks = _bookState
-                    .Where(a => a.Value < DateTime.Now.AddSeconds(-10))
-                    .OrderBy(a => a.Key);
-
-                var bestRealAsk = niceAsks.Any() ? niceAsks.First().Key : -1;
-                ///////////////////////////////
-
-                if ((bestRealAsk > 0) && (_contractInfo != null) && (bestRealAsk - _contractInfo.PriceUnit > e.Data.Bids[0][0])) bestRealAsk -= _contractInfo.PriceUnit;
-                var contractSize = _contractInfo == null ? 1M : _contractInfo.СontractSize; // 0.0001M; // btc
-                BnnUtils.ClearCurrentConsoleLine();
-                Console.Write($"{obEntries[0][0]} / {obEntries[0][1]} / {contractSize * obEntries[0][0] * obEntries[0][1]:0.###} => {bestRealAsk}", false);
-
-                if ((bestRealAsk > 0) && (_orderBookSubscription != null))
-                {
-                    await _socketClient.UnsubscribeAsync(_orderBookSubscription);
-                    _orderBookSubscription = null;
-                    Console.WriteLine();
-
-                    bestRealAsk = 0.07M;
-                    Console.WriteLine($"placing short order: {symbol}, {bestRealAsk} x {amount}...");
-                    /*var orderResult = _apiClient.FuturesApi.Trading.PlaceOrderAsync(symbol, bestRealAsk, amount, 1, 3, 2, 2).Result;
-                    if (orderResult.Data.Success) Console.WriteLine($"{orderResult.Data.Data}");
-                    else Console.WriteLine($"Order error: {GetErrorText(orderResult.Data.Code)} ({orderResult.Data.Code})");*/
-                }
-            })).Data;
         }
 
         private async void SubscribeUserSpotData()
@@ -550,5 +502,11 @@ namespace Bnncmd
                 _isLock = false;
             }).Result.Data;
         }
+
+        protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price) => throw new NotImplementedException();
+
+        protected override void UnsubscribeOrderBookData() => throw new NotImplementedException();
+
+        protected override void SubscribeOrderBookData(string symbol) => throw new NotImplementedException();
     }
 }

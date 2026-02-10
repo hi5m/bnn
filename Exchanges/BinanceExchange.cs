@@ -37,7 +37,6 @@ namespace Bnncmd
             _apiClient = new BinanceRestClient(null, null, options); 
         }
 
-        // private readonly string _fdusdtName = "FDUSD";
         public override string Name { get; } = "Binance";
         public override int Code { get; } = 0;
         // public override decimal SpotTakerFee { get; } = 0.1M;
@@ -177,22 +176,12 @@ namespace Bnncmd
             return accInfo.Data.AvailableBalance;
         }
 
-        public override decimal GetSpotPrice(string coin)
+        public override decimal GetSpotPrice(string coin, string stablecoin = EmptyString)
         {
-            /*var priceInfo = _client.SpotApi.ExchangeData.GetPriceAsync(coin + UsdtName).Result;
-            if ((priceInfo.Error != null) && !priceInfo.Success)
-            {
-                if (priceInfo.Error.Code == -1121) return 0;
-                throw new Exception("Exception from Error: " + priceInfo.Error.Message);
-            }
-            Console.WriteLine($"\t\t{Name} {UsdtName} price: {priceInfo.Data.Price}");*/
-
-            var priceInfo = _apiClient.SpotApi.ExchangeData.GetPriceAsync(coin + StableCoin.FDUSD).Result;
-            if ((priceInfo.Error != null) && !priceInfo.Success)
-            {
-                if (priceInfo.Error.Code == -1121) return 0;
-                throw new Exception(priceInfo.Error.Message);
-            }
+            // if (stablecoin == EmptyString) stablecoin = StableCoin.FDUSD;
+            var symbol = (coin + (stablecoin == EmptyString ? StableCoin.FDUSD : stablecoin)).ToUpper(); // '_' + 
+            var priceInfo = _apiClient.SpotApi.ExchangeData.GetPriceAsync(symbol).Result;
+            if ((priceInfo.Error != null) && !priceInfo.Success) throw new Exception($"Error while getting {symbol} price: {priceInfo.Error.Message}");
             return priceInfo.Data.Price;
         }
 
@@ -414,7 +403,7 @@ namespace Bnncmd
 
             if ((priceInfo.Error != null) && !priceInfo.Success)
             {
-                if (priceInfo.Error.Code == -1121) return 0;
+                // if (priceInfo.Error.Code == -1121) return 0;
                 throw new Exception($"{Name} best price returned error: {priceInfo.Error.Message} / {priceInfo.Error.Code}");
             }
             return isAsk ? priceInfo.Data.BestAskPrice : priceInfo.Data.BestBidPrice;
@@ -440,7 +429,8 @@ namespace Bnncmd
                         Console.WriteLine($"- {balance.Asset}: свободно {balance.Free}, заблокировано {balance.Locked}");
                     }
                 },*/
-                onOrderUpdate: data => {
+                onOrderUpdate: data =>
+                {
                     if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.New) return;
                     Console.WriteLine($"Order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
                     Console.Beep();

@@ -161,7 +161,7 @@ namespace Bnncmd
         public abstract decimal GetFuturesBalance(string? coin = null);
 
         // Exchange Info
-        public abstract decimal GetSpotPrice(string coin);
+        public abstract decimal GetSpotPrice(string coin, string stablecoin = EmptyString);
         public abstract decimal FindFunds(string stableCoin, bool forSpot = true, decimal amount = 0);
         public abstract decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString);
         public abstract decimal GetMinLimit(string coin, bool isSpot, string stablecoin = EmptyString);
