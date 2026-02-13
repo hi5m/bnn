@@ -136,8 +136,8 @@ namespace Bnncmd.Strategy
 
             // buy futures than spot
             Console.WriteLine("Do you want to start with futures order?");
-            var command = Console.ReadLine();
-            if ((command == null) || (command.ToLower()[0] != 'y')) return;
+            //var command = Console.ReadLine();
+            //if ((command == null) || (command.ToLower()[0] != 'y')) return;
 
             Console.WriteLine();
             Console.WriteLine($"{futuresExchange.Name} futures short position opening...");

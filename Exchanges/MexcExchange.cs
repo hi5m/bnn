@@ -470,7 +470,7 @@ namespace Bnncmd
             _order = null;
             _orderBookSubscription = _socketClient.SpotApi.SubscribeToBookTickerUpdatesAsync($"{symbol}", update =>
             {
-                lock (_locker)
+                lock (Locker)
                 {
                     if (_isLock) return;
                     if ((_order != null) && (_order.Price == update.Data.BestBidPrice)) return;

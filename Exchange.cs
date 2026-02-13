@@ -66,7 +66,6 @@ namespace Bnncmd
 
         private static readonly MexcExchange s_mexc = new();
         public static MexcExchange Mexc { get { return s_mexc; } }
-
         public static AbstractExchange GetExchangeByName(string exchName)
         {
             if (exchName.Equals(Binance.Name, StringComparison.InvariantCultureIgnoreCase)) return Binance;
@@ -108,7 +107,7 @@ namespace Bnncmd
 
         protected CryptoExchange.Net.Objects.Sockets.UpdateSubscription? _orderBookSubscription = null;
 
-        protected readonly object _locker = new();
+        protected static readonly object Locker = new();
 
         protected bool _isLock = false;
 
@@ -180,6 +179,8 @@ namespace Bnncmd
 
         private decimal _currAmount = 0;
 
+        private bool _showRealtimeData = true;
+
         /// <summary>
         /// Get constant price
         /// </summary>
@@ -189,16 +190,19 @@ namespace Bnncmd
         /// <param name="bids"></param>
         protected void ProcessFuturesOrderBook(string symbol, decimal[][] asks, decimal[][] bids)
         {
-            var contractSize = 1; //  _contractInfo == null ? 1M : _contractInfo.ContractSize; // 0.0001M; // btc
+            // var contractSize = 1; //  _contractInfo == null ? 1M : _contractInfo.ContractSize; // 0.0001M; // btc
             var bestAsk = asks[0][0];
             var bestRealAsk = GetTrueBestAsk([.. asks.Select(a => a[0])]);
             if ((bestRealAsk > 0) && (bestRealAsk - _priceStep > bids.First()[0])) bestRealAsk -= _priceStep;
-            BnnUtils.ClearCurrentConsoleLine();
-            Console.Write($"{bestAsk} / {asks[0][1]} / {contractSize * bestAsk * asks[0][1]:0.###} => {bestRealAsk} [ {_priceStep} ]", false);
+            if (_showRealtimeData)
+            {
+                BnnUtils.ClearCurrentConsoleLine();
+                Console.Write($"{bestAsk} | {asks[0][1]} => {(bestRealAsk == -1 ? "searching" : bestRealAsk)} [ {_priceStep} ]", false); // / {contractSize * bestAsk * asks[0][1]:0.###}
+            }
 
             if ((bestRealAsk > 0) && (_orderBookSubscription != null))
             {
-                lock (_locker)
+                lock (Locker)
                 {
                     if (_isLock) return;
                     _isLock = true;
@@ -207,9 +211,15 @@ namespace Bnncmd
                 // bestRealAsk = 0.07M;
                 if (_futuresOrder == null)
                 {
+                    _showRealtimeData = false;
+                    BnnUtils.ClearCurrentConsoleLine();
                     Console.WriteLine($"Placing short order: {symbol}, {bestRealAsk} x {_currAmount}...");
                     _futuresOrder = PlaceFuturesOrder(symbol, _currAmount, bestRealAsk);
                     if (IsTest) Console.WriteLine($"Test order placed: {_futuresOrder.Id}");
+
+                    Console.WriteLine($"dummy line...");
+
+                    _showRealtimeData = true;
                 }
                 else
                 {
@@ -270,6 +280,7 @@ namespace Bnncmd
             _bookState.Clear();
             _isLock = false;
             _futuresOrder = null;
+            _showRealtimeData = true;
             SubscribeOrderBookData(symbol);
         }
     }

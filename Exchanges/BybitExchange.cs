@@ -397,7 +397,7 @@ namespace Bnncmd
             {
                 return new Order()
                 {
-                    Id = $"test_order_{Name}",
+                    Id = $"test_order_{Name.ToLower()}",
                     Price = price,
                     Amount = amount
                 };
@@ -422,19 +422,85 @@ namespace Bnncmd
             ScanFutures(symbol, amount);
         }
 
+        private List<BybitOrderbookEntry> _asks = [];
+
+        private List<BybitOrderbookEntry> _bids = [];
+
+        private void ProcessOrderBookDelta(List<BybitOrderbookEntry> book, BybitOrderbookEntry[] delta)
+        {
+            foreach (var a in delta)
+            {
+                if (a.Quantity <= 0)
+                {
+                    book.RemoveAll(ask => ask.Price == a.Price);
+                    Console.WriteLine($" >> {a.Price} => 0");
+                }
+                else
+                {
+                    var ask = book.FirstOrDefault(ask => ask.Price == a.Price);
+                    if (ask == null) book.Add(a);
+                    else ask.Quantity = a.Quantity;
+                }
+            }
+        }
+
         protected override async void SubscribeOrderBookData(string symbol)
         {
+            _isLock = false;
             // SubscribeUserFuturesData();
             // Console.WriteLine($"Bybit SubscribeOrderBookData: {symbol}");
-
-            var subsResult = (await _socketClient.V5LinearApi.SubscribeToOrderbookUpdatesAsync(symbol, 50, e =>
+            var subsResult = (await _socketClient.V5LinearApi.SubscribeToOrderbookUpdatesAsync(symbol, 50, e => // 50 / 1000
             {
-                var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
-                var bids = e.Data.Bids.Select(b => new[] { b.Price, b.Quantity }).ToArray();
+                // process snapshorts and delta
+                if (e.UpdateType == SocketUpdateType.Snapshot)
+                {
+                    ProcessOrderBookDelta(_asks, e.Data.Asks);
+                    ProcessOrderBookDelta(_bids, e.Data.Bids);
+                }
+                else
+                {
+                    _asks = [.. e.Data.Asks];
+                    _bids = [.. e.Data.Bids];
+                }
 
-                // Console.WriteLine($"asks: {asks.First()[0]}");
+                // prepare prices
+                if (_isLock) return;
+                lock (Locker)
+                {
+                    // if (_isLock) return;
+                    _isLock = true;
+                    try
+                    {
+                        var asks = _asks.Select(a => new[] { a.Price, a.Quantity }).OrderBy(a => a[0]).ToArray();
+                        var bids = _bids.Select(b => new[] { b.Price, b.Quantity }).OrderByDescending(b => b[0]).ToArray();
 
-                ProcessFuturesOrderBook(symbol, asks, bids);
+                        // Console.WriteLine($">> {asks[2][0]} {asks[1][0]} {asks[0][0]} | {bids[0][0]} {bids[1][0]} {bids[2][0]}"); // / {contractSize * bestAsk * asks[0][1]:0.###}
+
+                        /* BnnUtils.ClearCurrentConsoleLine();
+                        Console.Write($"{asks[2][0]} {asks[1][0]} {asks[0][0]} | {bids[0][0]} {bids[1][0]} {bids[2][0]}");
+                        Thread.Sleep(500);*/
+                        Console.WriteLine($"{asks[4][0]} {asks[3][0]} {asks[2][0]} {asks[1][0]} {asks[0][0]} ({asks[0][1]}) | ({bids[0][1]}) {bids[0][0]} {bids[1][0]} {bids[2][0]} {bids[3][0]} {bids[4][0]}"); // / {contractSize * bestAsk * asks[0][1]:0.###}
+                    }
+                    finally
+                    {
+                        _isLock = false;
+                    }
+                }
+
+
+                /* Console.Clear();
+                for (var i = 4; i >= 0; i--)
+                {
+                    Console.WriteLine($"{asks[i][0]} | {asks[i][1]}"); // / {contractSize * bestAsk * asks[0][1]:0.###}
+                }
+                Console.WriteLine($"=============");
+                for (var i = 0; i <= 4; i++)
+                {
+                    Console.WriteLine($"{bids[i][0]} | {bids[i][1]}"); // / {contractSize * bestAsk * asks[0][1]:0.###}
+                }*/
+
+                // ProcessFuturesOrderBook(symbol, asks, bids);
+                // _isLock = false;
             }));
             if (!subsResult.Success && (subsResult.Error != null)) throw new Exception(subsResult.Error.Message);
             _orderBookSubscription = subsResult.Data;
