@@ -434,7 +434,6 @@ namespace Bnncmd
                     if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.New) return;
                     Console.WriteLine($"Order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
                     Console.Beep();
-                    FireShortEntered();
                 }
             );
 
@@ -495,8 +494,9 @@ namespace Bnncmd
                     Price = orderResult.Data.Price,
                     Amount = orderResult.Data.Quantity
                 };
-                // return _futuresOrder;
             }
         }
+
+        protected override Order CancelFuturesOrder(Order order) => throw new NotImplementedException();    
     }
 }

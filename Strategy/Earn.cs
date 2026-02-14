@@ -125,24 +125,25 @@ namespace Bnncmd.Strategy
 
         public static void BuyPair(string coin, AbstractExchange spotExchange, AbstractExchange futuresExchange, decimal amount, string spotStablecoin = "", string futuresStablecoin = "")
         {
-            spotExchange.IsTest = true;
+            spotExchange.IsTest = false;
             futuresExchange.IsTest = spotExchange.IsTest;
             if (spotExchange.IsTest) Console.WriteLine($"THE PROGRAM WORKS IN TEST MODE!");
 
             Console.WriteLine($"Requested {coin} amount: {amount}");
             Console.WriteLine();
 
-            // if (!ControlDeal(coin, spotExchange, futuresExchange, amount, spotStablecoin, futuresStablecoin)) return;
+            if (!ControlDeal(coin, spotExchange, futuresExchange, amount, spotStablecoin, futuresStablecoin)) return;
 
             // buy futures than spot
             Console.WriteLine("Do you want to start with futures order?");
-            //var command = Console.ReadLine();
-            //if ((command == null) || (command.ToLower()[0] != 'y')) return;
+            var command = Console.ReadLine();
+            if ((command == null) || (command.ToLower()[0] != 'y')) return;
 
             Console.WriteLine();
             Console.WriteLine($"{futuresExchange.Name} futures short position opening...");
             futuresExchange.ShortEntered += e =>
             {
+                Console.Beep();
                 Console.WriteLine($"{spotExchange.Name} spot buy order placing...");
                 // spotExchange.BuySpot(coin, amount);
             };

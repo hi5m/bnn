@@ -165,6 +165,7 @@ internal class Program
                     Exchange.Binance.GetFundingRateStat(s, int.Parse(args[4]));
                     Console.WriteLine();
                 }
+                Environment.Exit(0);
                 break;
             default: throw new Exception($"Unknown operation: {operation}");
         }

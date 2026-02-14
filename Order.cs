@@ -13,6 +13,7 @@ namespace Bnncmd
         public string Id { get; set; } = string.Empty;
         public long LongId { get; set; }
 
+        public string Symbol { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public decimal StopLossPrice { get; set; }
         public decimal Amount { get; set; }

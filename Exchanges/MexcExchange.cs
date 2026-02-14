@@ -505,6 +505,8 @@ namespace Bnncmd
 
         protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price) => throw new NotImplementedException();
 
+        protected override Order CancelFuturesOrder(Order order) => throw new NotImplementedException();
+
         protected override void UnsubscribeOrderBookData() => throw new NotImplementedException();
 
         protected override void SubscribeOrderBookData(string symbol) => throw new NotImplementedException();

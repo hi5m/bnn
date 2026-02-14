@@ -168,10 +168,11 @@ namespace Bnncmd
 
         // Order routines
         public event Action<AbstractExchange>? ShortEntered;
-        protected void FireShortEntered() => this.ShortEntered?.Invoke(this);
+        protected void FireShortEntered() => ShortEntered?.Invoke(this);
         public abstract void EnterShort(string coin, decimal amount, string stableCoin = EmptyString);
         public abstract void BuySpot(string coin, decimal amount);
         protected abstract Order PlaceFuturesOrder(string symbol, decimal amount, decimal price);
+        protected abstract Order CancelFuturesOrder(Order order);
 
         protected Order? _futuresOrder = null;
         protected abstract void SubscribeOrderBookData(string symbol);
@@ -197,7 +198,8 @@ namespace Bnncmd
             if (_showRealtimeData)
             {
                 BnnUtils.ClearCurrentConsoleLine();
-                Console.Write($"{bestAsk} | {asks[0][1]} => {(bestRealAsk == -1 ? "searching" : bestRealAsk)} [ {_priceStep} ]", false); // / {contractSize * bestAsk * asks[0][1]:0.###}
+                // Console.Write($"{bestAsk} | {asks[0][1]} => {(bestRealAsk == -1 ? "searching" : bestRealAsk)} [ {_priceStep} ]", false); // / {contractSize * bestAsk * asks[0][1]:0.###}
+                Console.Write($"{asks[2][0]} {asks[1][0]} {bestAsk} | {bids[0][0]} => {(bestRealAsk == -1 ? "searching..." : bestRealAsk)} [ {_priceStep} ]", false); // / {contractSize * bestAsk * asks[0][1]:0.###}
             }
 
             if ((bestRealAsk > 0) && (_orderBookSubscription != null))
@@ -216,9 +218,6 @@ namespace Bnncmd
                     Console.WriteLine($"Placing short order: {symbol}, {bestRealAsk} x {_currAmount}...");
                     _futuresOrder = PlaceFuturesOrder(symbol, _currAmount, bestRealAsk);
                     if (IsTest) Console.WriteLine($"Test order placed: {_futuresOrder.Id}");
-
-                    Console.WriteLine($"dummy line...");
-
                     _showRealtimeData = true;
                 }
                 else
@@ -226,14 +225,25 @@ namespace Bnncmd
                     if (bestAsk > _futuresOrder.Price)
                     {
                         UnsubscribeOrderBookData();
+                        BnnUtils.ClearCurrentConsoleLine();
                         Console.WriteLine($"Price raised ({bestAsk}), it seems the order is filled ({_futuresOrder})");
                         Console.WriteLine();
-                        if (IsTest) FireShortEntered(); // in real environment fired via subsription
+                        _futuresOrder = null;
+                        FireShortEntered(); // in real environment fired via subsription
+                        return;
                     }
 
-                    if (bestRealAsk < _futuresOrder.Price)
+                    if (bestRealAsk < _futuresOrder.Price) // (_futuresOrder != null) && 
                     {
-                        Console.WriteLine($"Price dropped {bestAsk}, the order should be cancelled (...)");
+                        UnsubscribeOrderBookData();
+                        BnnUtils.ClearCurrentConsoleLine();
+                        Console.WriteLine($"The best ask dropped ({bestAsk}), the order cancelling...");
+                        CancelFuturesOrder(_futuresOrder);
+                        Console.WriteLine($"The order cancelled");
+                        // Console.Beep();
+                        _futuresOrder = null;
+                        return;
+
                         // var cancelationResult = _apiClient.UsdFuturesApi.Trading.CancelOrderAsync(symbol).Result;
                         // if (!cancelationResult.Success) throw new Exception($"Error while order cancelation: {cancelationResult.Error}");
                         // Console.WriteLine($"Cancelation result: {cancelationResult.Data}, quantity: {cancelationResult.Data.CumulativeQuantity}");
