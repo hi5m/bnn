@@ -451,8 +451,10 @@ namespace Bnncmd
 
         protected override async void SubscribeOrderBookData(string symbol)
         {
-            _isLock = false;
+            throw new Exception("SubscribeUserFuturesData not implemented");
             // SubscribeUserFuturesData();
+
+            _isLock = false;
             var subsResult = (await _socketClient.V5LinearApi.SubscribeToOrderbookUpdatesAsync(symbol, 50, e => // 50 / 1000
             {
                 // process snapshorts and delta

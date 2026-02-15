@@ -8,6 +8,7 @@ using Binance.Net.Objects.Models;
 using Binance.Net.Objects.Models.Futures;
 using Binance.Net.Objects.Models.Spot;
 using Binance.Net.Objects.Options;
+using Bnncmd;
 using Bnncmd.Strategy;
 using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Objects;
@@ -20,10 +21,12 @@ using System.Runtime.CompilerServices;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static System.Windows.Forms.AxHost;
 
-namespace Bnncmd
+namespace bnncmd.Exchanges
 {
     internal class BinanceExchange : AbstractExchange
     {
+        #region Constructor and Variables
+
         public BinanceExchange() : base()
         {
             var ak = AccountManager.Config.GetValue<string>("TKBNN") ?? string.Empty;
@@ -48,16 +51,20 @@ namespace Bnncmd
 
         private readonly BinanceSocketClient _socketClient = new();
 
+        #endregion
+
+        #region Earn Routines
+
         private string GetChipSymbol(string coin, out decimal fee)
         {
             fee = 0; // fdusd
             if (_spotSymbols == null) throw new Exception("Coins sotre not found");
             var symbolInfo = _spotSymbols.FirstOrDefault(s => s.Name.Equals($"{coin}{StableCoin.FDUSD}", StringComparison.OrdinalIgnoreCase));
-            if ((symbolInfo != null) && (symbolInfo.Status == SymbolStatus.Trading)) return StableCoin.FDUSD;
+            if (symbolInfo != null && symbolInfo.Status == SymbolStatus.Trading) return StableCoin.FDUSD;
 
             fee = 0.075M; // usdt
             symbolInfo = _spotSymbols.FirstOrDefault(s => s.Name.Equals($"{coin}{StableCoin.USDT}", StringComparison.OrdinalIgnoreCase));
-            if ((symbolInfo != null) && (symbolInfo.Status == SymbolStatus.Trading)) return StableCoin.USDT;
+            if (symbolInfo != null && symbolInfo.Status == SymbolStatus.Trading) return StableCoin.USDT;
             return StableCoin.None;
         }
 
@@ -73,7 +80,7 @@ namespace Bnncmd
                 try
                 {
                     fixedProducts = _apiClient.GeneralApi.SimpleEarn.GetLockedProductsAsync(null, pageNum, pageSize).Result;
-                    if (!fixedProducts.Success && (fixedProducts.Error != null))
+                    if (!fixedProducts.Success && fixedProducts.Error != null)
                     {
                         if (fixedProducts.Error.Code == -2015) Console.WriteLine($"{BnnUtils.GetPublicIp()}"); // ip: 
                         throw new Exception(fixedProducts.Error.Message + " ( " + fixedProducts.Error.Code + " )"); //  ? $"{Name} throw exception while get data" : 
@@ -145,19 +152,23 @@ namespace Bnncmd
             GetFlexibleProducts(products, minApr);
         }
 
+        #endregion
+
+        #region Control Routines
+
         public override decimal GetSpotBalance(string? coin = null)
         {
             if (coin == null) coin = StableCoin.USDT;
             try
             {
                 var accInfo = _apiClient.SpotApi.Account.GetAccountInfoAsync().Result;
-                if ((accInfo.Error != null) && !accInfo.Success) throw new Exception(accInfo.Error.Message);
+                if (accInfo.Error != null && !accInfo.Success) throw new Exception(accInfo.Error.Message);
                 if (accInfo.Data == null) throw new Exception("AccountInfo returned no data");
 
                 foreach (var b in accInfo.Data.Balances)
                 {
                     if (b.Asset.Equals(coin, StringComparison.OrdinalIgnoreCase)) return b.Available;
-                    if ((b.Available == 0) || (b.Locked == 0)) continue;
+                    if (b.Available == 0 || b.Locked == 0) continue;
                     Console.WriteLine($"{b.Asset}, Free: {b.Available}, Locked: {b.Locked}");
                 }
             }
@@ -172,7 +183,7 @@ namespace Bnncmd
         public override decimal GetFuturesBalance(string? coin = null)
         {
             var accInfo = _apiClient.UsdFuturesApi.Account.GetAccountInfoV3Async().Result;
-            if ((accInfo.Error != null) && (!accInfo.Success)) throw new Exception(accInfo.Error.Message);
+            if (accInfo.Error != null && !accInfo.Success) throw new Exception(accInfo.Error.Message);
             return accInfo.Data.AvailableBalance;
         }
 
@@ -181,7 +192,7 @@ namespace Bnncmd
             // if (stablecoin == EmptyString) stablecoin = StableCoin.FDUSD;
             var symbol = (coin + (stablecoin == EmptyString ? StableCoin.FDUSD : stablecoin)).ToUpper(); // '_' + 
             var priceInfo = _apiClient.SpotApi.ExchangeData.GetPriceAsync(symbol).Result;
-            if ((priceInfo.Error != null) && !priceInfo.Success) throw new Exception($"Error while getting {symbol} price: {priceInfo.Error.Message}");
+            if (priceInfo.Error != null && !priceInfo.Success) throw new Exception($"Error while getting {symbol} price: {priceInfo.Error.Message}");
             return priceInfo.Data.Price;
         }
 
@@ -191,7 +202,7 @@ namespace Bnncmd
         {
             Console.WriteLine($"Tranfering from spot to futures wallet: {amount} ...");
             var transferRes = _apiClient.GeneralApi.Futures.TransferFuturesAccountAsync(StableCoin.USDT, amount, FuturesTransferType.FromSpotToUsdtFutures).Result;
-            if ((transferRes.Error != null) && !transferRes.Success) throw new Exception(transferRes.Error.Message);
+            if (transferRes.Error != null && !transferRes.Success) throw new Exception(transferRes.Error.Message);
             var newBalance = GetFuturesBalance();
             Console.WriteLine($"New futures balance: {newBalance}");
             return newBalance;
@@ -201,7 +212,7 @@ namespace Bnncmd
         {
             Console.WriteLine($"Tranfering from futures to spot wallet: {amount} ...");
             var transferRes = _apiClient.GeneralApi.Futures.TransferFuturesAccountAsync(StableCoin.USDT, amount, FuturesTransferType.FromUsdtFuturesToSpot).Result;
-            if ((transferRes.Error != null) && !transferRes.Success) throw new Exception(transferRes.Error.Message);
+            if (transferRes.Error != null && !transferRes.Success) throw new Exception(transferRes.Error.Message);
             var newBalance = GetSpotBalance();
             Console.WriteLine($"New spot balance: {newBalance:0.###}");
             return newBalance;
@@ -232,15 +243,15 @@ namespace Bnncmd
             }
 
             var flexiblePositions = _apiClient.GeneralApi.SimpleEarn.GetFlexibleProductPositionsAsync(null, _usdtFlexibleDeposite).Result;
-            if ((flexiblePositions.Error != null) && !flexiblePositions.Success) throw new Exception(flexiblePositions.Error.Message);
+            if (flexiblePositions.Error != null && !flexiblePositions.Success) throw new Exception(flexiblePositions.Error.Message);
             var earnRest = flexiblePositions.Data.Rows.Length == 0 ? 0 : flexiblePositions.Data.Rows.First().TotalQuantity;
             sum += earnRest;
-            if ((amount > 0) && (earnRest >= amount))
+            if (amount > 0 && earnRest >= amount)
             {
                 Console.WriteLine($"Redeeming earn rest to spot wallet: {amount} ...");
                 // var toWallet = forSpot ? AccountSource.Spot : AccountSource.;
                 var redeemRes = _apiClient.GeneralApi.SimpleEarn.RedeemFlexibleProductAsync(_usdtFlexibleDeposite, false, amount, AccountSource.Spot).Result;
-                if ((redeemRes.Error != null) && !redeemRes.Success) throw new Exception(redeemRes.Error.Message);
+                if (redeemRes.Error != null && !redeemRes.Success) throw new Exception(redeemRes.Error.Message);
                 Console.WriteLine($"New spot balance: {GetSpotBalance(StableCoin.USDT)}");
                 if (!forSpot) return TranserFromSpotToFutures(amount);
                 return amount;
@@ -263,7 +274,7 @@ namespace Bnncmd
             }
             else
             {
-                if ((_symbolFuturesInfo == null) || (_symbolFuturesInfo.LotSizeFilter == null)) throw new Exception($"MinLimit: {Name} has no {symbol} information");
+                if (_symbolFuturesInfo == null || _symbolFuturesInfo.LotSizeFilter == null) throw new Exception($"MinLimit: {Name} has no {symbol} information");
                 return _symbolFuturesInfo.LotSizeFilter.MinQuantity; //  * GetSpotPrice(coin)
             }
         }
@@ -274,7 +285,7 @@ namespace Bnncmd
         {
             if (_spotSymbols != null) return _spotSymbols;
             var exchangeInfoResult = _apiClient.SpotApi.ExchangeData.GetExchangeInfoAsync().Result;
-            if ((exchangeInfoResult.Error != null) && !exchangeInfoResult.Success) throw new Exception(exchangeInfoResult.Error.Message);
+            if (exchangeInfoResult.Error != null && !exchangeInfoResult.Success) throw new Exception(exchangeInfoResult.Error.Message);
             _spotSymbols = exchangeInfoResult.Data.Symbols;
             return _spotSymbols;
         }
@@ -296,31 +307,43 @@ namespace Bnncmd
                 {
                     Console.WriteLine($"{Name} current position size: {positionInfo.Quantity}, leverage: {positionInfo.Leverage}x");
                     var leverageResult = _apiClient.UsdFuturesApi.Account.ChangeInitialLeverageAsync(symbol, 1).Result;
-                    if ((leverageResult.Error != null) && !leverageResult.Success) throw new Exception(leverageResult.Error.Message);
+                    if (leverageResult.Error != null && !leverageResult.Success) throw new Exception(leverageResult.Error.Message);
                     Console.WriteLine($"{Name} new leverage: {leverageResult.Data.Leverage}");
                 };
 
                 var exchData = _apiClient.UsdFuturesApi.ExchangeData.GetExchangeInfoAsync().Result;
-                if ((exchData.Error != null) && !exchData.Success) throw new Exception(exchData.Error.Message);
-                if ((exchData.Data.Symbols == null) || (exchData.Data.Symbols.Length == 0)) throw new Exception($"{Name} returned not data for {coin}");
-                _symbolFuturesInfo = exchData.Data.Symbols.FirstOrDefault(s => s.Name == symbol) ?? throw new Exception($"{Name} returned not suitable symbol for {coin}");
+                if (exchData.Error != null && !exchData.Success) throw new Exception(exchData.Error.Message);
+                if (exchData.Data.Symbols == null || exchData.Data.Symbols.Length == 0) throw new Exception($"{Name} returned not data for {symbol}");
+                _symbolFuturesInfo = exchData.Data.Symbols.FirstOrDefault(s => s.Name.Equals(symbol, StringComparison.OrdinalIgnoreCase)) ?? throw new Exception($"{Name} returned not suitable symbol for {symbol}");
 
                 _priceStep = _symbolFuturesInfo.PriceFilter == null ? 0 : _symbolFuturesInfo.PriceFilter.TickSize;
                 return _symbolFuturesInfo.LotSizeFilter == null ? 0 : _symbolFuturesInfo.LotSizeFilter.MaxQuantity; //  * GetSpotPrice(coin)
             }
         }
 
-        public override void GetFundingRates(List<FundingRate> rates, decimal minRate)
+        public override decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk)
         {
-            var fundingInfo = _apiClient.UsdFuturesApi.ExchangeData.GetMarkPricesAsync().Result;
-            if ((fundingInfo.Error != null) && !fundingInfo.Success) throw new Exception(fundingInfo.Error.Message);
-            foreach (var s in fundingInfo.Data)
+            var priceInfo = isSpot ? _apiClient.SpotApi.ExchangeData.GetBookPriceAsync(coin + StableCoin.FDUSD).Result : _apiClient.UsdFuturesApi.ExchangeData.GetBookPriceAsync(coin + StableCoin.USDT).Result;
+
+            // Console.WriteLine($"binance: {priceInfo}");
+
+            if (priceInfo.Error != null && !priceInfo.Success)
             {
-                if (!s.Symbol.EndsWith(StableCoin.USDT) || (s.FundingRate <= minRate / 100)) continue;
-                var fr = new FundingRate(this, s.Symbol, s.FundingRate * 100 ?? 0);
-                rates.Add(fr);
+                // if (priceInfo.Error.Code == -1121) return 0;
+                throw new Exception($"{Name} best price returned error: {priceInfo.Error.Message} / {priceInfo.Error.Code}");
             }
+            return isAsk ? priceInfo.Data.BestAskPrice : priceInfo.Data.BestBidPrice;
         }
+
+        #endregion
+
+        #region Spot Routines
+
+        public override void BuySpot(string coin, decimal amount) => throw new NotImplementedException();
+
+        #endregion
+
+        #region Funding Rate Routines
 
         public void GetFundingRateStat(string symbol, int daysCount)
         {
@@ -358,8 +381,20 @@ namespace Bnncmd
             Console.WriteLine($"Min value: {minValue * 100:0.###}%");
             Console.WriteLine($"Min value day: {minValueDay:dd.MM.yyyy}");
             Console.WriteLine($"Sum: {sum * 100:0.###}%");
-            Console.WriteLine($"Avg: {sum * 100 / (decimal)fundingRates.Length:0.#####}%");
+            Console.WriteLine($"Avg: {sum * 100 / fundingRates.Length:0.#####}%");
             Console.WriteLine($"Ema: {ema * 100:0.###}%");
+        }
+
+        public override void GetFundingRates(List<FundingRate> rates, decimal minRate)
+        {
+            var fundingInfo = _apiClient.UsdFuturesApi.ExchangeData.GetMarkPricesAsync().Result;
+            if (fundingInfo.Error != null && !fundingInfo.Success) throw new Exception(fundingInfo.Error.Message);
+            foreach (var s in fundingInfo.Data)
+            {
+                if (!s.Symbol.EndsWith(StableCoin.USDT) || s.FundingRate <= minRate / 100) continue;
+                var fr = new FundingRate(this, s.Symbol, s.FundingRate * 100 ?? 0);
+                rates.Add(fr);
+            }
         }
 
         private void AddHedge(List<HedgeInfo> hedges, string symbol, decimal fee)
@@ -395,23 +430,10 @@ namespace Bnncmd
             }*/
         }
 
-        public override decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk)
-        {
-            var priceInfo = isSpot ? _apiClient.SpotApi.ExchangeData.GetBookPriceAsync(coin + StableCoin.FDUSD).Result : _apiClient.UsdFuturesApi.ExchangeData.GetBookPriceAsync(coin + StableCoin.USDT).Result;
+        #endregion
 
-            // Console.WriteLine($"binance: {priceInfo}");
+        #region Futures Routines
 
-            if ((priceInfo.Error != null) && !priceInfo.Success)
-            {
-                // if (priceInfo.Error.Code == -1121) return 0;
-                throw new Exception($"{Name} best price returned error: {priceInfo.Error.Message} / {priceInfo.Error.Code}");
-            }
-            return isAsk ? priceInfo.Data.BestAskPrice : priceInfo.Data.BestBidPrice;
-        }
-
-        public override void BuySpot(string coin, decimal amount) => throw new NotImplementedException();
-
-        // Futures Routines
         private async void SubscribeUserFuturesData()
         {
             var listenKeyResult = _apiClient.UsdFuturesApi.Account.StartUserStreamAsync().Result;
@@ -432,8 +454,16 @@ namespace Bnncmd
                 onOrderUpdate: data =>
                 {
                     if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.New) return;
+                    BnnUtils.ClearCurrentConsoleLine();
                     Console.WriteLine($"Order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
-                    Console.Beep();
+                    if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.Filled)
+                    {
+                        UnsubscribeOrderBookData();
+                        _showRealtimeData = false;
+                        _isLock = true;
+                        BnnUtils.ClearCurrentConsoleLine();
+                        FireShortEntered(); // in real environment fired via subsription
+                    }
                 }
             );
 
@@ -460,7 +490,6 @@ namespace Bnncmd
             {
                 var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
                 var bids = e.Data.Bids.Select(b => new[] { b.Price, b.Quantity }).ToArray();
-
                 ProcessFuturesOrderBook(symbol, asks, bids);
             })).Data;
         }
@@ -480,7 +509,8 @@ namespace Bnncmd
                 {
                     Id = $"test_order_{Name}",
                     Price = price,
-                    Amount = amount
+                    Amount = amount,
+                    Symbol = symbol
                 };
             }
             else
@@ -492,11 +522,20 @@ namespace Bnncmd
                 {
                     Id = orderResult.Data.Id.ToString(),
                     Price = orderResult.Data.Price,
-                    Amount = orderResult.Data.Quantity
+                    Amount = orderResult.Data.Quantity,
+                    Symbol = orderResult.Data.Symbol
                 };
             }
         }
 
-        protected override Order CancelFuturesOrder(Order order) => throw new NotImplementedException();    
+        protected override Order CancelFuturesOrder(Order order)
+        {
+            if (IsTest) return order;
+            var cancelResult = _apiClient.UsdFuturesApi.Trading.CancelOrderAsync(order.Symbol, long.Parse(order.Id)).Result;
+            if (!cancelResult.Success) throw new Exception($"Error while canceling order: {cancelResult.Error}");
+            return order;
+        }
+
+        #endregion
     }
 }

@@ -40,10 +40,11 @@ internal class Program
         Console.WriteLine("e                       - earn: ");
         Console.WriteLine("                                b - buy pair (b xo spotExch futExch 10000)");
         Console.WriteLine("                                f - find best offers");
-        Console.WriteLine("                                r - get funding rate statisctics (r coin daysCount)");
+        Console.WriteLine("                                r - get funding rate statisctics (r symbol1,symbol2,symbol3 [daysCount])");
         Console.WriteLine();
 
         Console.WriteLine("q                       - quit");
+        Environment.Exit(0);
     }
 
     static async void Ping()
@@ -160,9 +161,11 @@ internal class Program
                 break;
             case 'r':
                 var symbols = args[3].Split(',');
+                var dayCount = args.Length > 4 ? int.Parse(args[4]) : 99;
                 foreach (var s in symbols)
                 {
-                    Exchange.Binance.GetFundingRateStat(s, int.Parse(args[4]));
+
+                    Exchange.Binance.GetFundingRateStat(s, dayCount);
                     Console.WriteLine();
                 }
                 Environment.Exit(0);

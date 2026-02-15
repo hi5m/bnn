@@ -70,7 +70,7 @@ namespace Bnncmd.Strategy
             var checksAreOk = true;
 
             // spot exchange rests 
-            var spotRest = spotExchange.GetSpotBalance();
+            var spotRest = spotExchange.GetSpotBalance(spotStablecoin);
             checksAreOk = checksAreOk && spotRest >= requiredUsdAmount;
             Console.WriteLine($"{spotExchange.Name} spot stable coin rest: {spotRest:0.###} => {(spotRest >= requiredUsdAmount ? "ok" : "not enaugh :(")}");
             decimal spotReserve = 0;

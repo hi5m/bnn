@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
+using Bnncmd;
 using Bnncmd.Strategy;
 using Bybit.Net.Objects.Models.V5;
 using CryptoExchange.Net.Authentication;
@@ -18,14 +19,13 @@ using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1.X509;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Bnncmd
+namespace bnncmd.Exchanges
 {
     internal class MexcExchange : AbstractExchange
     {
+        #region Constructor and Variables
+
         public MexcExchange() : base()
         {
             var ak = AccountManager.Config.GetValue<string>("TKMX") ?? string.Empty;
@@ -73,8 +73,61 @@ namespace Bnncmd
         // public override decimal SpotTakerFee { get; } = 0.05M;
         // public override decimal SpotMakerFee { get; } = 0;
         public override decimal FuturesTakerFee { get; } = 0.02M;
-        // public override decimal FuturesMakerFee { get; } = 0M;
         public override decimal FuturesMakerFee { get; } = 0.01M; // sometimes 0
+
+        #endregion
+
+        #region Earn Routines
+        public override void GetEarnProducts(List<EarnProduct> products, decimal minApr)
+        {
+            Console.WriteLine($"{Exchange.Mexc.Name} - Page...");
+
+            try
+            {
+                var earnString = DownloadWithCurl("get-mexc-earn-products.bat");
+
+                /* var client = CreateMexcClient();
+                client.DefaultRequestHeaders.Add("Accept", @"text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"); // escape slash
+
+                var earnString = client.GetStringAsync("https://www.mexc.com/api/financialactivity/financial/products/list/V2").Result;
+                // var earnString = client.GetStringAsync("https://www.mexc.com/api/operateactivity/staking").Result; */
+                dynamic? earnData = JsonConvert.DeserializeObject(earnString.Trim()) ?? throw new Exception("mexc earn returned no data");
+                foreach (var coin in earnData.data)
+                {
+                    if (coin.financialProductList == null) continue; // EFTD - new user
+                    // if ((coin.lockPosList == null) || (coin.lockPosList[0].joinConditions == "EFTD")) continue; // EFTD - new user
+                    foreach (var offer in coin.financialProductList)
+                    {
+                        if (offer.showApr == null || offer.memberType == "EFTD") continue; // EFTD - new user
+                        if ((offer.soldOut != null) || (offer.soldOut == true)) continue;  // sold out
+                        if (offer.sort == 3260107) continue; // VIP?
+                        decimal apr = offer.showApr;
+                        if (apr < minApr) continue;
+                        string currency = coin.currency; // explicite type
+
+                        // Console.WriteLine($"{coin.currency}: {apr}");
+                        // Console.WriteLine($"{coin.currency}: {offer.profitRate * 100M}%");
+                        var product = new EarnProduct(Exchange.Mexc, currency, apr, "from page")
+                        {
+                            StableCoin = StableCoin.USDT,
+                            SpotFee = 0
+                        };
+                        if (offer.perPledgeMaxQuantity != null) product.LimitMax = offer.perPledgeMaxQuantity;
+                        if (offer.fixedInvestPeriodCount == null) product.Term = 1;
+                        else product.Term = offer.fixedInvestPeriodCount;
+                        products.Add(product);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error while process mexc earn products: " + ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Futures Deprecated
 
         public override HedgeInfo[] GetDayFundingRate(string symbol)
         {
@@ -114,6 +167,22 @@ namespace Bnncmd
             Console.WriteLine($"   mexc dynamic rate: {avg3DaysRate:0.###} => {lastRate:0.###} => {currRate:0.###}");
 
             return lastRate; //  Math.Min(minCurrentRate, avg3DaysRate);*/
+        }
+
+        public override void GetFundingRates(List<FundingRate> rates, decimal minRate)
+        {
+            var ratesData = _apiClient.FuturesApi.ExchangeData.GetFundingRatesAsync().Result;
+            if (!ratesData.Success && ratesData.Error != null) throw new Exception(ratesData.Error.Message);
+            if (ratesData.Data.Data == null) throw new Exception("Mexc returned no funding rates");
+            foreach (var s in ratesData.Data.Data)
+            {
+                if (s == null || s.Symbol == null) continue;
+                if (!s.Symbol.EndsWith(StableCoin.USDT) || s.FundingRate <= minRate / 100) continue;
+                var fr = new FundingRate(this, s.Symbol, s.FundingRate * 100 ?? 0);
+                fr.Interval = s.CollectCycle ?? 0;
+                if (fr.Interval == 4) fr.CurrRate *= 2;
+                rates.Add(fr);
+            }
         }
 
         /*private static HttpClient CreateMexcClient()
@@ -200,51 +269,24 @@ namespace Bnncmd
             Console.WriteLine(response.Content.ReadAsStringAsync().Result); */
         }
 
-        public override void GetEarnProducts(List<EarnProduct> products, decimal minApr)
+        public override decimal GetFuturesBalance(string? coin = null)
         {
-            Console.WriteLine($"{Exchange.Mexc.Name} - Page...");
+            var result = _apiClient.FuturesApi.Account.GetAccountInfoAsync().Result;
+            if (!result.Success && result.Error != null) throw new Exception(result.Error.Message);
+            if (result.Data.Data == null) return 0;
 
-            try
+            foreach (var c in result.Data.Data)
             {
-                var earnString = DownloadWithCurl("get-mexc-earn-products.bat");
-
-                /* var client = CreateMexcClient();
-                client.DefaultRequestHeaders.Add("Accept", @"text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"); // escape slash
-
-                var earnString = client.GetStringAsync("https://www.mexc.com/api/financialactivity/financial/products/list/V2").Result;
-                // var earnString = client.GetStringAsync("https://www.mexc.com/api/operateactivity/staking").Result; */
-                dynamic? earnData = JsonConvert.DeserializeObject(earnString.Trim()) ?? throw new Exception("mexc earn returned no data");
-                foreach (var coin in earnData.data)
+                if (c.Currency == coin)
                 {
-                    if (coin.financialProductList == null) continue; // EFTD - new user
-                    // if ((coin.lockPosList == null) || (coin.lockPosList[0].joinConditions == "EFTD")) continue; // EFTD - new user
-                    foreach (var offer in coin.financialProductList)
-                    {
-                        if ((offer.showApr == null) || (offer.memberType == "EFTD")) continue; // EFTD - new user
-                        if (offer.sort == 3260107) continue; // VIP?
-                        decimal apr = offer.showApr;
-                        if (apr < minApr) continue;
-                        string currency = coin.currency; // explicite type
-
-                        // Console.WriteLine($"{coin.currency}: {apr}");
-                        // Console.WriteLine($"{coin.currency}: {offer.profitRate * 100M}%");
-                        var product = new EarnProduct(Exchange.Mexc, currency, apr, "from page")
-                        {
-                            StableCoin = StableCoin.USDT,
-                            SpotFee = 0
-                        };
-                        if (offer.perPledgeMaxQuantity != null) product.LimitMax = offer.perPledgeMaxQuantity;
-                        if (offer.fixedInvestPeriodCount == null) product.Term = 1;
-                        else product.Term = offer.fixedInvestPeriodCount;
-                        products.Add(product);
-                    }
+                    // Console.WriteLine($"{c.Currency}. total: {c.Equity}, free: {c.AvailableBalance}");
+                    return c.AvailableBalance;
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error while process mexc earn products: " + ex.Message);
-            }
+            return 0;
         }
+
+        private MexcContractInfo? _contractInfo = null;
 
         public override void EnterShort(string coin, decimal amount, string stableCoin = EmptyString)
         {
@@ -268,6 +310,10 @@ namespace Bnncmd
             // ScanFutures(coin, amount);
         }
 
+        #endregion
+
+        #region Controls Routines
+
         public override decimal GetSpotBalance(string? coin = null)
         {
             coin ??= StableCoin.USDT;
@@ -277,34 +323,12 @@ namespace Bnncmd
             // var rest = 0M;
             foreach (var balance in accountData.Data.Balances)
             {
-                // Console.WriteLine($"   Spot {balance.Asset}: Free: {balance.Available}, Locked: {balance.Locked}");
                 if (coin.Equals(balance.Asset, StringComparison.CurrentCultureIgnoreCase)) return balance.Available; // return 
             }
             return 0;
         }
 
-        public override decimal GetFuturesBalance(string? coin = null)
-        {
-            var result = _apiClient.FuturesApi.Account.GetAccountInfoAsync().Result;
-            if (!result.Success && (result.Error != null)) throw new Exception(result.Error.Message);
-            if (result.Data.Data == null) return 0;
-
-            foreach (var c in result.Data.Data)
-            {
-                if (c.Currency == coin)
-                {
-                    // Console.WriteLine($"{c.Currency}. total: {c.Equity}, free: {c.AvailableBalance}");
-                    return c.AvailableBalance;
-                }
-            }
-            return 0;
-        }
-
         private MexcPrice[]? _prices = null;
-
-        private MexcContractInfo? _contractInfo = null;
-
-        // private UpdateSubscription? _orderBookSubscription = null;
 
         public override decimal GetSpotPrice(string coin, string stablecoin = EmptyString)
         {
@@ -325,17 +349,7 @@ namespace Bnncmd
             coin ??= StableCoin.USDT;
             var futuresRest = GetFuturesBalance(coin);
             Console.WriteLine($"   Futures rest: {futuresRest}");
-            Console.WriteLine($"   Earn rest: Not available via Api");
-
-            /*var assets = _apiClient.SpotApi.Account.GetUserAssetsAsync().Result;
-            if (assets.Success)
-            {
-                foreach (var a in assets.Data)
-                {
-                    Console.WriteLine($"   contract rest: {a.AssetName}: {a.Asset}");
-                }
-            }*/
-
+            Console.WriteLine($"   Earn rest: not available via Api");
             return futuresRest;
         }
 
@@ -373,22 +387,6 @@ namespace Bnncmd
             return _spotSymbolInfo.QuoteQuantityPrecision;
         }
 
-        public override void GetFundingRates(List<FundingRate> rates, decimal minRate)
-        {
-            var ratesData = _apiClient.FuturesApi.ExchangeData.GetFundingRatesAsync().Result;
-            if (!ratesData.Success && (ratesData.Error != null)) throw new Exception(ratesData.Error.Message);
-            if (ratesData.Data.Data == null) throw new Exception("Mexc returned no funding rates");
-            foreach (var s in ratesData.Data.Data)
-            {
-                if ((s == null) || (s.Symbol == null)) continue;
-                if (!s.Symbol.EndsWith(StableCoin.USDT) || (s.FundingRate <= minRate / 100)) continue;
-                var fr = new FundingRate(this, s.Symbol, s.FundingRate * 100 ?? 0);
-                fr.Interval = s.CollectCycle ?? 0;
-                if (fr.Interval == 4) fr.CurrRate *= 2;
-                rates.Add(fr);
-            }
-        }
-
         public override decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk)
         {
             // Console.WriteLine($"mexc: GetOrderBookTicker");
@@ -410,13 +408,17 @@ namespace Bnncmd
                 priceInfo = futuresTicker.As(bestFuturesPrice);
             }
 
-            if ((priceInfo.Error != null) && !priceInfo.Success)
+            if (priceInfo.Error != null && !priceInfo.Success)
             {
                 // if (priceInfo.Error.Code == -1121) return 0;
                 throw new Exception($"{Name} best spot price returned error: {priceInfo.Error.Message} / {priceInfo.Error.Code}");
             }
             return priceInfo.Data ?? 0;
         }
+
+        #endregion
+
+        #region Spot Routines
 
         private async void SubscribeUserSpotData()
         {
@@ -432,14 +434,11 @@ namespace Bnncmd
             });
         }
 
-        // private string _orderId = string.Empty;
-        // private decimal _orderPrice = -1;
         private MexcOrder? _order = null;
 
         private MexcOrder PlaceOrder(string symbol, decimal amount, decimal price)
         {
             Console.WriteLine($"Placing spot buy order: {symbol}, {price} x {amount}...");
-            // WebCallResult orderResult;
             if (IsTest)
             {
                 var testOrderResult = _apiClient.SpotApi.Trading.PlaceTestOrderAsync(symbol, OrderSide.Buy, OrderType.LimitMaker, amount, null, price).Result;
@@ -473,7 +472,7 @@ namespace Bnncmd
                 lock (Locker)
                 {
                     if (_isLock) return;
-                    if ((_order != null) && (_order.Price == update.Data.BestBidPrice)) return;
+                    if (_order != null && _order.Price == update.Data.BestBidPrice) return;
                     _isLock = true;
                 }
 
@@ -503,6 +502,10 @@ namespace Bnncmd
             }).Result.Data;
         }
 
+        #endregion
+
+        #region Futures Routines
+
         protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price) => throw new NotImplementedException();
 
         protected override Order CancelFuturesOrder(Order order) => throw new NotImplementedException();
@@ -510,5 +513,7 @@ namespace Bnncmd
         protected override void UnsubscribeOrderBookData() => throw new NotImplementedException();
 
         protected override void SubscribeOrderBookData(string symbol) => throw new NotImplementedException();
+
+        #endregion
     }
 }

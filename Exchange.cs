@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using bnncmd.Exchanges;
 using Bnncmd.Strategy;
 
 namespace Bnncmd
@@ -180,7 +181,7 @@ namespace Bnncmd
 
         private decimal _currAmount = 0;
 
-        private bool _showRealtimeData = true;
+        protected bool _showRealtimeData = true;
 
         /// <summary>
         /// Get constant price
@@ -225,6 +226,7 @@ namespace Bnncmd
                     if (bestAsk > _futuresOrder.Price)
                     {
                         UnsubscribeOrderBookData();
+                        _showRealtimeData = false;
                         BnnUtils.ClearCurrentConsoleLine();
                         Console.WriteLine($"Price raised ({bestAsk}), it seems the order is filled ({_futuresOrder})");
                         Console.WriteLine();
@@ -233,20 +235,23 @@ namespace Bnncmd
                         return;
                     }
 
-                    if (bestRealAsk < _futuresOrder.Price) // (_futuresOrder != null) && 
+                    if (bestRealAsk < _futuresOrder.Price)
                     {
                         UnsubscribeOrderBookData();
+                        _showRealtimeData = false;
                         BnnUtils.ClearCurrentConsoleLine();
                         Console.WriteLine($"The best ask dropped ({bestAsk}), the order cancelling...");
                         CancelFuturesOrder(_futuresOrder);
                         Console.WriteLine($"The order cancelled");
-                        // Console.Beep();
+
+                        /////////////////////////////
+                        /*Console.WriteLine($"Placing new short order: {symbol}, {bestRealAsk} x {_currAmount}...");
+                        _futuresOrder = PlaceFuturesOrder(symbol, _currAmount, bestRealAsk);
+                        Console.WriteLine($"WARNING! ORDER WAS CHANGED! SEE APP!");*/
+                        /////////////////////////////
+
                         _futuresOrder = null;
                         return;
-
-                        // var cancelationResult = _apiClient.UsdFuturesApi.Trading.CancelOrderAsync(symbol).Result;
-                        // if (!cancelationResult.Success) throw new Exception($"Error while order cancelation: {cancelationResult.Error}");
-                        // Console.WriteLine($"Cancelation result: {cancelationResult.Data}, quantity: {cancelationResult.Data.CumulativeQuantity}");
                     }
                 }
 
