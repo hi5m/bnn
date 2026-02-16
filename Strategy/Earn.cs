@@ -74,7 +74,7 @@ namespace Bnncmd.Strategy
             checksAreOk = checksAreOk && spotRest >= requiredUsdAmount;
             Console.WriteLine($"{spotExchange.Name} spot stable coin rest: {spotRest:0.###} => {(spotRest >= requiredUsdAmount ? "ok" : "not enaugh :(")}");
             decimal spotReserve = 0;
-            if (spotRest < requiredUsdAmount) spotReserve = spotExchange.FindFunds(string.Empty, true);
+            if (spotRest < requiredUsdAmount) spotReserve = spotExchange.FindFunds(spotStablecoin, true);
 
             // futures exchange rests
             var futuresRest = futuresExchange.GetFuturesBalance(futuresStablecoin == string.Empty ? StableCoin.USDT : futuresStablecoin);
@@ -82,7 +82,7 @@ namespace Bnncmd.Strategy
             decimal futuresReserve = 0;
             var futureCoinName = futuresStablecoin == string.Empty ? string.Empty : futuresStablecoin + ' ';
             Console.WriteLine($"{futuresExchange.Name} futures {futureCoinName}rest: {futuresRest:0.###} => {(futuresRest >= requiredUsdAmount ? "ok" : "not enaugh :(")}");
-            if (futuresRest < requiredUsdAmount) futuresReserve = futuresExchange.FindFunds(string.Empty, false);
+            if (futuresRest < requiredUsdAmount) futuresReserve = futuresExchange.FindFunds(futuresStablecoin, false);
 
             // ... max limits
             var maxSpotOrderLimit = spotExchange.GetMaxLimit(coin, true);
@@ -112,7 +112,7 @@ namespace Bnncmd.Strategy
                 else return checksAreOk;
             }
 
-            if ((futuresReserve >= requiredUsdAmount) && (futuresRest < requiredUsdAmount))
+            if ((futuresReserve + futuresRest >= requiredUsdAmount) && (futuresRest < requiredUsdAmount))
             {
                 Console.WriteLine("Do you want to transfer assets to futures wallet?");
                 var commandFutures = Console.ReadLine();
@@ -125,7 +125,10 @@ namespace Bnncmd.Strategy
 
         public static void BuyPair(string coin, AbstractExchange spotExchange, AbstractExchange futuresExchange, decimal amount, string spotStablecoin = "", string futuresStablecoin = "")
         {
-            spotExchange.IsTest = false;
+            spotStablecoin = spotStablecoin.ToUpper();
+            futuresStablecoin = spotStablecoin.ToUpper();
+
+            spotExchange.IsTest = true;
             futuresExchange.IsTest = spotExchange.IsTest;
             if (spotExchange.IsTest) Console.WriteLine($"THE PROGRAM WORKS IN TEST MODE!");
 
@@ -144,10 +147,11 @@ namespace Bnncmd.Strategy
             futuresExchange.ShortEntered += e =>
             {
                 Console.Beep();
+                Console.WriteLine();
                 Console.WriteLine($"{spotExchange.Name} spot buy order placing...");
                 // spotExchange.BuySpot(coin, amount);
             };
-            futuresExchange.EnterShort(coin, amount);
+            futuresExchange.EnterShort(coin, amount, futuresStablecoin);
         }
 
         public static void FindBestProduct()
@@ -158,7 +162,7 @@ namespace Bnncmd.Strategy
 
             // Get earn products from all exchanges
             var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; // 
-            // var exchanges = new List<AbstractExchange> { Exchange.Binance };
+            // var exchanges = new List<AbstractExchange> { Exchange.Mexc };
             foreach (var e in exchanges)
             {
                 e.GetEarnProducts(products, minApr);
@@ -236,10 +240,11 @@ namespace Bnncmd.Strategy
         {
             // override abstract method
         }
-        #endregion
 
         public override void Start() => BnnUtils.Log($"We are beginning...");
 
         public override string GetCurrentInfo() => string.Empty;
+
+        #endregion
     }
 }

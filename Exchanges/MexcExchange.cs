@@ -1,6 +1,7 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
+
 using Bnncmd;
 using Bnncmd.Strategy;
 using Bybit.Net.Objects.Models.V5;
@@ -99,7 +100,7 @@ namespace bnncmd.Exchanges
                     foreach (var offer in coin.financialProductList)
                     {
                         if (offer.showApr == null || offer.memberType == "EFTD") continue; // EFTD - new user
-                        if ((offer.soldOut != null) || (offer.soldOut == true)) continue;  // sold out
+                        if ((offer.soldOut == true)) continue;  // sold out --- (offer.soldOut != null) && 
                         if (offer.sort == 3260107) continue; // VIP?
                         decimal apr = offer.showApr;
                         if (apr < minApr) continue;

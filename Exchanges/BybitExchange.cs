@@ -27,33 +27,46 @@ using CryptoExchange.Net.Objects.Sockets;
 
 namespace Bnncmd
 {
-    internal class
-    BybitExchange : AbstractExchange
+    internal class BybitExchange : AbstractExchange
     {
+        #region Constructor and Variables
+
         public BybitExchange() : base()
         {
             // var httpClient = BnnUtils.BuildLoggingClient();
             var ak = AccountManager.Config.GetValue<string>("TKBBT") ?? string.Empty;
             var asc = AccountManager.Config.GetValue<string>("TSBBT") ?? string.Empty;
-            var options = Options.Create(new BybitRestOptions
+            var apiOptions = Options.Create(new BybitRestOptions
             {
                 OutputOriginalData = true,
                 ApiCredentials = new ApiCredentials(ak, asc)
             });
-            _apiClient = new Bybit.Net.Clients.BybitRestClient(null, null, options);
-        }
+            _apiClient = new Bybit.Net.Clients.BybitRestClient(null, null, apiOptions);
 
+            var socketOptions = Options.Create(new BybitSocketOptions
+            {
+                OutputOriginalData = true,
+                ApiCredentials = new ApiCredentials(ak, asc)
+            });
+            // _socketClient = new Bybit.Net.Clients.BybitSocketClient();
+            _socketClient = new Bybit.Net.Clients.BybitSocketClient(socketOptions);
+        }
         public override string Name { get; } = "Bybit";
         public override int Code { get; } = 1;
-        // public override decimal SpotTakerFee { get; } = 0.1M; // 00
-        // public override decimal SpotMakerFee { get; } = 0.1M;
+
         private static readonly decimal _spotFee = 0.1M;
         public override decimal FuturesTakerFee { get; } = 0.055M;
         public override decimal FuturesMakerFee { get; } = 0.02M;
 
         private readonly Bybit.Net.Clients.BybitRestClient _apiClient;
 
-        private readonly Bybit.Net.Clients.BybitSocketClient _socketClient = new();
+        private readonly Bybit.Net.Clients.BybitSocketClient _socketClient; //  = new();
+
+        private BybitLinearInverseSymbol[]? _futuresSymbols = null;
+
+        #endregion
+
+        #region Funding Rates Routines
 
         public override HedgeInfo[] GetDayFundingRate(string coin)
         {
@@ -87,6 +100,22 @@ namespace Bnncmd
             return sumFundingRate / (decimal)FundingRateDepth;*/
             // Console.WriteLine($"3-days bybit accumulated funding rate: {sumFundingRate}");
         }
+
+        public override void GetFundingRates(List<FundingRate> rates, decimal minRate)
+        {
+            var symbolsInfo = _apiClient.V5Api.ExchangeData.GetLinearInverseTickersAsync(Category.Linear).Result;
+            if (!symbolsInfo.Success && (symbolsInfo.Error != null)) throw new Exception(symbolsInfo.Error.Message);
+            foreach (var s in symbolsInfo.Data.List)
+            {
+                if (!s.Symbol.EndsWith(StableCoin.USDT) || (s.FundingRate <= minRate / 100)) continue;
+                var fr = new FundingRate(this, s.Symbol, s.FundingRate * 100 ?? 0);
+                rates.Add(fr);
+            }
+        }
+
+        #endregion
+
+        #region Earn Routines
 
         private static void GetPageProducts(int pageNum, List<EarnProduct> products, decimal minApr)
         {
@@ -193,12 +222,21 @@ namespace Bnncmd
             GetBybitApiProducts(products, minApr);
         }
 
+        #endregion
+
+        #region Control Routines
+
         public override decimal GetSpotBalance(string? coin = null)
         {
+            // return 0;
             coin ??= StableCoin.USDT;
-            var assetIfo = _apiClient.V5Api.Account.GetAssetBalanceAsync(AccountType.Unified, coin).Result;
-            if (!assetIfo.Success && (assetIfo.Error != null)) throw new Exception($"{Name} exception: {assetIfo.Error.Message}");
-            return assetIfo.Data.Balances.WalletBalance ?? 0;
+            var assetIfo = _apiClient.V5Api.Account.GetAssetBalanceAsync(AccountType.Unified, coin.ToUpper()).Result;
+            if (!assetIfo.Success && (assetIfo.Error != null)) throw new Exception($"{Name} return exception while {coin} balance request: {assetIfo.Error.Message}");
+            // return assetIfo.Data.Balances.WalletBalance ?? 0;set-leverage
+
+            // Console.WriteLine($"  > {assetIfo.Data}");
+
+            return assetIfo.Data.Balances.TransferBalance;
             // Console.WriteLine($"{Name} contract rest: {assetIfo.Data.Balances.WalletBalance}");
             // return CheckBalance(coin, AccountType.Unified); // "USDT,USDC,BTC,ETH,BOMB,XO,LA"
 
@@ -218,9 +256,6 @@ namespace Bnncmd
         public override decimal GetFuturesBalance(string? coin = null)
         {
             return GetSpotBalance(coin);
-            /*coin ??= StableCoin.USDT;
-            var assetIfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Contract, coin).Result;
-            return assetIfo.Data.Balances.WalletBalance ?? 0;*/
         }
 
         public override decimal GetSpotPrice(string coin, string stablecoin = EmptyString)
@@ -238,31 +273,15 @@ namespace Bnncmd
 
         public override decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0)
         {
-            // decimal sum = 0;
             WebCallResult<BybitSingleAssetBalance> assetInfo;
 
-            // get rests
-            /*if (forSpot)
-            {
-                assetInfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Contract, StableCoin.USDT).Result; // Unified?
-                if ((assetInfo.Error != null) && !assetInfo.Success) throw new Exception(assetInfo.Error.Message);
-                sum += assetInfo.Data.Balances.WalletBalance ?? 0;
-                Console.WriteLine($"   Futures rest: {assetInfo.Data.Balances.WalletBalance}");
-            }
-            else
-            {
-                assetInfo = _client.V5Api.Account.GetAssetBalanceAsync(AccountType.Unified, StableCoin.USDT).Result;
-                if ((assetInfo.Error != null) && !assetInfo.Success) throw new Exception(assetInfo.Error.Message);
-                sum += assetInfo.Data.Balances.WalletBalance ?? 0;
-                if (amount == 0) Console.WriteLine($"   Unified wallet rest: {assetInfo.Data.Balances.WalletBalance}");
-            // }*/
             var sum = GetSpotBalance(StableCoin.USDT);
             if (amount == 0) Console.WriteLine($"   Unified wallet rest: {sum}");
 
             // fund
             assetInfo = _apiClient.V5Api.Account.GetAssetBalanceAsync(AccountType.Fund, StableCoin.USDT).Result;
             if ((assetInfo.Error != null) && !assetInfo.Success) throw new Exception(assetInfo.Error.Message);
-            sum += assetInfo.Data.Balances.WalletBalance ?? 0;
+            sum = assetInfo.Data.Balances.WalletBalance ?? 0; // only assets to transfer
             if (amount == 0) Console.WriteLine($"   Fund rest: {assetInfo.Data.Balances.WalletBalance}");
 
             if ((amount > 0) && (assetInfo.Data.Balances.WalletBalance > 1))
@@ -298,9 +317,7 @@ namespace Bnncmd
         public override decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString)
         {
             var symbol = coin + StableCoin.USDT;
-            // throw new NotImplementedException();            
-            // Task<WebCallResult<BybitResponse<object>>> symbolInfo = isSpot ? _client.V5Api.ExchangeData.GetSpotSymbolsAsync(coin + UsdtName).Result : _client.V5Api.ExchangeData.GetLinearInverseSymbolsAsync(Category.Linear, coin + UsdtName).Result;
-            // var symbolInfo = isSpot ? _client.V5Api.ExchangeData.GetSpotSymbolsAsync(coin + UsdtName).Result : _client.V5Api.ExchangeData.GetLinearInverseSymbolsAsync(Category.Linear, coin + UsdtName).Result;
+
             if (isSpot)
             {
                 var symbolInfo = _apiClient.V5Api.ExchangeData.GetSpotSymbolsAsync(symbol).Result;
@@ -318,8 +335,6 @@ namespace Bnncmd
                 return filter.MaxOrderQuantity;
             }
         }
-
-        private BybitLinearInverseSymbol[]? _futuresSymbols = null;
 
         private BybitLinearInverseSymbol[] GetFuturesSymbols()
         {
@@ -351,18 +366,6 @@ namespace Bnncmd
             }
         }
 
-        public override void GetFundingRates(List<FundingRate> rates, decimal minRate)
-        {
-            var symbolsInfo = _apiClient.V5Api.ExchangeData.GetLinearInverseTickersAsync(Category.Linear).Result;
-            if (!symbolsInfo.Success && (symbolsInfo.Error != null)) throw new Exception(symbolsInfo.Error.Message);
-            foreach (var s in symbolsInfo.Data.List)
-            {
-                if (!s.Symbol.EndsWith(StableCoin.USDT) || (s.FundingRate <= minRate / 100)) continue;
-                var fr = new FundingRate(this, s.Symbol, s.FundingRate * 100 ?? 0);
-                rates.Add(fr);
-            }
-        }
-
         public override decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk)
         {
             WebCallResult<decimal?> priceInfo;
@@ -388,9 +391,27 @@ namespace Bnncmd
             return priceInfo.Data ?? 0;
         }
 
+        #endregion
+
+        #region Spot Routines
+
         public override void BuySpot(string coin, decimal amount) => throw new NotImplementedException();
 
-        // Futures Routines
+        #endregion
+
+        #region Futures Routines
+
+        private void SubscribeUserFuturesData()
+        {
+            _socketClient.V5PrivateApi.SubscribeToOrderUpdatesAsync(e => // var listenKeyResult = 
+            {
+                foreach (var o in e.Data)
+                {
+                    Console.WriteLine($"{Name} order updated: {o.Symbol}, ID: {o.OrderId}, Status: {o.Status}");
+                };
+            });
+        }
+
         protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
         {
             if (IsTest)
@@ -428,6 +449,7 @@ namespace Bnncmd
         public override void EnterShort(string coin, decimal amount, string stableCoin = EmptyString)
         {
             var symbol = coin + (stableCoin == string.Empty ? StableCoin.USDT : stableCoin);
+            _apiClient.V5Api.Account.SetLeverageAsync(Category.Linear, symbol, 1, 1);
             ScanFutures(symbol, amount);
         }
 
@@ -451,8 +473,8 @@ namespace Bnncmd
 
         protected override async void SubscribeOrderBookData(string symbol)
         {
-            throw new Exception("SubscribeUserFuturesData not implemented");
-            // SubscribeUserFuturesData();
+            // throw new Exception("SubscribeUserFuturesData not implemented");
+            SubscribeUserFuturesData();
 
             _isLock = false;
             var subsResult = (await _socketClient.V5LinearApi.SubscribeToOrderbookUpdatesAsync(symbol, 50, e => // 50 / 1000
@@ -473,8 +495,6 @@ namespace Bnncmd
                 var asks = _asks.Select(a => new[] { a.Price, a.Quantity }).OrderBy(a => a[0]).ToArray();
                 var bids = _bids.Select(b => new[] { b.Price, b.Quantity }).OrderByDescending(b => b[0]).ToArray();
 
-                // BnnUtils.ClearCurrentConsoleLine();
-                // Console.Write($"{asks[2][0]} {asks[1][0]} {asks[0][0]} | {bids[0][0]} {bids[1][0]} {bids[2][0]}");
                 ProcessFuturesOrderBook(symbol, asks, bids);
             }));
             if (!subsResult.Success && (subsResult.Error != null)) throw new Exception(subsResult.Error.Message);
@@ -487,5 +507,7 @@ namespace Bnncmd
             await _socketClient.UnsubscribeAsync(_orderBookSubscription);
             _orderBookSubscription = null;
         }
+
+        #endregion
     }
 }

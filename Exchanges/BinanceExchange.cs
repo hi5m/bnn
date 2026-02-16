@@ -158,7 +158,7 @@ namespace bnncmd.Exchanges
 
         public override decimal GetSpotBalance(string? coin = null)
         {
-            if (coin == null) coin = StableCoin.USDT;
+            coin ??= StableCoin.USDT;
             try
             {
                 var accInfo = _apiClient.SpotApi.Account.GetAccountInfoAsync().Result;
@@ -182,9 +182,15 @@ namespace bnncmd.Exchanges
 
         public override decimal GetFuturesBalance(string? coin = null)
         {
+            coin ??= StableCoin.USDT;
             var accInfo = _apiClient.UsdFuturesApi.Account.GetAccountInfoV3Async().Result;
             if (accInfo.Error != null && !accInfo.Success) throw new Exception(accInfo.Error.Message);
-            return accInfo.Data.AvailableBalance;
+            foreach (var a in accInfo.Data.Assets)
+            {
+                if (a.Asset.Equals(coin, StringComparison.OrdinalIgnoreCase)) return a.WalletBalance;
+            }
+            return 0;
+            // return accInfo.Data.AvailableBalance;
         }
 
         public override decimal GetSpotPrice(string coin, string stablecoin = EmptyString)
@@ -208,13 +214,14 @@ namespace bnncmd.Exchanges
             return newBalance;
         }
 
-        private decimal TranserFromFuturesToSpot(decimal amount)
+        private decimal TranserFromFuturesToSpot(decimal amount, string stableCoin)
         {
             Console.WriteLine($"Tranfering from futures to spot wallet: {amount} ...");
-            var transferRes = _apiClient.GeneralApi.Futures.TransferFuturesAccountAsync(StableCoin.USDT, amount, FuturesTransferType.FromUsdtFuturesToSpot).Result;
-            if (transferRes.Error != null && !transferRes.Success) throw new Exception(transferRes.Error.Message);
+            var amountToTransder = BnnUtils.FormatQuantity(amount, 0.0001); // 0.001
+            var transferRes = _apiClient.GeneralApi.Futures.TransferFuturesAccountAsync(stableCoin, amountToTransder, FuturesTransferType.FromUsdtFuturesToSpot).Result;
+            if (transferRes.Error != null && !transferRes.Success) throw new Exception($"Error while {amountToTransder} {stableCoin} transfering on {Name}. " + transferRes.Error.Message);
             var newBalance = GetSpotBalance();
-            Console.WriteLine($"New spot balance: {newBalance:0.###}");
+            Console.WriteLine($"New spot balance: {newBalance:0.###} {stableCoin}");
             return newBalance;
         }
 
@@ -222,39 +229,46 @@ namespace bnncmd.Exchanges
         {
             decimal sum = 0;
 
+            // spot / futures assets
             if (forSpot)
             {
                 if (stableCoin == string.Empty) stableCoin = StableCoin.FDUSD;
-                var futuresRest = GetFuturesBalance(StableCoin.USDT);
+                var futuresRest = GetFuturesBalance(stableCoin);
                 sum += futuresRest;
                 if (amount > 0)
                 {
-                    if (stableCoin.Equals(StableCoin.USDT, StringComparison.OrdinalIgnoreCase)) return TranserFromFuturesToSpot(futuresRest > amount ? amount : futuresRest);
-                    else throw new Exception($"Futures rest is in {futuresRest:0.###}{StableCoin.USDT}, but you probably want some {StableCoin.FDUSD}?");
+                    return TranserFromFuturesToSpot(futuresRest > amount ? amount : futuresRest, stableCoin);
+                    // if (stableCoin.Equals(StableCoin.USDT, StringComparison.OrdinalIgnoreCase)) return TranserFromFuturesToSpot(futuresRest > amount ? amount : futuresRest);
+                    // else throw new Exception($"Futures rest is in {futuresRest:0.###}{StableCoin.USDT}, but you probably want some {StableCoin.FDUSD}?");
                 }
-                else Console.WriteLine($"   Futures rest: {futuresRest}");
+                else Console.WriteLine($"   Futures {stableCoin} rest: {futuresRest}");
             }
             else
             {
-                var spotRest = GetSpotBalance(StableCoin.USDT);
+                if (stableCoin == string.Empty) stableCoin = StableCoin.USDT;
+                var spotRest = GetSpotBalance(stableCoin);
                 sum += spotRest;
-                if (amount > 0) return TranserFromSpotToFutures(spotRest > amount ? amount : spotRest);
+                if (amount > 0)
+                {
+                    if (spotRest > 0.01M) return TranserFromSpotToFutures(spotRest > amount ? amount : spotRest);
+                }
                 else Console.WriteLine($"   Spot rest: {spotRest}");
             }
 
+            // earn assets
             var flexiblePositions = _apiClient.GeneralApi.SimpleEarn.GetFlexibleProductPositionsAsync(null, _usdtFlexibleDeposite).Result;
             if (flexiblePositions.Error != null && !flexiblePositions.Success) throw new Exception(flexiblePositions.Error.Message);
             var earnRest = flexiblePositions.Data.Rows.Length == 0 ? 0 : flexiblePositions.Data.Rows.First().TotalQuantity;
             sum += earnRest;
             if (amount > 0 && earnRest >= amount)
             {
-                Console.WriteLine($"Redeeming earn rest to spot wallet: {amount} ...");
-                // var toWallet = forSpot ? AccountSource.Spot : AccountSource.;
-                var redeemRes = _apiClient.GeneralApi.SimpleEarn.RedeemFlexibleProductAsync(_usdtFlexibleDeposite, false, amount, AccountSource.Spot).Result;
-                if (redeemRes.Error != null && !redeemRes.Success) throw new Exception(redeemRes.Error.Message);
+                Console.WriteLine($"Redeeming earn rest to spot wallet: {amount} ..."); // not available just to futures
+                var amountToTransder = BnnUtils.FormatQuantity(amount, 0.0001); // 0.001
+                var redeemRes = _apiClient.GeneralApi.SimpleEarn.RedeemFlexibleProductAsync(_usdtFlexibleDeposite, false, amountToTransder, AccountSource.Spot).Result;
+                if (redeemRes.Error != null && !redeemRes.Success) throw new Exception($"Exception while {amountToTransder} USDT redeeming from {Name} earn: " + redeemRes.Error.Message);
                 Console.WriteLine($"New spot balance: {GetSpotBalance(StableCoin.USDT)}");
-                if (!forSpot) return TranserFromSpotToFutures(amount);
-                return amount;
+                if (!forSpot) return TranserFromSpotToFutures(amountToTransder);
+                return amountToTransder;
             }
             else Console.WriteLine($"   Earn rest: {earnRest}");
 
@@ -439,7 +453,6 @@ namespace bnncmd.Exchanges
             var listenKeyResult = _apiClient.UsdFuturesApi.Account.StartUserStreamAsync().Result;
             if (!listenKeyResult.Success) throw new Exception($"Error while getting listenKey: {listenKeyResult.Error}");
             var listenKey = listenKeyResult.Data;
-            // Console.WriteLine($"listenKey: {listenKey}");
 
             var subscribeResult = await _socketClient.UsdFuturesApi.Account.SubscribeToUserDataUpdatesAsync(
                 listenKey,
@@ -466,8 +479,6 @@ namespace bnncmd.Exchanges
                     }
                 }
             );
-
-            // return listenKey;
         }
 
         public override void EnterShort(string coin, decimal amount, string stableCoin = EmptyString)

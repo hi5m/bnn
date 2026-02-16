@@ -193,6 +193,7 @@ namespace Bnncmd
         protected void ProcessFuturesOrderBook(string symbol, decimal[][] asks, decimal[][] bids)
         {
             // var contractSize = 1; //  _contractInfo == null ? 1M : _contractInfo.ContractSize; // 0.0001M; // btc
+            symbol = symbol.ToUpper();
             var bestAsk = asks[0][0];
             var bestRealAsk = GetTrueBestAsk([.. asks.Select(a => a[0])]);
             if ((bestRealAsk > 0) && (bestRealAsk - _priceStep > bids.First()[0])) bestRealAsk -= _priceStep;
@@ -238,20 +239,17 @@ namespace Bnncmd
                     if (bestRealAsk < _futuresOrder.Price)
                     {
                         UnsubscribeOrderBookData();
-                        _showRealtimeData = false;
+                        // _showRealtimeData = false;
                         BnnUtils.ClearCurrentConsoleLine();
                         Console.WriteLine($"The best ask dropped ({bestAsk}), the order cancelling...");
                         CancelFuturesOrder(_futuresOrder);
                         Console.WriteLine($"The order cancelled");
 
-                        /////////////////////////////
-                        /*Console.WriteLine($"Placing new short order: {symbol}, {bestRealAsk} x {_currAmount}...");
+                        Console.WriteLine($"Placing new short order: {symbol}, {bestRealAsk} x {_currAmount}...");
                         _futuresOrder = PlaceFuturesOrder(symbol, _currAmount, bestRealAsk);
-                        Console.WriteLine($"WARNING! ORDER WAS CHANGED! SEE APP!");*/
-                        /////////////////////////////
-
-                        _futuresOrder = null;
-                        return;
+                        if (IsTest) Console.WriteLine($"Test order placed: {_futuresOrder.Id}");
+                        // _futuresOrder = null;
+                        // return;
                     }
                 }
 
