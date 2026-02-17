@@ -41,6 +41,7 @@ internal class Program
         Console.WriteLine("                                b - buy pair (b xo spotExch futExch 10000)");
         Console.WriteLine("                                f - find best offers");
         Console.WriteLine("                                r - get funding rate statisctics (r symbol1,symbol2,symbol3 [daysCount])");
+        Console.WriteLine("                                m - monitor");
         Console.WriteLine();
 
         Console.WriteLine("q                       - quit");

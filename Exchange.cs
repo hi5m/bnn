@@ -85,7 +85,18 @@ namespace Bnncmd
 
         public static readonly string USDT = "USDT";
 
+        public static readonly string USAT = "USAT";
+
         public static readonly string None = "-";
+
+        public static bool Is(string coin)
+        {
+            if (coin.Equals(FDUSD, StringComparison.OrdinalIgnoreCase)) return true;
+            if (coin.Equals(USDC, StringComparison.OrdinalIgnoreCase)) return true;
+            if (coin.Equals(USDT, StringComparison.OrdinalIgnoreCase)) return true;
+            if (coin.Equals(USAT, StringComparison.OrdinalIgnoreCase)) return true;
+            return false;
+        }
     }
 
 

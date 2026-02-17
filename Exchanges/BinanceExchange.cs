@@ -361,6 +361,7 @@ namespace bnncmd.Exchanges
 
         public void GetFundingRateStat(string symbol, int daysCount)
         {
+            if (symbol.Length < 5) symbol = symbol + StableCoin.USDT;
             Console.WriteLine($" * {symbol.ToUpper()} statistics on {Name} for {daysCount} last days *");
             Console.WriteLine();
 
@@ -376,7 +377,7 @@ namespace bnncmd.Exchanges
             var sum = 0M;
             var ema = fundingRates.First().FundingRate;
             var emaKoef = 0.3M;
-            foreach (var f in fundingRates) // .Reverse()
+            foreach (var f in fundingRates) // .Reverse()symbol
             {
                 if (f.FundingRate > maxValue) maxValue = f.FundingRate;
                 if (f.FundingRate < minValue)

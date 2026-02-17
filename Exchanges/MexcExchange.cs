@@ -103,11 +103,9 @@ namespace bnncmd.Exchanges
                         if ((offer.soldOut == true)) continue;  // sold out --- (offer.soldOut != null) && 
                         if (offer.sort == 3260107) continue; // VIP?
                         decimal apr = offer.showApr;
-                        if (apr < minApr) continue;
                         string currency = coin.currency; // explicite type
+                        if ((apr < minApr) && !StableCoin.Is(currency)) continue;
 
-                        // Console.WriteLine($"{coin.currency}: {apr}");
-                        // Console.WriteLine($"{coin.currency}: {offer.profitRate * 100M}%");
                         var product = new EarnProduct(Exchange.Mexc, currency, apr, "from page")
                         {
                             StableCoin = StableCoin.USDT,

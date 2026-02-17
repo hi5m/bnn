@@ -170,12 +170,21 @@ namespace Bnncmd.Strategy
 
             // Get funding rates for hedging from available futures
             Console.WriteLine("\r\n===========================\r\n");
-            exchanges = [Exchange.Binance, Exchange.Bybit];
-            // exchanges = [Exchange.Bybit];
+            var shortExchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit };
+            // var shortExchanges = [Exchange.Bybit];
             foreach (var p in products)
             {
                 Console.WriteLine($"{p}");
-                foreach (var e in exchanges)
+
+                // stablecoin
+                if (StableCoin.Is(p.ProductName))
+                {
+                    p.RealApr = p.Apr;
+                    continue;
+                }
+
+                // hedges
+                foreach (var e in shortExchanges)
                 {
                     e.FundingRateDepth = fundingRateDepth;
                     var his = e.GetDayFundingRate(p.ProductName);
@@ -190,17 +199,6 @@ namespace Bnncmd.Strategy
                             p.RealApr = realApr;
                         }
                     }
-
-                    /*if (fr == decimal.MinValue) continue;
-                    var dayProfit = ((p.Apr / 365 + fr) * p.Term - p.Exchange.SpotMakerFee - e.FuturesMakerFee) / p.Term / 2;
-                    var realApr = 365 * dayProfit;
-                    Console.WriteLine($"   {e.Name.ToLower()} funding rate: {fr:0.###} => {realApr:0.###}       [ (({p.Apr:0.###} / 365 + {fr:0.###}) * {p.Term} - {p.Exchange.SpotMakerFee} - {e.FuturesMakerFee}) / {p.Term} = {dayProfit:0.###} ]");
-                    if ((p.FuturesExchange == null) || (p.RealApr < realApr))
-                    {
-                        p.FuturesExchange = e;
-                        p.DayFundingRate = fr;
-                        p.RealApr = realApr;
-                    }*/
                 }
             }
 
