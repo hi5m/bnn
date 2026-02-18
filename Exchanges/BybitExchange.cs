@@ -407,7 +407,12 @@ namespace Bnncmd
             {
                 foreach (var o in e.Data)
                 {
-                    Console.WriteLine($"{Name} order updated: {o.Symbol}, ID: {o.OrderId}, Status: {o.Status}");
+                    if (o.Status == Bybit.Net.Enums.OrderStatus.Filled)
+                    {
+                        ExecFuturesOrder();
+                        BnnUtils.ClearCurrentConsoleLine();
+                        Console.WriteLine($"{Name} order updated: {o.Symbol}, ID: {o.OrderId}, Status: {o.Status}");
+                    }
                 };
             });
         }

@@ -56,7 +56,6 @@ namespace Bnncmd
         }
     }
 
-
     internal class Exchange
     {
         private static readonly BinanceExchange s_binance = new();
@@ -75,7 +74,6 @@ namespace Bnncmd
             throw new Exception($"Unknown exchange: {exchName}");
         }
     }
-
 
     static class StableCoin
     {
@@ -98,7 +96,6 @@ namespace Bnncmd
             return false;
         }
     }
-
 
     internal abstract class AbstractExchange
     {
@@ -194,6 +191,17 @@ namespace Bnncmd
 
         protected bool _showRealtimeData = true;
 
+        protected void ExecFuturesOrder()
+        {
+            if (_futuresOrder == null) return; // if event fired from different places
+            UnsubscribeOrderBookData();
+            _showRealtimeData = false;
+            _isLock = true;
+            BnnUtils.ClearCurrentConsoleLine();
+            _futuresOrder = null;
+            FireShortEntered(); // in real environment fired via subsription
+        }
+
         /// <summary>
         /// Get constant price
         /// </summary>
@@ -237,24 +245,20 @@ namespace Bnncmd
                 {
                     if (bestAsk > _futuresOrder.Price)
                     {
-                        UnsubscribeOrderBookData();
-                        _showRealtimeData = false;
-                        BnnUtils.ClearCurrentConsoleLine();
+                        ExecFuturesOrder();
                         Console.WriteLine($"Price raised ({bestAsk}), it seems the order is filled ({_futuresOrder})");
                         Console.WriteLine();
-                        _futuresOrder = null;
-                        FireShortEntered(); // in real environment fired via subsription
                         return;
                     }
 
                     if (bestRealAsk < _futuresOrder.Price)
                     {
-                        UnsubscribeOrderBookData();
+                        // UnsubscribeOrderBookData();
                         // _showRealtimeData = false;
                         BnnUtils.ClearCurrentConsoleLine();
                         Console.WriteLine($"The best ask dropped ({bestAsk}), the order cancelling...");
                         CancelFuturesOrder(_futuresOrder);
-                        Console.WriteLine($"The order cancelled");
+                        // Console.WriteLine($"The order cancelled");
 
                         Console.WriteLine($"Placing new short order: {symbol}, {bestRealAsk} x {_currAmount}...");
                         _futuresOrder = PlaceFuturesOrder(symbol, _currAmount, bestRealAsk);

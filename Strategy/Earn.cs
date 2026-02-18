@@ -114,7 +114,7 @@ namespace Bnncmd.Strategy
 
             if ((futuresReserve + futuresRest >= requiredUsdAmount) && (futuresRest < requiredUsdAmount))
             {
-                Console.WriteLine("Do you want to transfer assets to futures wallet?");
+                Console.WriteLine($"Do you want to transfer assets to {futuresExchange.Name} futures wallet?");
                 var commandFutures = Console.ReadLine();
                 Console.WriteLine();
                 if ((commandFutures != null) && (commandFutures.ToLower()[0] == 'y')) futuresExchange.FindFunds(string.Empty, false, 1.015M * requiredUsdAmount - futuresRest); // futuresRest = 
@@ -210,6 +210,7 @@ namespace Bnncmd.Strategy
                 var arpStr = $"{p.RealApr:0.###}";
                 var futuresExchange = $"{(p.HedgeInfo == null ? string.Empty : p.HedgeInfo.Exchanger.Name)}";
                 var term = $"{p.Term:0}";
+                var futuresCoin = $"{(p.HedgeInfo == null ? string.Empty : p.HedgeInfo.Symbol)}";
                 Console.WriteLine($"{p.ProductName,-23} | {arpStr,-9} | {p.Exchange.Name,-9} | {p.StableCoin,-5} | {futuresExchange,-9} | {term,-3} | {p.LimitMax}");
             }
             // Environment.Exit(0);

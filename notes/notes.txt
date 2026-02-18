@@ -1,107 +1,4 @@
 
- * MOVEUSDT statistics on Binance for 61 last days *
-
-First date: 19.12.2025
-Interval: 4 hours
-Last value: -0.07
-Max value: 0.005%
-Min value: -2%
-Min value day: 12.02.2026
-Sum: -35.204%
-Avg: -0.08779%
-Ema: -0.111%
-
- * INITUSDT statistics on Binance for 61 last days *
-
-First date: 19.12.2025
-Interval: 1 hours
-Last value: -0.015
-Max value: 0.005%
-Min value: -2%
-Min value day: 15.02.2026
-Sum: -14.667%
-Avg: -0.03657%
-Ema: -0.019%
-
- * NILUSDT statistics on Binance for 61 last days *
-
-First date: 19.12.2025
-Interval: 4 hours
-Last value: 0.005
-Max value: 0.005%
-Min value: -0.747%
-Min value day: 11.02.2026
-Sum: -2.105%
-Avg: -0.00577%
-Ema: 0.003%
-
- * FOGOUSDT statistics on Binance for 61 last days *
-
-First date: 10.01.2026
-Interval: 4 hours
-Last value: 0.005
-Max value: 0.005%
-Min value: -0.348%
-Min value day: 15.01.2026
-Sum: -5.235%
-Avg: -0.02286%
-Ema: 0.004%
-
- * SAFEUSDT statistics on Binance for 61 last days *
-
-First date: 19.12.2025
-Interval: 4 hours
-Last value: -0.053
-Max value: 0.005%
-Min value: -0.681%
-Min value day: 15.01.2026
-Sum: -6.087%
-Avg: -0.01668%
-Ema: -0.013%
-
- * ANKRUSDT statistics on Binance for 61 last days *
-
-First date: 19.12.2025
-Interval: 8 hours
-Last value: 0.002
-Max value: 0.01%
-Min value: -1.715%
-Min value day: 03.02.2026
-Sum: -4.246%
-Avg: -0.0232%
-Ema: 0.003%
-
- * CTKUSDT statistics on Binance for 61 last days *
-
-First date: 19.12.2025
-Interval: 4 hours
-Last value: 0.005
-Max value: 0.005%
-Min value: -0.017%
-Min value day: 29.01.2026
-Sum: 1.458%
-Avg: 0.00399%
-Ema: 0.005%
-
- * SOPHUSDT statistics on Binance for 61 last days *
-
-First date: 19.12.2025
-Interval: 4 hours
-Last value: -0.023
-Max value: 0.005%
-Min value: -2%
-Min value day: 19.12.2025
-Sum: -15.567%
-Avg: -0.02548%
-Ema: -0.008%
-
- * COREUSDT statistics on Binance for 61 last days *
-
-There are no values for this symbol on Binance
-
-
-
-
 Binance - Api - Locked...
 Binance - Api - Flexible...
 Bybit - Page 1...
@@ -111,193 +8,173 @@ Mexc - Page...
 ===========================
 
 WAL                 | 29.9%   | Binance     | FDUSD | 90 | locked - api
-   Binance WALUSDT funding rate: -0.096 => -2.692       [ ((29.9 / 365 + -0.096) * 90 - 0 - 0.018) / 90 / 2 = -0.007 ]
-   Bybit WALUSDT funding rate: -0.086 => -0.704       [ ((29.9 / 365 + -0.086) * 90 - 0 - 0.02) / 90 / 2 = -0.002 ]
+   Binance WALUSDT funding rate: -0.079 => 0.523       [ ((29.9 / 365 + -0.079) * 90 - 0 - 0.018) / 90 / 2 = 0.001 ]
+   Bybit WALUSDT funding rate: 0.004 => 15.704       [ ((29.9 / 365 + 0.004) * 90 - 0 - 0.02) / 90 / 2 = 0.043 ]
 KERNEL              | 29.9%   | Binance     | USDT  | 90 | locked - api
-   Binance KERNELUSDT funding rate: -0.134 => -9.73       [ ((29.9 / 365 + -0.134) * 90 - 0.075 - 0.018) / 90 / 2 = -0.027 ]
-   Bybit KERNELUSDT funding rate: -0.147 => -12.122       [ ((29.9 / 365 + -0.147) * 90 - 0.075 - 0.02) / 90 / 2 = -0.033 ]
+   Binance KERNELUSDT funding rate: -0.021 => 10.863       [ ((29.9 / 365 + -0.021) * 90 - 0.075 - 0.018) / 90 / 2 = 0.03 ]
+   Bybit KERNELUSDT funding rate: -0.095 => -2.49       [ ((29.9 / 365 + -0.095) * 90 - 0.075 - 0.02) / 90 / 2 = -0.007 ]
 FOGO                | 29.9%   | Binance     | USDT  | 90 | locked - api
-   Binance FOGOUSDT funding rate: 0.025 => 19.311       [ ((29.9 / 365 + 0.025) * 90 - 0.075 - 0.018) / 90 / 2 = 0.053 ]
-   Bybit FOGOUSDT funding rate: -0.11 => -5.342       [ ((29.9 / 365 + -0.11) * 90 - 0.075 - 0.02) / 90 / 2 = -0.015 ]
+   Binance FOGOUSDT funding rate: -0.045 => 6.461       [ ((29.9 / 365 + -0.045) * 90 - 0.075 - 0.018) / 90 / 2 = 0.018 ]
+   Bybit FOGOUSDT funding rate: -0.219 => -25.297       [ ((29.9 / 365 + -0.219) * 90 - 0.075 - 0.02) / 90 / 2 = -0.069 ]
 BABY                | 29.9%   | Binance     | USDT  | 120 | locked - api
-   Binance BABYUSDT funding rate: -0.007 => 13.46       [ ((29.9 / 365 + -0.007) * 120 - 0.075 - 0.018) / 120 / 2 = 0.037 ]
-   Bybit BABYUSDT funding rate: -0.251 => -31.02       [ ((29.9 / 365 + -0.251) * 120 - 0.075 - 0.02) / 120 / 2 = -0.085 ]
+   Binance BABYUSDT funding rate: 0.011 => 16.86       [ ((29.9 / 365 + 0.011) * 120 - 0.075 - 0.018) / 120 / 2 = 0.046 ]
+   Bybit BABYUSDT funding rate: -0.43 => -63.634       [ ((29.9 / 365 + -0.43) * 120 - 0.075 - 0.02) / 120 / 2 = -0.174 ]
 0G                  | 29.9%   | Binance     | USDT  | 120 | locked - api
-   Binance 0GUSDT funding rate: -0.471 => -71.064       [ ((29.9 / 365 + -0.471) * 120 - 0.075 - 0.018) / 120 / 2 = -0.195 ]
-   Bybit 0GUSDT funding rate: -0.461 => -69.37       [ ((29.9 / 365 + -0.461) * 120 - 0.075 - 0.02) / 120 / 2 = -0.19 ]
+   Binance 0GUSDT funding rate: -0.265 => -33.586       [ ((29.9 / 365 + -0.265) * 120 - 0.075 - 0.018) / 120 / 2 = -0.092 ]
+   Bybit 0GUSDT funding rate: -0.176 => -17.279       [ ((29.9 / 365 + -0.176) * 120 - 0.075 - 0.02) / 120 / 2 = -0.047 ]
 NIL                 | 29.9%   | Binance     | USDT  | 120 | locked - api
-   Binance NILUSDT funding rate: 0.025 => 19.314       [ ((29.9 / 365 + 0.025) * 120 - 0.075 - 0.018) / 120 / 2 = 0.053 ]
-   Bybit NILUSDT funding rate: 0.025 => 19.341       [ ((29.9 / 365 + 0.025) * 120 - 0.075 - 0.02) / 120 / 2 = 0.053 ]
+   Binance NILUSDT funding rate: 0.03 => 20.284       [ ((29.9 / 365 + 0.03) * 120 - 0.075 - 0.018) / 120 / 2 = 0.056 ]
+   Bybit NILUSDT funding rate: 0.03 => 20.281       [ ((29.9 / 365 + 0.03) * 120 - 0.075 - 0.02) / 120 / 2 = 0.056 ]
 KERNEL              | 25.9%   | Binance     | USDT  | 60 | locked - api
-   Binance KERNELUSDT funding rate: -0.134 => -11.824       [ ((25.9 / 365 + -0.134) * 60 - 0.075 - 0.018) / 60 / 2 = -0.032 ]
-   Bybit KERNELUSDT funding rate: -0.147 => -14.218       [ ((25.9 / 365 + -0.147) * 60 - 0.075 - 0.02) / 60 / 2 = -0.039 ]
+   Binance KERNELUSDT funding rate: -0.021 => 8.768       [ ((25.9 / 365 + -0.021) * 60 - 0.075 - 0.018) / 60 / 2 = 0.024 ]
+   Bybit KERNELUSDT funding rate: -0.095 => -4.586       [ ((25.9 / 365 + -0.095) * 60 - 0.075 - 0.02) / 60 / 2 = -0.013 ]
 NIL                 | 25.9%   | Binance     | USDT  | 60 | locked - api
-   Binance NILUSDT funding rate: 0.025 => 17.173       [ ((25.9 / 365 + 0.025) * 60 - 0.075 - 0.018) / 60 / 2 = 0.047 ]
-   Bybit NILUSDT funding rate: 0.025 => 17.197       [ ((25.9 / 365 + 0.025) * 60 - 0.075 - 0.02) / 60 / 2 = 0.047 ]
+   Binance NILUSDT funding rate: 0.03 => 18.142       [ ((25.9 / 365 + 0.03) * 60 - 0.075 - 0.018) / 60 / 2 = 0.05 ]
+   Bybit NILUSDT funding rate: 0.03 => 18.136       [ ((25.9 / 365 + 0.03) * 60 - 0.075 - 0.02) / 60 / 2 = 0.05 ]
 FOGO                | 25.9%   | Binance     | USDT  | 60 | locked - api
-   Binance FOGOUSDT funding rate: 0.025 => 17.217       [ ((25.9 / 365 + 0.025) * 60 - 0.075 - 0.018) / 60 / 2 = 0.047 ]
-   Bybit FOGOUSDT funding rate: -0.11 => -7.439       [ ((25.9 / 365 + -0.11) * 60 - 0.075 - 0.02) / 60 / 2 = -0.02 ]
+   Binance FOGOUSDT funding rate: -0.045 => 4.367       [ ((25.9 / 365 + -0.045) * 60 - 0.075 - 0.018) / 60 / 2 = 0.012 ]
+   Bybit FOGOUSDT funding rate: -0.219 => -27.394       [ ((25.9 / 365 + -0.219) * 60 - 0.075 - 0.02) / 60 / 2 = -0.075 ]
 0G                  | 25.9%   | Binance     | USDT  | 90 | locked - api
-   Binance 0GUSDT funding rate: -0.471 => -73.111       [ ((25.9 / 365 + -0.471) * 90 - 0.075 - 0.018) / 90 / 2 = -0.2 ]
-   Bybit 0GUSDT funding rate: -0.461 => -71.418       [ ((25.9 / 365 + -0.461) * 90 - 0.075 - 0.02) / 90 / 2 = -0.196 ]
+   Binance 0GUSDT funding rate: -0.265 => -35.633       [ ((25.9 / 365 + -0.265) * 90 - 0.075 - 0.018) / 90 / 2 = -0.098 ]
+   Bybit 0GUSDT funding rate: -0.176 => -19.328       [ ((25.9 / 365 + -0.176) * 90 - 0.075 - 0.02) / 90 / 2 = -0.053 ]
 WAL                 | 24.9%   | Binance     | FDUSD | 60 | locked - api
-   Binance WALUSDT funding rate: -0.096 => -5.211       [ ((24.9 / 365 + -0.096) * 60 - 0 - 0.018) / 60 / 2 = -0.014 ]
-   Bybit WALUSDT funding rate: -0.086 => -3.225       [ ((24.9 / 365 + -0.086) * 60 - 0 - 0.02) / 60 / 2 = -0.009 ]
+   Binance WALUSDT funding rate: -0.079 => -1.995       [ ((24.9 / 365 + -0.079) * 60 - 0 - 0.018) / 60 / 2 = -0.005 ]
+   Bybit WALUSDT funding rate: 0.004 => 13.184       [ ((24.9 / 365 + 0.004) * 60 - 0 - 0.02) / 60 / 2 = 0.036 ]
 BABY                | 24%     | Binance     | USDT  | 60 | locked - api
-   Binance BABYUSDT funding rate: -0.007 => 10.369       [ ((24 / 365 + -0.007) * 60 - 0.075 - 0.018) / 60 / 2 = 0.028 ]
-   Bybit BABYUSDT funding rate: -0.251 => -34.115       [ ((24 / 365 + -0.251) * 60 - 0.075 - 0.02) / 60 / 2 = -0.093 ]
+   Binance BABYUSDT funding rate: 0.011 => 13.769       [ ((24 / 365 + 0.011) * 60 - 0.075 - 0.018) / 60 / 2 = 0.038 ]
+   Bybit BABYUSDT funding rate: -0.43 => -66.728       [ ((24 / 365 + -0.43) * 60 - 0.075 - 0.02) / 60 / 2 = -0.183 ]
 BERA                | 22.8%   | Binance     | USDT  | 90 | locked - api
-   Binance BERAUSDT funding rate: -1.012 => -173.475       [ ((22.8 / 365 + -1.012) * 90 - 0.075 - 0.018) / 90 / 2 = -0.475 ]
-   Bybit BERAUSDT funding rate: -1.002 => -171.639       [ ((22.8 / 365 + -1.002) * 90 - 0.075 - 0.02) / 90 / 2 = -0.47 ]
+   Binance BERAUSDT funding rate: -1.151 => -198.776       [ ((22.8 / 365 + -1.151) * 90 - 0.075 - 0.018) / 90 / 2 = -0.545 ]
+   Bybit BERAUSDT funding rate: -0.986 => -168.714       [ ((22.8 / 365 + -0.986) * 90 - 0.075 - 0.02) / 90 / 2 = -0.462 ]
 KERNEL              | 21.9%   | Binance     | USDT  | 30 | locked - api
-   Binance KERNELUSDT funding rate: -0.134 => -14.107       [ ((21.9 / 365 + -0.134) * 30 - 0.075 - 0.018) / 30 / 2 = -0.039 ]
-   Bybit KERNELUSDT funding rate: -0.147 => -16.507       [ ((21.9 / 365 + -0.147) * 30 - 0.075 - 0.02) / 30 / 2 = -0.045 ]
+   Binance KERNELUSDT funding rate: -0.021 => 6.485       [ ((21.9 / 365 + -0.021) * 30 - 0.075 - 0.018) / 30 / 2 = 0.018 ]
+   Bybit KERNELUSDT funding rate: -0.095 => -6.875       [ ((21.9 / 365 + -0.095) * 30 - 0.075 - 0.02) / 30 / 2 = -0.019 ]
 CTK                 | 21.5%   | Binance     | USDT  | 90 | locked - api
    Binance CTKUSDT funding rate: 0.03 => 16.036       [ ((21.5 / 365 + 0.03) * 90 - 0.075 - 0.018) / 90 / 2 = 0.044 ]
    Bybit CTKUSDT funding rate: 0.03 => 16.032       [ ((21.5 / 365 + 0.03) * 90 - 0.075 - 0.02) / 90 / 2 = 0.044 ]
 NIL                 | 20.9%   | Binance     | USDT  | 30 | locked - api
-   Binance NILUSDT funding rate: 0.025 => 14.39       [ ((20.9 / 365 + 0.025) * 30 - 0.075 - 0.018) / 30 / 2 = 0.039 ]
-   Bybit NILUSDT funding rate: 0.025 => 14.408       [ ((20.9 / 365 + 0.025) * 30 - 0.075 - 0.02) / 30 / 2 = 0.039 ]
+   Binance NILUSDT funding rate: 0.03 => 15.359       [ ((20.9 / 365 + 0.03) * 30 - 0.075 - 0.018) / 30 / 2 = 0.042 ]
+   Bybit NILUSDT funding rate: 0.03 => 15.347       [ ((20.9 / 365 + 0.03) * 30 - 0.075 - 0.02) / 30 / 2 = 0.042 ]
 FOGO                | 20.9%   | Binance     | USDT  | 30 | locked - api
-   Binance FOGOUSDT funding rate: 0.025 => 14.434       [ ((20.9 / 365 + 0.025) * 30 - 0.075 - 0.018) / 30 / 2 = 0.04 ]
-   Bybit FOGOUSDT funding rate: -0.11 => -10.228       [ ((20.9 / 365 + -0.11) * 30 - 0.075 - 0.02) / 30 / 2 = -0.028 ]
-ORCA                | 41.5%   | Binance     | USDT  | 1 | flexible - api
-   Binance ORCAUSDT funding rate: -10.418 => -1897.597       [ ((41.495 / 365 + -10.418) * 1 - 0.075 - 0.018) / 1 / 2 = -5.199 ]
-   Bybit ORCAUSDT funding rate: -12.63 => -2301.541       [ ((41.495 / 365 + -12.63) * 1 - 0.075 - 0.02) / 1 / 2 = -6.306 ]
-NOM                 | 25.93%  | Binance     | USDT  | 1 | flexible - api
-   Binance NOMUSDT funding rate: -0.378 => -73.023       [ ((25.934 / 365 + -0.378) * 1 - 0.075 - 0.018) / 1 / 2 = -0.2 ]
-   Bybit NOMUSDT funding rate: -0.359 => -69.821       [ ((25.934 / 365 + -0.359) * 1 - 0.075 - 0.02) / 1 / 2 = -0.191 ]
-0G                  | 30.57%  | Binance     | USDT  | 1 | flexible - api
-   Binance 0GUSDT funding rate: -0.471 => -87.562       [ ((30.566 / 365 + -0.471) * 1 - 0.075 - 0.018) / 1 / 2 = -0.24 ]
-   Bybit 0GUSDT funding rate: -0.461 => -86.23       [ ((30.566 / 365 + -0.461) * 1 - 0.075 - 0.02) / 1 / 2 = -0.236 ]
-BREV                | 35.05%  | Binance     | USDT  | 1 | flexible - api
-   Binance BREVUSDT funding rate: -0.466 => -84.503       [ ((35.052 / 365 + -0.466) * 1 - 0.075 - 0.018) / 1 / 2 = -0.232 ]
-   Bybit BREVUSDT funding rate: -0.451 => -82.153       [ ((35.052 / 365 + -0.451) * 1 - 0.075 - 0.02) / 1 / 2 = -0.225 ]
-MMT                 | 36.99%  | Binance     | USDT  | 1 | flexible - api
-   Binance MMTUSDT funding rate: -0.532 => -95.614       [ ((36.987 / 365 + -0.532) * 1 - 0.075 - 0.018) / 1 / 2 = -0.262 ]
-   Bybit MMTUSDT funding rate: -0.75 => -135.633       [ ((36.987 / 365 + -0.75) * 1 - 0.075 - 0.02) / 1 / 2 = -0.372 ]
-MOVE                | 34.41%  | Binance     | USDT  | 1 | flexible - api
-   Binance MOVEUSDT funding rate: -0.616 => -112.101       [ ((34.413 / 365 + -0.616) * 1 - 0.075 - 0.018) / 1 / 2 = -0.307 ]
-   Bybit MOVEUSDT funding rate: -0.024 => -4.452       [ ((34.413 / 365 + -0.024) * 1 - 0.075 - 0.02) / 1 / 2 = -0.012 ]
-SXP                 | 26.84%  | Binance     | USDT  | 1 | flexible - api
-   Bybit SXPUSDT funding rate: 0.03 => 1.556       [ ((26.837 / 365 + 0.03) * 1 - 0.075 - 0.02) / 1 / 2 = 0.004 ]
-UMA                 | 20.03%  | Binance     | USDT  | 1 | flexible - api
-   Binance UMAUSDT funding rate: -0.586 => -113.844       [ ((20.028 / 365 + -0.586) * 1 - 0.075 - 0.018) / 1 / 2 = -0.312 ]
-   Bybit UMAUSDT funding rate: -0.564 => -110.341       [ ((20.028 / 365 + -0.564) * 1 - 0.075 - 0.02) / 1 / 2 = -0.302 ]
-ZKC                 | 23.17%  | Binance     | USDT  | 1 | flexible - api
-   Binance ZKCUSDT funding rate: -0.007 => -6.684       [ ((23.169 / 365 + -0.007) * 1 - 0.075 - 0.018) / 1 / 2 = -0.018 ]
-   Bybit ZKCUSDT funding rate: 0.03 => -0.278       [ ((23.169 / 365 + 0.03) * 1 - 0.075 - 0.02) / 1 / 2 = -0.001 ]
-BERA                | 39.8%   | Binance     | USDT  | 1 | flexible - api
-   Binance BERAUSDT funding rate: -1.012 => -181.759       [ ((39.798 / 365 + -1.012) * 1 - 0.075 - 0.018) / 1 / 2 = -0.498 ]
-   Bybit BERAUSDT funding rate: -1.002 => -180.285       [ ((39.798 / 365 + -1.002) * 1 - 0.075 - 0.02) / 1 / 2 = -0.494 ]
-LPT                 | 24.21%  | Binance     | USDT  | 1 | flexible - api
-   Binance LPTUSDT funding rate: -0.421 => -81.663       [ ((24.215 / 365 + -0.421) * 1 - 0.075 - 0.018) / 1 / 2 = -0.224 ]
-   Bybit LPTUSDT funding rate: -0.077 => -19.227       [ ((24.215 / 365 + -0.077) * 1 - 0.075 - 0.02) / 1 / 2 = -0.053 ]
-RPL                 | 36.33%  | Binance     | USDT  | 1 | flexible - api
-   Binance RPLUSDT funding rate: -2.713 => -493.969       [ ((36.328 / 365 + -2.713) * 1 - 0.075 - 0.018) / 1 / 2 = -1.353 ]
-   Bybit RPLUSDT funding rate: -1.33 => -241.852       [ ((36.328 / 365 + -1.33) * 1 - 0.075 - 0.02) / 1 / 2 = -0.663 ]
-SENT                | 36.24%  | Binance     | USDT  | 1 | flexible - api
-   Binance SENTUSDT funding rate: -1.099 => -199.442       [ ((36.24 / 365 + -1.099) * 1 - 0.075 - 0.018) / 1 / 2 = -0.546 ]
-   Bybit SENTUSDT funding rate: -1.029 => -187.05       [ ((36.24 / 365 + -1.029) * 1 - 0.075 - 0.02) / 1 / 2 = -0.512 ]
-ZKP                 | 20.96%  | Binance     | USDT  | 1 | flexible - api
-   Binance ZKPUSDT funding rate: -0.206 => -44.06       [ ((20.961 / 365 + -0.206) * 1 - 0.075 - 0.018) / 1 / 2 = -0.121 ]
-   Bybit ZKPUSDT funding rate: 0.03 => -1.382       [ ((20.961 / 365 + 0.03) * 1 - 0.075 - 0.02) / 1 / 2 = -0.004 ]
-AXS                 | 32.75%  | Binance     | USDT  | 1 | flexible - api
-   Binance AXSUSDT funding rate: -1.874 => -342.665       [ ((32.748 / 365 + -1.874) * 1 - 0.075 - 0.018) / 1 / 2 = -0.939 ]
-   Bybit AXSUSDT funding rate: -1.93 => -353.212       [ ((32.748 / 365 + -1.93) * 1 - 0.075 - 0.02) / 1 / 2 = -0.968 ]
-ENSO                | 25.34%  | Binance     | USDT  | 1 | flexible - api
-   Binance ENSOUSDT funding rate: -0.474 => -90.845       [ ((25.34 / 365 + -0.474) * 1 - 0.075 - 0.018) / 1 / 2 = -0.249 ]
-   Bybit ENSOUSDT funding rate: -0.051 => -14.055       [ ((25.34 / 365 + -0.051) * 1 - 0.075 - 0.02) / 1 / 2 = -0.039 ]
-INIT                | 39.93%  | Binance     | USDT  | 1 | flexible - api
-   Binance INITUSDT funding rate: -0.442 => -77.643       [ ((39.931 / 365 + -0.442) * 1 - 0.075 - 0.018) / 1 / 2 = -0.213 ]
-   Bybit INITUSDT funding rate: 0.008 => 4.007       [ ((39.931 / 365 + 0.008) * 1 - 0.075 - 0.02) / 1 / 2 = 0.011 ]
-LA                  | 32.41%  | Binance     | USDT  | 1 | flexible - api
-   Binance LAUSDT funding rate: -2.201 => -402.391       [ ((32.415 / 365 + -2.201) * 1 - 0.075 - 0.018) / 1 / 2 = -1.102 ]
-   Bybit LAUSDT funding rate: -1.27 => -232.971       [ ((32.415 / 365 + -1.27) * 1 - 0.075 - 0.02) / 1 / 2 = -0.638 ]
-SHELL               | 34.65%  | Binance     | USDT  | 1 | flexible - api
-   Binance SHELLUSDT funding rate: -0.076 => -13.583       [ ((34.653 / 365 + -0.076) * 1 - 0.075 - 0.018) / 1 / 2 = -0.037 ]
-   Bybit SHELLUSDT funding rate: -0.089 => -16.312       [ ((34.653 / 365 + -0.089) * 1 - 0.075 - 0.02) / 1 / 2 = -0.045 ]
-SOPH                | 29.62%  | Binance     | FDUSD | 1 | flexible - api
-   Binance SOPHUSDT funding rate: -0.04 => 4.248       [ ((29.617 / 365 + -0.04) * 1 - 0 - 0.018) / 1 / 2 = 0.012 ]
-   Bybit SOPHUSDT funding rate: 0.018 => 14.43       [ ((29.617 / 365 + 0.018) * 1 - 0 - 0.02) / 1 / 2 = 0.04 ]
-LRC                 | 32.4%   | Binance     | USDT  | 1 | flexible - api
-   Binance LRCUSDT funding rate: -0.532 => -97.854       [ ((32.401 / 365 + -0.532) * 1 - 0.075 - 0.018) / 1 / 2 = -0.268 ]
-   Bybit LRCUSDT funding rate: -0.567 => -104.616       [ ((32.401 / 365 + -0.567) * 1 - 0.075 - 0.02) / 1 / 2 = -0.287 ]
-ARK                 | 37.93%  | Binance     | USDT  | 1 | flexible - api
-   Binance ARKUSDT funding rate: -0.04 => -5.325       [ ((37.935 / 365 + -0.04) * 1 - 0.075 - 0.018) / 1 / 2 = -0.015 ]
-   Bybit ARKUSDT funding rate: -0.054 => -8.276       [ ((37.935 / 365 + -0.054) * 1 - 0.075 - 0.02) / 1 / 2 = -0.023 ]
+   Binance FOGOUSDT funding rate: -0.045 => 1.584       [ ((20.9 / 365 + -0.045) * 30 - 0.075 - 0.018) / 30 / 2 = 0.004 ]
+   Bybit FOGOUSDT funding rate: -0.219 => -30.182       [ ((20.9 / 365 + -0.219) * 30 - 0.075 - 0.02) / 30 / 2 = -0.083 ]
+ORCA                | 42.51%  | Binance     | USDT  | 1 | flexible - api
+   Binance ORCAUSDT funding rate: -8.474 => -1542.29       [ ((42.513 / 365 + -8.474) * 1 - 0.075 - 0.018) / 1 / 2 = -4.225 ]
+   Bybit ORCAUSDT funding rate: -6.441 => -1171.566       [ ((42.513 / 365 + -6.441) * 1 - 0.075 - 0.02) / 1 / 2 = -3.21 ]
+0G                  | 28.26%  | Binance     | USDT  | 1 | flexible - api
+   Binance 0GUSDT funding rate: -0.265 => -51.236       [ ((28.262 / 365 + -0.265) * 1 - 0.075 - 0.018) / 1 / 2 = -0.14 ]
+   Bybit 0GUSDT funding rate: -0.176 => -35.291       [ ((28.262 / 365 + -0.176) * 1 - 0.075 - 0.02) / 1 / 2 = -0.097 ]
+BREV                | 33.71%  | Binance     | USDT  | 1 | flexible - api
+   Binance BREVUSDT funding rate: -0.064 => -11.851       [ ((33.714 / 365 + -0.064) * 1 - 0.075 - 0.018) / 1 / 2 = -0.032 ]
+   Bybit BREVUSDT funding rate: -0.03 => -5.998       [ ((33.714 / 365 + -0.03) * 1 - 0.075 - 0.02) / 1 / 2 = -0.016 ]
+MMT                 | 37%     | Binance     | USDT  | 1 | flexible - api
+   Binance MMTUSDT funding rate: -0.106 => -17.877       [ ((37.003 / 365 + -0.106) * 1 - 0.075 - 0.018) / 1 / 2 = -0.049 ]
+   Bybit MMTUSDT funding rate: -0.057 => -9.283       [ ((37.003 / 365 + -0.057) * 1 - 0.075 - 0.02) / 1 / 2 = -0.025 ]
+MOVE                | 33.97%  | Binance     | USDT  | 1 | flexible - api
+   Binance MOVEUSDT funding rate: -0.361 => -65.794       [ ((33.973 / 365 + -0.361) * 1 - 0.075 - 0.018) / 1 / 2 = -0.18 ]
+   Bybit MOVEUSDT funding rate: -0.072 => -13.467       [ ((33.973 / 365 + -0.072) * 1 - 0.075 - 0.02) / 1 / 2 = -0.037 ]
+SXP                 | 24.36%  | Binance     | USDT  | 1 | flexible - api
+   Bybit SXPUSDT funding rate: -0.009 => -6.796       [ ((24.363 / 365 + -0.009) * 1 - 0.075 - 0.02) / 1 / 2 = -0.019 ]
+ZKC                 | 23.93%  | Binance     | USDT  | 1 | flexible - api
+   Binance ZKCUSDT funding rate: -0.049 => -13.893       [ ((23.934 / 365 + -0.049) * 1 - 0.075 - 0.018) / 1 / 2 = -0.038 ]
+   Bybit ZKCUSDT funding rate: 0.014 => -2.727       [ ((23.934 / 365 + 0.014) * 1 - 0.075 - 0.02) / 1 / 2 = -0.007 ]
+BERA                | 36.46%  | Binance     | USDT  | 1 | flexible - api
+   Binance BERAUSDT funding rate: -1.151 => -208.729       [ ((36.463 / 365 + -1.151) * 1 - 0.075 - 0.018) / 1 / 2 = -0.572 ]
+   Bybit BERAUSDT funding rate: -0.986 => -179.027       [ ((36.463 / 365 + -0.986) * 1 - 0.075 - 0.02) / 1 / 2 = -0.49 ]
+ONT                 | 29.31%  | Binance     | USDT  | 1 | flexible - api
+   Binance ONTUSDT funding rate: -0.362 => -68.42       [ ((29.309 / 365 + -0.362) * 1 - 0.075 - 0.018) / 1 / 2 = -0.187 ]
+   Bybit ONTUSDT funding rate: -0.401 => -75.789       [ ((29.309 / 365 + -0.401) * 1 - 0.075 - 0.02) / 1 / 2 = -0.208 ]
+RPL                 | 35.56%  | Binance     | USDT  | 1 | flexible - api
+   Binance RPLUSDT funding rate: -0.7 => -126.936       [ ((35.565 / 365 + -0.7) * 1 - 0.075 - 0.018) / 1 / 2 = -0.348 ]
+   Bybit RPLUSDT funding rate: -0.329 => -59.528       [ ((35.565 / 365 + -0.329) * 1 - 0.075 - 0.02) / 1 / 2 = -0.163 ]
+SENT                | 35.48%  | Binance     | USDT  | 1 | flexible - api
+   Binance SENTUSDT funding rate: -1.254 => -228.067       [ ((35.484 / 365 + -1.254) * 1 - 0.075 - 0.018) / 1 / 2 = -0.625 ]
+   Bybit SENTUSDT funding rate: -1.084 => -197.444       [ ((35.484 / 365 + -1.084) * 1 - 0.075 - 0.02) / 1 / 2 = -0.541 ]
+STEEM               | 45.44%  | Binance     | USDT  | 1 | flexible - api
+   Binance STEEMUSDT funding rate: -3.507 => -634.343       [ ((45.436 / 365 + -3.507) * 1 - 0.075 - 0.018) / 1 / 2 = -1.738 ]
+   Bybit STEEMUSDT funding rate: -4.329 => -784.746       [ ((45.436 / 365 + -4.329) * 1 - 0.075 - 0.02) / 1 / 2 = -2.15 ]
+ZKP                 | 20.78%  | Binance     | USDT  | 1 | flexible - api
+   Binance ZKPUSDT funding rate: -0.065 => -18.483       [ ((20.781 / 365 + -0.065) * 1 - 0.075 - 0.018) / 1 / 2 = -0.051 ]
+   Bybit ZKPUSDT funding rate: -0.018 => -10.183       [ ((20.781 / 365 + -0.018) * 1 - 0.075 - 0.02) / 1 / 2 = -0.028 ]
+AXS                 | 32.37%  | Binance     | USDT  | 1 | flexible - api
+   Binance AXSUSDT funding rate: -2.191 => -400.734       [ ((32.372 / 365 + -2.191) * 1 - 0.075 - 0.018) / 1 / 2 = -1.098 ]
+   Bybit AXSUSDT funding rate: -3.235 => -591.519       [ ((32.372 / 365 + -3.235) * 1 - 0.075 - 0.02) / 1 / 2 = -1.621 ]
+ENSO                | 25.71%  | Binance     | USDT  | 1 | flexible - api
+   Binance ENSOUSDT funding rate: -0.366 => -70.874       [ ((25.708 / 365 + -0.366) * 1 - 0.075 - 0.018) / 1 / 2 = -0.194 ]
+   Bybit ENSOUSDT funding rate: -0.093 => -21.515       [ ((25.708 / 365 + -0.093) * 1 - 0.075 - 0.02) / 1 / 2 = -0.059 ]
+INIT                | 38.13%  | Binance     | USDT  | 1 | flexible - api
+   Binance INITUSDT funding rate: -0.185 => -31.722       [ ((38.133 / 365 + -0.185) * 1 - 0.075 - 0.018) / 1 / 2 = -0.087 ]
+   Bybit INITUSDT funding rate: 0.022 => 5.779       [ ((38.133 / 365 + 0.022) * 1 - 0.075 - 0.02) / 1 / 2 = 0.016 ]
+LA                  | 32.29%  | Binance     | USDT  | 1 | flexible - api
+   Binance LAUSDT funding rate: -2.602 => -475.78       [ ((32.291 / 365 + -2.602) * 1 - 0.075 - 0.018) / 1 / 2 = -1.304 ]
+   Bybit LAUSDT funding rate: -2.326 => -425.762       [ ((32.291 / 365 + -2.326) * 1 - 0.075 - 0.02) / 1 / 2 = -1.166 ]
+SOPH                | 29.45%  | Binance     | FDUSD | 1 | flexible - api
+   Binance SOPHUSDT funding rate: -0.061 => 0.393       [ ((29.452 / 365 + -0.061) * 1 - 0 - 0.018) / 1 / 2 = 0.001 ]
+   Bybit SOPHUSDT funding rate: -0.29 => -41.831       [ ((29.452 / 365 + -0.29) * 1 - 0 - 0.02) / 1 / 2 = -0.115 ]
+LRC                 | 20.1%   | Binance     | USDT  | 1 | flexible - api
+   Binance LRCUSDT funding rate: -0.328 => -66.786       [ ((20.105 / 365 + -0.328) * 1 - 0.075 - 0.018) / 1 / 2 = -0.183 ]
+   Bybit LRCUSDT funding rate: -0.028 => -12.43       [ ((20.105 / 365 + -0.028) * 1 - 0.075 - 0.02) / 1 / 2 = -0.034 ]
+CYBER               | 46.24%  | Binance     | FDUSD | 1 | flexible - api
+   Binance CYBERUSDT funding rate: -3.569 => -631.51       [ ((46.238 / 365 + -3.569) * 1 - 0 - 0.018) / 1 / 2 = -1.73 ]
+   Bybit CYBERUSDT funding rate: -3.788 => -671.842       [ ((46.238 / 365 + -3.788) * 1 - 0 - 0.02) / 1 / 2 = -1.841 ]
+ARK                 | 23.11%  | Binance     | USDT  | 1 | flexible - api
+   Binance ARKUSDT funding rate: -0.052 => -14.872       [ ((23.113 / 365 + -0.052) * 1 - 0.075 - 0.018) / 1 / 2 = -0.041 ]
+   Bybit ARKUSDT funding rate: -0.17 => -36.742       [ ((23.113 / 365 + -0.17) * 1 - 0.075 - 0.02) / 1 / 2 = -0.101 ]
 IMU_RC_tag          | 200%    | Bybit       | USDT  | 28 | from page - locked
-Crazy_Thursday_NewUser | 555%    | Bybit       | USDT  | 3 | from page - locked
 25Q2_555            | 555%    | Bybit       | USDT  | 1 | from page - locked
 CIS_26Q1_V3         | 600%    | Bybit       | USDT  | 3 | from page - locked
 MA_26Q1_USDT_For_USDT | 666%    | Bybit       | USDT  | 3 | from page - locked
-MMT                 | 51.28%  | Bybit       |       | 1 | from api - flexible
-   Binance MMTUSDT funding rate: -0.532 => -74.78       [ ((51.28 / 365 + -0.532) * 1 - 0 - 0.018) / 1 / 2 = -0.205 ]
-   Bybit MMTUSDT funding rate: -0.75 => -114.799       [ ((51.28 / 365 + -0.75) * 1 - 0 - 0.02) / 1 / 2 = -0.315 ]
-ZORA                | 90.23%  | Bybit       |       | 1 | from api - flexible
-   Binance ZORAUSDT funding rate: -0.528 => -54.447       [ ((90.23 / 365 + -0.528) * 1 - 0 - 0.018) / 1 / 2 = -0.149 ]
-   Bybit ZORAUSDT funding rate: -0.74 => -93.536       [ ((90.23 / 365 + -0.74) * 1 - 0 - 0.02) / 1 / 2 = -0.256 ]
-AVNT                | 50.12%  | Bybit       |       | 1 | from api - flexible
-   Binance AVNTUSDT funding rate: -0.164 => -8.138       [ ((50.12 / 365 + -0.164) * 1 - 0 - 0.018) / 1 / 2 = -0.022 ]
-   Bybit AVNTUSDT funding rate: -0.344 => -41.298       [ ((50.12 / 365 + -0.344) * 1 - 0 - 0.02) / 1 / 2 = -0.113 ]
-0G                  | 41.38%  | Bybit       |       | 1 | from api - flexible
-   Binance 0GUSDT funding rate: -0.471 => -68.467       [ ((41.38 / 365 + -0.471) * 1 - 0 - 0.018) / 1 / 2 = -0.188 ]
-   Bybit 0GUSDT funding rate: -0.461 => -67.136       [ ((41.38 / 365 + -0.461) * 1 - 0 - 0.02) / 1 / 2 = -0.184 ]
-LA                  | 181.85% | Bybit       |       | 1 | from api - flexible
-   Binance LAUSDT funding rate: -2.201 => -313.985       [ ((181.85 / 365 + -2.201) * 1 - 0 - 0.018) / 1 / 2 = -0.86 ]
-   Bybit LAUSDT funding rate: -1.27 => -144.566       [ ((181.85 / 365 + -1.27) * 1 - 0 - 0.02) / 1 / 2 = -0.396 ]
-INIT                | 47.73%  | Bybit       |       | 1 | from api - flexible
-   Binance INITUSDT funding rate: -0.442 => -60.056       [ ((47.73 / 365 + -0.442) * 1 - 0 - 0.018) / 1 / 2 = -0.165 ]
-   Bybit INITUSDT funding rate: 0.008 => 21.594       [ ((47.73 / 365 + 0.008) * 1 - 0 - 0.02) / 1 / 2 = 0.059 ]
-BERA                | 96.96%  | Bybit       |       | 1 | from api - flexible
-   Binance BERAUSDT funding rate: -1.012 => -139.491       [ ((96.96 / 365 + -1.012) * 1 - 0 - 0.018) / 1 / 2 = -0.382 ]
-   Bybit BERAUSDT funding rate: -1.002 => -138.017       [ ((96.96 / 365 + -1.002) * 1 - 0 - 0.02) / 1 / 2 = -0.378 ]
-MOVE                | 92.98%  | Bybit       |       | 1 | from api - flexible
-   Binance MOVEUSDT funding rate: -0.616 => -69.129       [ ((92.98 / 365 + -0.616) * 1 - 0 - 0.018) / 1 / 2 = -0.189 ]
-   Bybit MOVEUSDT funding rate: -0.024 => 38.519       [ ((92.98 / 365 + -0.024) * 1 - 0 - 0.02) / 1 / 2 = 0.106 ]
-ATH                 | 22.06%  | Bybit       |       | 1 | from api - flexible
-   Binance ATHUSDT funding rate: 0.024 => 12.137       [ ((22.06 / 365 + 0.024) * 1 - 0 - 0.018) / 1 / 2 = 0.033 ]
-   Bybit ATHUSDT funding rate: 0.029 => 12.599       [ ((22.06 / 365 + 0.029) * 1 - 0 - 0.02) / 1 / 2 = 0.035 ]
-ENJ                 | 31.86%  | Bybit       |       | 1 | from api - flexible
-   Binance ENJUSDT funding rate: -0.068 => 0.203       [ ((31.86 / 365 + -0.068) * 1 - 0 - 0.018) / 1 / 2 = 0.001 ]
-   Bybit ENJUSDT funding rate: -0.148 => -14.746       [ ((31.86 / 365 + -0.148) * 1 - 0 - 0.02) / 1 / 2 = -0.04 ]
-SAFE                | 55.98%  | Bybit       |       | 1 | from api - flexible
-   Binance SAFEUSDT funding rate: -0.077 => 10.738       [ ((55.98 / 365 + -0.077) * 1 - 0 - 0.018) / 1 / 2 = 0.029 ]
-   Bybit SAFEUSDT funding rate: -0.043 => 16.531       [ ((55.98 / 365 + -0.043) * 1 - 0 - 0.02) / 1 / 2 = 0.045 ]
-UMA                 | 27.73%  | Bybit       |       | 1 | from api - flexible
-   Binance UMAUSDT funding rate: -0.586 => -96.306       [ ((27.73 / 365 + -0.586) * 1 - 0 - 0.018) / 1 / 2 = -0.264 ]
-   Bybit UMAUSDT funding rate: -0.564 => -92.802       [ ((27.73 / 365 + -0.564) * 1 - 0 - 0.02) / 1 / 2 = -0.254 ]
-AXS                 | 126.1%  | Bybit       |       | 1 | from api - flexible
-   Binance AXSUSDT funding rate: -1.874 => -282.301       [ ((126.1 / 365 + -1.874) * 1 - 0 - 0.018) / 1 / 2 = -0.773 ]
-   Bybit AXSUSDT funding rate: -1.93 => -292.848       [ ((126.1 / 365 + -1.93) * 1 - 0 - 0.02) / 1 / 2 = -0.802 ]
-AXL                 | 20.04%  | Bybit       |       | 1 | from api - flexible
-   Binance AXLUSDT funding rate: -0.082 => -8.219       [ ((20.04 / 365 + -0.082) * 1 - 0 - 0.018) / 1 / 2 = -0.023 ]
-   Bybit AXLUSDT funding rate: -0.221 => -33.902       [ ((20.04 / 365 + -0.221) * 1 - 0 - 0.02) / 1 / 2 = -0.093 ]
-AGLD                | 20.68%  | Bybit       |       | 1 | from api - flexible
-   Binance AGLDUSDT funding rate: 0.026 => 11.76       [ ((20.68 / 365 + 0.026) * 1 - 0 - 0.018) / 1 / 2 = 0.032 ]
-   Bybit AGLDUSDT funding rate: -0.007 => 5.437       [ ((20.68 / 365 + -0.007) * 1 - 0 - 0.02) / 1 / 2 = 0.015 ]
-MAGIC               | 79.24%  | Bybit       |       | 1 | from api - flexible
-   Binance MAGICUSDT funding rate: -0.996 => -145.491       [ ((79.24 / 365 + -0.996) * 1 - 0 - 0.018) / 1 / 2 = -0.399 ]
-   Bybit MAGICUSDT funding rate: -1.012 => -148.724       [ ((79.24 / 365 + -1.012) * 1 - 0 - 0.02) / 1 / 2 = -0.407 ]
-LRC                 | 51.54%  | Bybit       |       | 1 | from api - flexible
-   Binance LRCUSDT funding rate: -0.532 => -74.597       [ ((51.54 / 365 + -0.532) * 1 - 0 - 0.018) / 1 / 2 = -0.204 ]
-   Bybit LRCUSDT funding rate: -0.567 => -81.359       [ ((51.54 / 365 + -0.567) * 1 - 0 - 0.02) / 1 / 2 = -0.223 ]
-JTO                 | 23.96%  | Bybit       |       | 1 | from api - flexible
-   Binance JTOUSDT funding rate: -4.998 => -903.493       [ ((23.96 / 365 + -4.998) * 1 - 0 - 0.018) / 1 / 2 = -2.475 ]
-   Bybit JTOUSDT funding rate: -7.933 => -1439.485       [ ((23.96 / 365 + -7.933) * 1 - 0 - 0.02) / 1 / 2 = -3.944 ]
-ANKR                | 35.97%  | Bybit       |       | 1 | from api - flexible
-   Binance ANKRUSDT funding rate: 0.008 => 16.13       [ ((35.97 / 365 + 0.008) * 1 - 0 - 0.018) / 1 / 2 = 0.044 ]
-   Bybit ANKRUSDT funding rate: -0.065 => 2.508       [ ((35.97 / 365 + -0.065) * 1 - 0 - 0.02) / 1 / 2 = 0.007 ]
+2Z                  | 37.93%  | Bybit       |       | 1 | from api - flexible
+   Binance 2ZUSDT funding rate: -0.092 => -1.156       [ ((37.93 / 365 + -0.092) * 1 - 0 - 0.018) / 1 / 2 = -0.003 ]
+   Bybit 2ZUSDT funding rate: -0.13 => -8.448       [ ((37.93 / 365 + -0.13) * 1 - 0 - 0.02) / 1 / 2 = -0.023 ]
+AVNT                | 27.42%  | Bybit       |       | 1 | from api - flexible
+   Binance AVNTUSDT funding rate: -0.195 => -25.179       [ ((27.42 / 365 + -0.195) * 1 - 0 - 0.018) / 1 / 2 = -0.069 ]
+   Bybit AVNTUSDT funding rate: -0.149 => -17.081       [ ((27.42 / 365 + -0.149) * 1 - 0 - 0.02) / 1 / 2 = -0.047 ]
+0G                  | 40.02%  | Bybit       |       | 1 | from api - flexible
+   Binance 0GUSDT funding rate: -0.265 => -31.669       [ ((40.02 / 365 + -0.265) * 1 - 0 - 0.018) / 1 / 2 = -0.087 ]
+   Bybit 0GUSDT funding rate: -0.176 => -15.725       [ ((40.02 / 365 + -0.176) * 1 - 0 - 0.02) / 1 / 2 = -0.043 ]
+LA                  | 141.94% | Bybit       |       | 1 | from api - flexible
+   Binance LAUSDT funding rate: -2.602 => -407.268       [ ((141.94 / 365 + -2.602) * 1 - 0 - 0.018) / 1 / 2 = -1.116 ]
+   Bybit LAUSDT funding rate: -2.326 => -357.25       [ ((141.94 / 365 + -2.326) * 1 - 0 - 0.02) / 1 / 2 = -0.979 ]
+INIT                | 22.28%  | Bybit       |       | 1 | from api - flexible
+   Binance INITUSDT funding rate: -0.185 => -25.962       [ ((22.28 / 365 + -0.185) * 1 - 0 - 0.018) / 1 / 2 = -0.071 ]
+   Bybit INITUSDT funding rate: 0.022 => 11.54       [ ((22.28 / 365 + 0.022) * 1 - 0 - 0.02) / 1 / 2 = 0.032 ]
+BERA                | 98.67%  | Bybit       |       | 1 | from api - flexible
+   Binance BERAUSDT funding rate: -1.151 => -163.938       [ ((98.67 / 365 + -1.151) * 1 - 0 - 0.018) / 1 / 2 = -0.449 ]
+   Bybit BERAUSDT funding rate: -0.986 => -134.236       [ ((98.67 / 365 + -0.986) * 1 - 0 - 0.02) / 1 / 2 = -0.368 ]
+ME                  | 36.33%  | Bybit       |       | 1 | from api - flexible
+   Binance MEUSDT funding rate: -0.428 => -63.3       [ ((36.33 / 365 + -0.428) * 1 - 0 - 0.018) / 1 / 2 = -0.173 ]
+   Bybit MEUSDT funding rate: -0.574 => -90.272       [ ((36.33 / 365 + -0.574) * 1 - 0 - 0.02) / 1 / 2 = -0.247 ]
+BLAST               | 20.26%  | Bybit       |       | 1 | from api - flexible
+   Bybit BLASTUSDT funding rate: -0.166 => -23.83       [ ((20.26 / 365 + -0.166) * 1 - 0 - 0.02) / 1 / 2 = -0.065 ]
+ATH                 | 23.65%  | Bybit       |       | 1 | from api - flexible
+   Binance ATHUSDT funding rate: 0.029 => 13.914       [ ((23.65 / 365 + 0.029) * 1 - 0 - 0.018) / 1 / 2 = 0.038 ]
+   Bybit ATHUSDT funding rate: -0.017 => 5.163       [ ((23.65 / 365 + -0.017) * 1 - 0 - 0.02) / 1 / 2 = 0.014 ]
+ENJ                 | 38.12%  | Bybit       |       | 1 | from api - flexible
+   Binance ENJUSDT funding rate: -0.079 => 1.279       [ ((38.12 / 365 + -0.079) * 1 - 0 - 0.018) / 1 / 2 = 0.004 ]
+   Bybit ENJUSDT funding rate: -0.272 => -34.211       [ ((38.12 / 365 + -0.272) * 1 - 0 - 0.02) / 1 / 2 = -0.094 ]
+AXS                 | 125.17% | Bybit       |       | 1 | from api - flexible
+   Binance AXSUSDT funding rate: -2.191 => -340.647       [ ((125.17 / 365 + -2.191) * 1 - 0 - 0.018) / 1 / 2 = -0.933 ]
+   Bybit AXSUSDT funding rate: -3.235 => -531.433       [ ((125.17 / 365 + -3.235) * 1 - 0 - 0.02) / 1 / 2 = -1.456 ]
+AGLD                | 20.11%  | Bybit       |       | 1 | from api - flexible
+   Binance AGLDUSDT funding rate: 0.028 => 11.895       [ ((20.11 / 365 + 0.028) * 1 - 0 - 0.018) / 1 / 2 = 0.033 ]
+   Bybit AGLDUSDT funding rate: -0.012 => 4.219       [ ((20.11 / 365 + -0.012) * 1 - 0 - 0.02) / 1 / 2 = 0.012 ]
+CYBER               | 128%    | Bybit       |       | 1 | from api - flexible
+   Binance CYBERUSDT funding rate: -3.569 => -590.629       [ ((128 / 365 + -3.569) * 1 - 0 - 0.018) / 1 / 2 = -1.618 ]
+   Bybit CYBERUSDT funding rate: -3.788 => -630.961       [ ((128 / 365 + -3.788) * 1 - 0 - 0.02) / 1 / 2 = -1.729 ]
+JTO                 | 22.37%  | Bybit       |       | 1 | from api - flexible
+   Binance JTOUSDT funding rate: -3.7 => -667.374       [ ((22.37 / 365 + -3.7) * 1 - 0 - 0.018) / 1 / 2 = -1.828 ]
+   Bybit JTOUSDT funding rate: -2.126 => -380.55       [ ((22.37 / 365 + -2.126) * 1 - 0 - 0.02) / 1 / 2 = -1.043 ]
 USDT                | 20%     | Mexc        | USDT  | 1 | from page
 USDT                | 15%     | Mexc        | USDT  | 7 | from page
 ETH                 | 20%     | Mexc        | USDT  | 7 | from page
-   Binance ETHUSDT funding rate: -0.006 => 8.436       [ ((20 / 365 + -0.006) * 7 - 0 - 0.018) / 7 / 2 = 0.023 ]
-   Binance ETHUSDC funding rate: -0.003 => 9.516       [ ((20 / 365 + -0.003) * 7 - 0 - 0) / 7 / 2 = 0.026 ]
-   Bybit ETHUSDT funding rate: -0.003 => 8.892       [ ((20 / 365 + -0.003) * 7 - 0 - 0.02) / 7 / 2 = 0.024 ]
+   Binance ETHUSDT funding rate: -0.005 => 8.641       [ ((20 / 365 + -0.005) * 7 - 0 - 0.018) / 7 / 2 = 0.024 ]
+   Binance ETHUSDC funding rate: -0.005 => 9.159       [ ((20 / 365 + -0.005) * 7 - 0 - 0) / 7 / 2 = 0.025 ]
+   Bybit ETHUSDT funding rate: -0.001 => 9.36       [ ((20 / 365 + -0.001) * 7 - 0 - 0.02) / 7 / 2 = 0.026 ]
 SOL                 | 20%     | Mexc        | USDT  | 7 | from page
-   Binance SOLUSDT funding rate: -0.025 => 4.978       [ ((20 / 365 + -0.025) * 7 - 0 - 0.018) / 7 / 2 = 0.014 ]
-   Binance SOLUSDC funding rate: -0.019 => 6.497       [ ((20 / 365 + -0.019) * 7 - 0 - 0) / 7 / 2 = 0.018 ]
-   Bybit SOLUSDT funding rate: -0.014 => 6.934       [ ((20 / 365 + -0.014) * 7 - 0 - 0.02) / 7 / 2 = 0.019 ]
+   Binance SOLUSDT funding rate: -0.036 => 3.03       [ ((20 / 365 + -0.036) * 7 - 0 - 0.018) / 7 / 2 = 0.008 ]
+   Binance SOLUSDC funding rate: -0.025 => 5.508       [ ((20 / 365 + -0.025) * 7 - 0 - 0) / 7 / 2 = 0.015 ]
+   Bybit SOLUSDT funding rate: -0.027 => 4.569       [ ((20 / 365 + -0.027) * 7 - 0 - 0.02) / 7 / 2 = 0.013 ]
 ECHELON             | 300%    | Mexc        | USDT  | 1 | from page
 MOVA                | 300%    | Mexc        | USDT  | 1 | from page
 TEM                 | 300%    | Mexc        | USDT  | 1 | from page
@@ -307,61 +184,58 @@ BRL                 | 20%     | Mexc        | USDT  | 1 | from page
 USDC                | 15%     | Mexc        | USDT  | 7 | from page
 USDC                | 12%     | Mexc        | USDT  | 1 | from page
 ZAMA                | 300%    | Mexc        | USDT  | 1 | from page
-   Binance ZAMAUSDT funding rate: 0.03 => 152.19       [ ((300 / 365 + 0.03) * 1 - 0 - 0.018) / 1 / 2 = 0.417 ]
-   Bybit ZAMAUSDT funding rate: -0.03 => 140.889       [ ((300 / 365 + -0.03) * 1 - 0 - 0.02) / 1 / 2 = 0.386 ]
+   Binance ZAMAUSDT funding rate: -0.026 => 141.947       [ ((300 / 365 + -0.026) * 1 - 0 - 0.018) / 1 / 2 = 0.389 ]
+   Bybit ZAMAUSDT funding rate: 0.027 => 151.232       [ ((300 / 365 + 0.027) * 1 - 0 - 0.02) / 1 / 2 = 0.414 ]
 3KDS                | 300%    | Mexc        | USDT  | 1 | from page
 SENT                | 50%     | Mexc        | USDT  | 30 | from page
-   Binance SENTUSDT funding rate: -1.099 => -175.7       [ ((50 / 365 + -1.099) * 30 - 0 - 0.018) / 30 / 2 = -0.481 ]
-   Bybit SENTUSDT funding rate: -1.029 => -162.954       [ ((50 / 365 + -1.029) * 30 - 0 - 0.02) / 30 / 2 = -0.446 ]
+   Binance SENTUSDT funding rate: -1.254 => -203.946       [ ((50 / 365 + -1.254) * 30 - 0 - 0.018) / 30 / 2 = -0.559 ]
+   Bybit SENTUSDT funding rate: -1.084 => -172.97       [ ((50 / 365 + -1.084) * 30 - 0 - 0.02) / 30 / 2 = -0.474 ]
 CKUSDT              | 25%     | Mexc        | USDT  | 30 | from page
 SUMR                | 100%    | Mexc        | USDT  | 30 | from page
 IP                  | 30%     | Mexc        | USDT  | 90 | from page
-   Binance IPUSDT funding rate: -0.106 => -4.394       [ ((30 / 365 + -0.106) * 90 - 0 - 0.018) / 90 / 2 = -0.012 ]
-   Binance IPUSDC funding rate: -0.11 => -5.131       [ ((30 / 365 + -0.11) * 90 - 0 - 0) / 90 / 2 = -0.014 ]
-   Bybit IPUSDT funding rate: -0.018 => 11.721       [ ((30 / 365 + -0.018) * 90 - 0 - 0.02) / 90 / 2 = 0.032 ]
+   Binance IPUSDT funding rate: -0.074 => 1.505       [ ((30 / 365 + -0.074) * 90 - 0 - 0.018) / 90 / 2 = 0.004 ]
+   Binance IPUSDC funding rate: -0.041 => 7.567       [ ((30 / 365 + -0.041) * 90 - 0 - 0) / 90 / 2 = 0.021 ]
+   Bybit IPUSDT funding rate: -0.101 => -3.409       [ ((30 / 365 + -0.101) * 90 - 0 - 0.02) / 90 / 2 = -0.009 ]
 IP                  | 25%     | Mexc        | USDT  | 180 | from page
-   Binance IPUSDT funding rate: -0.106 => -6.876       [ ((25 / 365 + -0.106) * 180 - 0 - 0.018) / 180 / 2 = -0.019 ]
-   Binance IPUSDC funding rate: -0.11 => -7.631       [ ((25 / 365 + -0.11) * 180 - 0 - 0) / 180 / 2 = -0.021 ]
-   Bybit IPUSDT funding rate: -0.018 => 9.241       [ ((25 / 365 + -0.018) * 180 - 0 - 0.02) / 180 / 2 = 0.025 ]
+   Binance IPUSDT funding rate: -0.074 => -0.977       [ ((25 / 365 + -0.074) * 180 - 0 - 0.018) / 180 / 2 = -0.003 ]
+   Binance IPUSDC funding rate: -0.041 => 5.067       [ ((25 / 365 + -0.041) * 180 - 0 - 0) / 180 / 2 = 0.014 ]
+   Bybit IPUSDT funding rate: -0.101 => -5.888       [ ((25 / 365 + -0.101) * 180 - 0 - 0.02) / 180 / 2 = -0.016 ]
 CORE                | 25%     | Mexc        | USDT  | 1 | from page
    Bybit COREUSDT funding rate: 0.03 => 14.325       [ ((25 / 365 + 0.03) * 1 - 0 - 0.02) / 1 / 2 = 0.039 ]
 
 ===========================
 
-MOVE,INIT,NIL,FOGO,SAFE,ANKR,CTK,SOPH,CORE,BABY,ATH
-
-
-ZAMA                    | 152.19    | Mexc      | USDT  | Binance   | 1   | 16667
-MOVE                    | 38.519    | Bybit     |       | Bybit     | 1   | 0
-INIT                    | 21.594    | Bybit     |       | Bybit     | 1   | 0
+ZAMA                    | 151.232   | Mexc      | USDT  | Bybit     | 1   | 16667
+NIL                     | 20.284    | Binance   | USDT  | Binance   | 120 | 0
 USDT                    | 20        | Mexc      | USDT  |           | 1   | 20000000
-NIL                     | 19.341    | Binance   | USDT  | Bybit     | 120 | 0
-FOGO                    | 19.311    | Binance   | USDT  | Binance   | 90  | 0
-FOGO                    | 17.217    | Binance   | USDT  | Binance   | 60  | 0
-NIL                     | 17.197    | Binance   | USDT  | Bybit     | 60  | 0
-SAFE                    | 16.531    | Bybit     |       | Bybit     | 1   | 0
-ANKR                    | 16.13     | Bybit     |       | Binance   | 1   | 0
+NIL                     | 18.142    | Binance   | USDT  | Binance   | 60  | 0
+BABY                    | 16.86     | Binance   | USDT  | Binance   | 120 | 0
 CTK                     | 16.036    | Binance   | USDT  | Binance   | 90  | 0
+WAL                     | 15.704    | Binance   | FDUSD | Bybit     | 90  | 0
+NIL                     | 15.359    | Binance   | USDT  | Binance   | 30  | 0
 USDT                    | 15        | Mexc      | USDT  |           | 7   | 100000
 USDC                    | 15        | Mexc      | USDT  |           | 7   | 50000
-FOGO                    | 14.434    | Binance   | USDT  | Binance   | 30  | 0
-SOPH                    | 14.43     | Binance   | FDUSD | Bybit     | 1   | 0
-NIL                     | 14.408    | Binance   | USDT  | Bybit     | 30  | 0
 CORE                    | 14.325    | Mexc      | USDT  | Bybit     | 1   | -1
-BABY                    | 13.46     | Binance   | USDT  | Binance   | 120 | 0
-ATH                     | 12.599    | Bybit     |       | Bybit     | 1   | 0
+ATH                     | 13.914    | Bybit     |       | Binance   | 1   | 0
+BABY                    | 13.769    | Binance   | USDT  | Binance   | 60  | 0
+WAL                     | 13.184    | Binance   | FDUSD | Bybit     | 60  | 0
 USDC                    | 12        | Mexc      | USDT  |           | 1   | 20000000
-AGLD                    | 11.76     | Bybit     |       | Binance   | 1   | 0
-IP                      | 11.721    | Mexc      | USDT  | Bybit     | 90  | 800000
-BABY                    | 10.369    | Binance   | USDT  | Binance   | 60  | 0
-ETH                     | 9.516     | Mexc      | USDT  | Binance   | 7   | 35
-IP                      | 9.241     | Mexc      | USDT  | Bybit     | 180 | 800000
-SOL                     | 6.934     | Mexc      | USDT  | Bybit     | 7   | 770
-INIT                    | 4.007     | Binance   | USDT  | Bybit     | 1   | 0
-SXP                     | 1.556     | Binance   | USDT  | Bybit     | 1   | 0
-ENJ                     | 0.203     | Bybit     |       | Binance   | 1   | 0
+AGLD                    | 11.895    | Bybit     |       | Binance   | 1   | 0
+INIT                    | 11.54     | Bybit     |       | Bybit     | 1   | 0
+KERNEL                  | 10.863    | Binance   | USDT  | Binance   | 90  | 0
+ETH                     | 9.36      | Mexc      | USDT  | Bybit     | 7   | 35
+KERNEL                  | 8.768     | Binance   | USDT  | Binance   | 60  | 0
+IP                      | 7.567     | Mexc      | USDT  | Binance   | 90  | 800000
+KERNEL                  | 6.485     | Binance   | USDT  | Binance   | 30  | 0
+FOGO                    | 6.461     | Binance   | USDT  | Binance   | 90  | 0
+INIT                    | 5.779     | Binance   | USDT  | Bybit     | 1   | 0
+SOL                     | 5.508     | Mexc      | USDT  | Binance   | 7   | 770
+IP                      | 5.067     | Mexc      | USDT  | Binance   | 180 | 800000
+FOGO                    | 4.367     | Binance   | USDT  | Binance   | 60  | 0
+FOGO                    | 1.584     | Binance   | USDT  | Binance   | 30  | 0
+ENJ                     | 1.279     | Bybit     |       | Binance   | 1   | 0
+SOPH                    | 0.393     | Binance   | FDUSD | Binance   | 1   | 0
 IMU_RC_tag              | 0         | Bybit     | USDT  |           | 28  | 0
-Crazy_Thursday_NewUser  | 0         | Bybit     | USDT  |           | 3   | 0
 25Q2_555                | 0         | Bybit     | USDT  |           | 1   | 0
 CIS_26Q1_V3             | 0         | Bybit     | USDT  |           | 3   | 0
 MA_26Q1_USDT_For_USDT   | 0         | Bybit     | USDT  |           | 3   | 0
@@ -374,45 +248,38 @@ BRL                     | 0         | Mexc      | USDT  |           | 1   | 5233
 3KDS                    | 0         | Mexc      | USDT  |           | 1   | 200000
 CKUSDT                  | 0         | Mexc      | USDT  |           | 30  | 1000000
 SUMR                    | 0         | Mexc      | USDT  |           | 30  | 400000
-ZKC                     | -0.278    | Binance   | USDT  | Bybit     | 1   | 0
-WAL                     | -0.704    | Binance   | FDUSD | Bybit     | 90  | 0
-ZKP                     | -1.382    | Binance   | USDT  | Bybit     | 1   | 0
-WAL                     | -3.225    | Binance   | FDUSD | Bybit     | 60  | 0
-MOVE                    | -4.452    | Binance   | USDT  | Bybit     | 1   | 0
-ARK                     | -5.325    | Binance   | USDT  | Binance   | 1   | 0
-AVNT                    | -8.138    | Bybit     |       | Binance   | 1   | 0
-AXL                     | -8.219    | Bybit     |       | Binance   | 1   | 0
-KERNEL                  | -9.73     | Binance   | USDT  | Binance   | 90  | 0
-KERNEL                  | -11.824   | Binance   | USDT  | Binance   | 60  | 0
-SHELL                   | -13.583   | Binance   | USDT  | Binance   | 1   | 0
-ENSO                    | -14.055   | Binance   | USDT  | Bybit     | 1   | 0
-KERNEL                  | -14.107   | Binance   | USDT  | Binance   | 30  | 0
-LPT                     | -19.227   | Binance   | USDT  | Bybit     | 1   | 0
-ZORA                    | -54.447   | Bybit     |       | Binance   | 1   | 0
-0G                      | -67.136   | Bybit     |       | Bybit     | 1   | 0
-0G                      | -69.37    | Binance   | USDT  | Bybit     | 120 | 0
-NOM                     | -69.821   | Binance   | USDT  | Bybit     | 1   | 0
-0G                      | -71.418   | Binance   | USDT  | Bybit     | 90  | 0
-LRC                     | -74.597   | Bybit     |       | Binance   | 1   | 0
-MMT                     | -74.78    | Bybit     |       | Binance   | 1   | 0
-BREV                    | -82.153   | Binance   | USDT  | Bybit     | 1   | 0
-0G                      | -86.23    | Binance   | USDT  | Bybit     | 1   | 0
-UMA                     | -92.802   | Bybit     |       | Bybit     | 1   | 0
-MMT                     | -95.614   | Binance   | USDT  | Binance   | 1   | 0
-LRC                     | -97.854   | Binance   | USDT  | Binance   | 1   | 0
-UMA                     | -110.341  | Binance   | USDT  | Bybit     | 1   | 0
-BERA                    | -138.017  | Bybit     |       | Bybit     | 1   | 0
-LA                      | -144.566  | Bybit     |       | Bybit     | 1   | 0
-MAGIC                   | -145.491  | Bybit     |       | Binance   | 1   | 0
-SENT                    | -162.954  | Mexc      | USDT  | Bybit     | 30  | 10000000
-BERA                    | -171.639  | Binance   | USDT  | Bybit     | 90  | 0
-BERA                    | -180.285  | Binance   | USDT  | Bybit     | 1   | 0
-SENT                    | -187.05   | Binance   | USDT  | Bybit     | 1   | 0
-LA                      | -232.971  | Binance   | USDT  | Bybit     | 1   | 0
-RPL                     | -241.852  | Binance   | USDT  | Bybit     | 1   | 0
-AXS                     | -282.301  | Bybit     |       | Binance   | 1   | 0
-AXS                     | -342.665  | Binance   | USDT  | Binance   | 1   | 0
-JTO                     | -903.493  | Bybit     |       | Binance   | 1   | 0
-ORCA                    | -1897.597 | Binance   | USDT  | Binance   | 1   | 0
+2Z                      | -1.156    | Bybit     |       | Binance   | 1   | 0
+ZKC                     | -2.727    | Binance   | USDT  | Bybit     | 1   | 0
+BREV                    | -5.998    | Binance   | USDT  | Bybit     | 1   | 0
+SXP                     | -6.796    | Binance   | USDT  | Bybit     | 1   | 0
+MMT                     | -9.283    | Binance   | USDT  | Bybit     | 1   | 0
+ZKP                     | -10.183   | Binance   | USDT  | Bybit     | 1   | 0
+LRC                     | -12.43    | Binance   | USDT  | Bybit     | 1   | 0
+MOVE                    | -13.467   | Binance   | USDT  | Bybit     | 1   | 0
+ARK                     | -14.872   | Binance   | USDT  | Binance   | 1   | 0
+0G                      | -15.725   | Bybit     |       | Bybit     | 1   | 0
+AVNT                    | -17.081   | Bybit     |       | Bybit     | 1   | 0
+0G                      | -17.279   | Binance   | USDT  | Bybit     | 120 | 0
+0G                      | -19.328   | Binance   | USDT  | Bybit     | 90  | 0
+ENSO                    | -21.515   | Binance   | USDT  | Bybit     | 1   | 0
+BLAST                   | -23.83    | Bybit     |       | Bybit     | 1   | 0
+0G                      | -35.291   | Binance   | USDT  | Bybit     | 1   | 0
+RPL                     | -59.528   | Binance   | USDT  | Bybit     | 1   | 0
+ME                      | -63.3     | Bybit     |       | Binance   | 1   | 0
+ONT                     | -68.42    | Binance   | USDT  | Binance   | 1   | 0
+BERA                    | -134.236  | Bybit     |       | Bybit     | 1   | 0
+BERA                    | -168.714  | Binance   | USDT  | Bybit     | 90  | 0
+SENT                    | -172.97   | Mexc      | USDT  | Bybit     | 30  | 10000000
+BERA                    | -179.027  | Binance   | USDT  | Bybit     | 1   | 0
+SENT                    | -197.444  | Binance   | USDT  | Bybit     | 1   | 0
+AXS                     | -340.647  | Bybit     |       | Binance   | 1   | 0
+LA                      | -357.25   | Bybit     |       | Bybit     | 1   | 0
+JTO                     | -380.55   | Bybit     |       | Bybit     | 1   | 0
+AXS                     | -400.734  | Binance   | USDT  | Binance   | 1   | 0
+LA                      | -425.762  | Binance   | USDT  | Bybit     | 1   | 0
+CYBER                   | -590.629  | Bybit     |       | Binance   | 1   | 0
+CYBER                   | -631.51   | Binance   | FDUSD | Binance   | 1   | 0
+STEEM                   | -634.343  | Binance   | USDT  | Binance   | 1   | 0
+ORCA                    | -1171.566 | Binance   | USDT  | Bybit     | 1   | 0
 
 C:\bnn\Bnncmd\bin\Debug\net8.0-windows>

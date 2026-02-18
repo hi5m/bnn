@@ -187,7 +187,9 @@ namespace bnncmd.Exchanges
             if (accInfo.Error != null && !accInfo.Success) throw new Exception(accInfo.Error.Message);
             foreach (var a in accInfo.Data.Assets)
             {
-                if (a.Asset.Equals(coin, StringComparison.OrdinalIgnoreCase)) return a.WalletBalance;
+                // Console.WriteLine(a);
+                // if (a.Asset.Equals(coin, StringComparison.OrdinalIgnoreCase)) return a.WalletBalance;
+                if (a.Asset.Equals(coin, StringComparison.OrdinalIgnoreCase)) return a.MaxWithdrawQuantity;
             }
             return 0;
             // return accInfo.Data.AvailableBalance;
@@ -467,16 +469,19 @@ namespace bnncmd.Exchanges
                 },*/
                 onOrderUpdate: data =>
                 {
-                    if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.New) return;
-                    BnnUtils.ClearCurrentConsoleLine();
-                    Console.WriteLine($"Order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
+                    // if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.New) return;
                     if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.Filled)
                     {
-                        UnsubscribeOrderBookData();
+                        ExecFuturesOrder();
+                        /* UnsubscribeOrderBookData();
                         _showRealtimeData = false;
                         _isLock = true;
                         BnnUtils.ClearCurrentConsoleLine();
-                        FireShortEntered(); // in real environment fired via subsription
+                        _futuresOrder = null;
+                        FireShortEntered(); // in real environment fired via subsription */
+
+                        BnnUtils.ClearCurrentConsoleLine();
+                        Console.WriteLine($"Order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
                     }
                 }
             );
