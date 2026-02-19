@@ -202,6 +202,7 @@ namespace Bnncmd.Strategy
                         var dayProfit = ((p.Apr / 365 + hi.EmaFundingRate) * p.Term - p.SpotFee - hi.Fee) / p.Term / 2;
                         var realApr = 365 * dayProfit;
                         Console.WriteLine($"   {e.Name} {hi.Symbol} ema day funding rate: {hi.EmaFundingRate:0.###} => {realApr:0.###}  [ (({p.Apr:0.###} / 365 + {hi.EmaFundingRate:0.###}) * {p.Term} - {p.SpotFee} - {hi.Fee}) / {p.Term} / 2 = {dayProfit:0.###} ]");
+                        Console.WriteLine($"   ema apr: {hi.EmaApr:0.###}, 3 months apr: {hi.ThreeMonthsApr:0.###}, current rate: {hi.CurrentFundingRate:0.####}");
                         if ((p.HedgeInfo == null) || (p.RealApr < realApr))
                         {
                             p.HedgeInfo = hi;

@@ -433,8 +433,8 @@ namespace bnncmd.Exchanges
                 Symbol = symbol,
                 EmaFundingRate = emaFr,
                 EmaApr = emaFr * 365,
-                ThreeMonthsApr = ratesArr.Sum() / (fundingRates.Data[^1].FundingTime - fundingRates.Data[0].FundingTime).Days * 365,
-                CurrentFundingRate = GetCurrentFundingRate(symbol),
+                ThreeMonthsApr = 100 * ratesArr.Sum() / (fundingRates.Data[^1].FundingTime - fundingRates.Data[0].FundingTime).Days * 365,
+                CurrentFundingRate = 100 * GetCurrentFundingRate(symbol),
                 Fee = fee
             });
         }
@@ -445,17 +445,6 @@ namespace bnncmd.Exchanges
             AddHedge(hedges, coin + StableCoin.USDT, FuturesMakerFee);
             AddHedge(hedges, coin + StableCoin.USDC, 0);
             return [.. hedges];
-
-            /*var fundingInterval = fundingRates.Data[^1].FundingTime.Hour - fundingRates.Data[^2].FundingTime.Hour;
-            var currFundingRate = fundingRates.Data[^1].FundingRate * 100 * 24 / fundingInterval;
-            return currFundingRate;*/
-
-            /* decimal sumFundingRate = 0;
-            foreach (var r in fundingRates.Data)
-            {
-                Console.WriteLine($"      {r.FundingTime}: {r.FundingRate * 100}");
-                sumFundingRate += r.FundingRate * 100;
-            }*/
         }
 
         #endregion
