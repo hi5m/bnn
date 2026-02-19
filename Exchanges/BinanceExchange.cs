@@ -353,12 +353,6 @@ namespace bnncmd.Exchanges
 
         #endregion
 
-        #region Spot Routines
-
-        public override void BuySpot(string coin, decimal amount) => throw new NotImplementedException();
-
-        #endregion
-
         #region Funding Rate Routines
 
         public void GetFundingRateStat(string symbol, int daysCount)
@@ -369,10 +363,15 @@ namespace bnncmd.Exchanges
 
             // ema, avg, min, max, first date, last value, sum, interval, ...
             var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-daysCount), DateTime.Now, 1000).Result.Data;
-            if (fundingRates.Length < 2) throw new Exception($"There are no values for this symbol on {Name}");
+            if (fundingRates.Length < 2)
+            {
+                Console.WriteLine($"There are no values for this symbol on {Name}");
+                // throw new Exception($"There are no values for this symbol on {Name}");
+                return;
+            }
             var firstDate = fundingRates.First().FundingTime;
             var lastValue = fundingRates.Last().FundingRate * 100;
-            var interval = fundingRates[^1].FundingTime.Hour - fundingRates[^2].FundingTime.Hour;
+            var interval = (fundingRates[^1].FundingTime - fundingRates[^2].FundingTime).Hours;
             var minValue = decimal.MaxValue;
             var maxValue = decimal.MinValue;
             var minValueDay = DateTime.MinValue;
@@ -414,16 +413,28 @@ namespace bnncmd.Exchanges
             }
         }
 
+        private decimal GetCurrentFundingRate(string symbol)
+        {
+            var fundingInfo = _apiClient.UsdFuturesApi.ExchangeData.GetMarkPriceAsync(symbol).Result;
+            if (fundingInfo.Error != null && !fundingInfo.Success) throw new Exception(fundingInfo.Error.Message);
+            return fundingInfo.Data.FundingRate ?? 0;
+        }
+
         private void AddHedge(List<HedgeInfo> hedges, string symbol, decimal fee)
         {
-            var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now, 72).Result;
+            var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now, 1000).Result; // 72
             if (fundingRates.Data.Length < 2) return;
-            var fundingInterval = fundingRates.Data[^1].FundingTime.Hour - fundingRates.Data[^2].FundingTime.Hour;
-            var ratesArr = fundingRates.Data.Select(r => r.FundingRate).Reverse().Take(10).ToArray(); // then process EMA
+            var fundingInterval = (fundingRates.Data[^1].FundingTime - fundingRates.Data[^2].FundingTime).Hours;
+            var ratesArr = fundingRates.Data.Select(r => r.FundingRate).Reverse().ToArray(); // then process EMA -- .Take(10)
+            var emaFr = 100 * GetEmaFundingRate(ratesArr) * 24 / fundingInterval;
+
             hedges.Add(new HedgeInfo(this)
             {
                 Symbol = symbol,
-                EmaFundingRate = 100 * GetEmaFundingRate(ratesArr) * 24 / fundingInterval,
+                EmaFundingRate = emaFr,
+                EmaApr = emaFr * 365,
+                ThreeMonthsApr = ratesArr.Sum() / (fundingRates.Data[^1].FundingTime - fundingRates.Data[0].FundingTime).Days * 365,
+                CurrentFundingRate = GetCurrentFundingRate(symbol),
                 Fee = fee
             });
         }
@@ -446,6 +457,12 @@ namespace bnncmd.Exchanges
                 sumFundingRate += r.FundingRate * 100;
             }*/
         }
+
+        #endregion
+
+        #region Spot Routines
+
+        public override void BuySpot(string coin, decimal amount) => throw new NotImplementedException();
 
         #endregion
 

@@ -32,7 +32,16 @@ namespace Bnncmd.Strategy
 
         public string Symbol { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Ema FR * Day Intervals Count
+        /// </summary>
         public decimal EmaFundingRate { get; set; }
+
+        public decimal EmaApr { get; set; }
+
+        public decimal ThreeMonthsApr { get; set; }
+
+        public decimal CurrentFundingRate { get; set; }
 
         public decimal Fee { get; set; }
     }
@@ -156,12 +165,12 @@ namespace Bnncmd.Strategy
 
         public static void FindBestProduct()
         {
-            var fundingRateDepth = 3;
+            var fundingRateDepth = 90;
             List<EarnProduct> products = [];
             var minApr = 20;
 
             // Get earn products from all exchanges
-            var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; // 
+            var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; 
             // var exchanges = new List<AbstractExchange> { Exchange.Mexc };
             foreach (var e in exchanges)
             {
@@ -192,7 +201,7 @@ namespace Bnncmd.Strategy
                     {
                         var dayProfit = ((p.Apr / 365 + hi.EmaFundingRate) * p.Term - p.SpotFee - hi.Fee) / p.Term / 2;
                         var realApr = 365 * dayProfit;
-                        Console.WriteLine($"   {e.Name} {hi.Symbol} funding rate: {hi.EmaFundingRate:0.###} => {realApr:0.###}       [ (({p.Apr:0.###} / 365 + {hi.EmaFundingRate:0.###}) * {p.Term} - {p.SpotFee} - {hi.Fee}) / {p.Term} / 2 = {dayProfit:0.###} ]");
+                        Console.WriteLine($"   {e.Name} {hi.Symbol} ema day funding rate: {hi.EmaFundingRate:0.###} => {realApr:0.###}  [ (({p.Apr:0.###} / 365 + {hi.EmaFundingRate:0.###}) * {p.Term} - {p.SpotFee} - {hi.Fee}) / {p.Term} / 2 = {dayProfit:0.###} ]");
                         if ((p.HedgeInfo == null) || (p.RealApr < realApr))
                         {
                             p.HedgeInfo = hi;
@@ -210,10 +219,9 @@ namespace Bnncmd.Strategy
                 var arpStr = $"{p.RealApr:0.###}";
                 var futuresExchange = $"{(p.HedgeInfo == null ? string.Empty : p.HedgeInfo.Exchanger.Name)}";
                 var term = $"{p.Term:0}";
-                var futuresCoin = $"{(p.HedgeInfo == null ? string.Empty : p.HedgeInfo.Symbol)}";
-                Console.WriteLine($"{p.ProductName,-23} | {arpStr,-9} | {p.Exchange.Name,-9} | {p.StableCoin,-5} | {futuresExchange,-9} | {term,-3} | {p.LimitMax}");
+                var futuresCoin = $"{(p.HedgeInfo == null ? string.Empty : p.HedgeInfo.Symbol[p.ProductName.Length..])}";
+                Console.WriteLine($"{p.ProductName,-23} | {arpStr,-9} | {p.Exchange.Name,-7} | {p.StableCoin,-5} | {futuresExchange,-7} | {futuresCoin,-5} | {term,-3} | {p.LimitMax}");
             }
-            // Environment.Exit(0);
         }
 
         #region Parent Methods

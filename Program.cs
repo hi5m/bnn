@@ -165,7 +165,6 @@ internal class Program
                 var dayCount = args.Length > 4 ? int.Parse(args[4]) : 99;
                 foreach (var s in symbols)
                 {
-
                     Exchange.Binance.GetFundingRateStat(s, dayCount);
                     Console.WriteLine();
                 }

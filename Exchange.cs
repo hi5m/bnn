@@ -108,7 +108,7 @@ namespace Bnncmd
         public abstract decimal FuturesTakerFee { get; }
         public abstract decimal FuturesMakerFee { get; }
         public bool IsTest { get; set; }
-        public double FundingRateDepth { get; set; } = 3;
+        public double FundingRateDepth { get; set; } = 90;
 
         protected readonly Dictionary<decimal, DateTime> _bookState = [];
 

@@ -71,13 +71,12 @@ namespace Bnncmd
         public override HedgeInfo[] GetDayFundingRate(string coin)
         {
             var symbol = coin + "USDT";
-            // var bybitClient = new Bybit.Net.Clients.BybitRestClient();
             var bybitData = _apiClient.V5Api.ExchangeData.GetFundingRateHistoryAsync(Category.Linear, symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now).Result.Data;
             if (bybitData == null) return [];
             var bybitRates = bybitData.List;
             if (bybitRates.Length < 2) return [];
 
-            var fundingInterval = bybitRates[0].Timestamp.Hour - bybitRates[1].Timestamp.Hour;
+            var fundingInterval = (bybitRates[0].Timestamp - bybitRates[1].Timestamp).Hours;
             var ratesArr = bybitRates.Select(r => r.FundingRate).Take(10).ToArray(); // then process EMA
             return [new HedgeInfo(this)
             {
@@ -190,21 +189,23 @@ namespace Bnncmd
         private void GetBybitApiProducts(List<EarnProduct> products, decimal minApr)
         {
             Console.WriteLine($"{Exchange.Bybit.Name} - Api...");
-            var apiProducts = _apiClient.V5Api.Earn.GetProductInfoAsync(EarnCategory.FlexibleSaving); // .Result.Data.List
+            var apiProducts = _apiClient.V5Api.Earn.GetProductInfoAsync(EarnCategory.FlexibleSaving);
             foreach (var p in apiProducts.Result.Data.List)
             {
-                var apr = decimal.Parse(p.EstimateApr.Substring(0, p.EstimateApr.Length - 1));// / 100; // 	"4.79%"
+                var apr = decimal.Parse(p.EstimateApr.Substring(0, p.EstimateApr.Length - 1));
                 if (apr < minApr) continue;
-                var product = new EarnProduct(Exchange.Bybit, p.Asset, apr);
-                product.Comment = "from api - flexible";
+                var product = new EarnProduct(Exchange.Bybit, p.Asset, apr)
+                {
+                    Comment = "from api - flexible",
+                    StableCoin = StableCoin.USDT
+                };
                 products.Add(product);
-                // Console.WriteLine($"{p.Asset}: {apr * 100}%");
             }
 
-            apiProducts = _apiClient.V5Api.Earn.GetProductInfoAsync(EarnCategory.OnChain); // .Result.Data.List
+            apiProducts = _apiClient.V5Api.Earn.GetProductInfoAsync(EarnCategory.OnChain);
             foreach (var p in apiProducts.Result.Data.List)
             {
-                var apr = decimal.Parse(p.EstimateApr.Substring(0, p.EstimateApr.Length - 1));// / 100; // 	"4.79%"
+                var apr = decimal.Parse(p.EstimateApr.Substring(0, p.EstimateApr.Length - 1));
                 if (apr < minApr) continue;
                 var product = new EarnProduct(Exchange.Bybit, p.Asset, apr, "from api - on-chain")
                 {
