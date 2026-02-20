@@ -200,6 +200,7 @@ namespace Bnncmd.Strategy
                     var his = e.GetDayFundingRate(p.ProductName);
                     foreach (var hi in his)
                     {
+                        var actualFundingRate = p.Term == 1 ? hi.EmaFundingRate : hi.ThreeMonthsApr / 365;
                         var dayProfit = ((p.Apr / 365 + hi.EmaFundingRate) * p.Term - p.SpotFee - hi.Fee) / p.Term / 2;
                         var realApr = 365 * dayProfit;
                         Console.WriteLine($"   {e.Name} {hi.Symbol} ema day funding rate: {hi.EmaFundingRate:0.###} => {realApr:0.###}  [ (({p.Apr:0.###} / 365 + {hi.EmaFundingRate:0.###}) * {p.Term} - {p.SpotFee} - {hi.Fee}) / {p.Term} / 2 = {dayProfit:0.###} ]");
