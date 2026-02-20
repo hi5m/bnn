@@ -170,7 +170,7 @@ namespace Bnncmd.Strategy
             var minApr = 20;
 
             // Get earn products from all exchanges
-            var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc }; 
+            var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc };
             // var exchanges = new List<AbstractExchange> { Exchange.Mexc };
             foreach (var e in exchanges)
             {
@@ -183,6 +183,7 @@ namespace Bnncmd.Strategy
             // var shortExchanges = [Exchange.Bybit];
             foreach (var p in products)
             {
+                // if (p.ProductName != "RPL") continue;
                 Console.WriteLine($"{p}");
 
                 // stablecoin

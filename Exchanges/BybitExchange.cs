@@ -73,6 +73,7 @@ namespace bnncmd.Exchanges
         {
             var fundingInfo = _apiClient.V5Api.ExchangeData.GetLinearInverseTickersAsync(Category.Linear, symbol).Result;
             if (fundingInfo.Error != null && !fundingInfo.Success) throw new Exception(fundingInfo.Error.Message);
+            if (fundingInfo.Data.List.Length == 0) return 0;
             return fundingInfo.Data.List.First().FundingRate ?? 0;
         }
 
@@ -84,15 +85,17 @@ namespace bnncmd.Exchanges
             var bybitRates = bybitData.List;
             if (bybitRates.Length < 2) return [];
 
-            var fundingInterval = (bybitRates[0].Timestamp - bybitRates[1].Timestamp).Hours;
+            var fundingInterval = (int)Math.Round((bybitRates[0].Timestamp - bybitRates[1].Timestamp).TotalHours);
             var ratesArr = bybitRates.Select(r => r.FundingRate).ToArray(); // then process EMA .Take(10).
             var emaFr = 100 * GetEmaFundingRate(ratesArr) * 24 / fundingInterval;
+            var statDays = (bybitRates[0].Timestamp - bybitRates[^1].Timestamp).Days;
+
             return [new HedgeInfo(this)
             {
                 Symbol = symbol,
                 EmaFundingRate = emaFr,
                 EmaApr = emaFr * 365,
-                ThreeMonthsApr = 100 * ratesArr.Sum() / (bybitRates[0].Timestamp - bybitRates[^1].Timestamp).Days * 365,
+                ThreeMonthsApr = 100 * ratesArr.Sum() / (statDays == 0 ? 1 : statDays) * 365,
                 CurrentFundingRate = 100 * GetCurrentFundingRate(symbol),
                 Fee = FuturesMakerFee
             }];

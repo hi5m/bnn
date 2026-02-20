@@ -8,175 +8,171 @@ Mexc - Page...
 ===========================
 
 WAL                 | 29.9%   | Binance     | FDUSD | 90 | locked - api
-   Binance WALUSDT ema day funding rate: -0.136 => -9.977  [ ((29.9 / 365 + -0.136) * 90 - 0 - 0.018) / 90 / 2 = -0.027 ]
-   ema apr: -49.782, 3 maonths apr: -55.474, current rate: -0.026
-   Bybit WALUSDT ema day funding rate: -0.049 => 5.937  [ ((29.9 / 365 + -0.049) * 90 - 0 - 0.02) / 90 / 2 = 0.016 ]
-   ema apr: -17.944, 3 maonths apr: -3.157, current rate: 0.001
+   Binance WALUSDT ema day funding rate: -0.07 => 2.085  [ ((29.9 / 365 + -0.07) * 90 - 0 - 0.018) / 90 / 2 = 0.006 ]
+   ema apr: -25.657, 3 months apr: -55.484, current rate: -0.0111
+   Bybit WALUSDT ema day funding rate: -0.149 => -12.303  [ ((29.9 / 365 + -0.149) * 90 - 0 - 0.02) / 90 / 2 = -0.034 ]
+   ema apr: -54.425, 3 months apr: -43.938, current rate: 0.0013
 KERNEL              | 29.9%   | Binance     | USDT  | 90 | locked - api
-   Binance KERNELUSDT ema day funding rate: 0.009 => 16.36  [ ((29.9 / 365 + 0.009) * 90 - 0.075 - 0.018) / 90 / 2 = 0.045 ]
-   ema apr: 3.198, 3 maonths apr: -33.049, current rate: 0.005
-   Bybit KERNELUSDT ema day funding rate: -0.005 => 13.93  [ ((29.9 / 365 + -0.005) * 90 - 0.075 - 0.02) / 90 / 2 = 0.038 ]
-   ema apr: -1.655, 3 maonths apr: -0.621, current rate: -0.004
+   Binance KERNELUSDT ema day funding rate: -0.004 => 14.028  [ ((29.9 / 365 + -0.004) * 90 - 0.075 - 0.018) / 90 / 2 = 0.038 ]
+   ema apr: -1.466, 3 months apr: -31.976, current rate: 0.0018
+   Bybit KERNELUSDT ema day funding rate: -0.016 => 11.804  [ ((29.9 / 365 + -0.016) * 90 - 0.075 - 0.02) / 90 / 2 = 0.032 ]
+   ema apr: -5.907, 3 months apr: -68.738, current rate: -0.0105
 FOGO                | 29.9%   | Binance     | USDT  | 90 | locked - api
-   Binance FOGOUSDT ema day funding rate: 0.02 => 18.34  [ ((29.9 / 365 + 0.02) * 90 - 0.075 - 0.018) / 90 / 2 = 0.05 ]
-   ema apr: 7.157, 3 maonths apr: -47.831, current rate: 0.005
-   Bybit FOGOUSDT ema day funding rate: -0.046 => 6.362  [ ((29.9 / 365 + -0.046) * 90 - 0.075 - 0.02) / 90 / 2 = 0.017 ]
-   ema apr: -16.791, 3 maonths apr: -2.239, current rate: 0.005
+   Binance FOGOUSDT ema day funding rate: 0.025 => 19.279  [ ((29.9 / 365 + 0.025) * 90 - 0.075 - 0.018) / 90 / 2 = 0.053 ]
+   ema apr: 9.035, 3 months apr: -47.694, current rate: 0.005
+   Bybit FOGOUSDT ema day funding rate: -0.005 => 13.895  [ ((29.9 / 365 + -0.005) * 90 - 0.075 - 0.02) / 90 / 2 = 0.038 ]
+   ema apr: -1.724, 3 months apr: -48.76, current rate: 0.005
 BABY                | 29.9%   | Binance     | USDT  | 120 | locked - api
-   Binance BABYUSDT ema day funding rate: 0.038 => 21.726  [ ((29.9 / 365 + 0.038) * 120 - 0.075 - 0.018) / 120 / 2 = 0.06 ]
-   ema apr: 13.836, 3 maonths apr: -8.693, current rate: 0.005
-   Bybit BABYUSDT ema day funding rate: -0.073 => 1.498  [ ((29.9 / 365 + -0.073) * 120 - 0.075 - 0.02) / 120 / 2 = 0.004 ]
-   ema apr: -26.615, 3 maonths apr: -0.696, current rate: 0.003
+   Binance BABYUSDT ema day funding rate: 0.029 => 20.185  [ ((29.9 / 365 + 0.029) * 120 - 0.075 - 0.018) / 120 / 2 = 0.055 ]
+   ema apr: 10.753, 3 months apr: -8.145, current rate: 0.005
+   Bybit BABYUSDT ema day funding rate: -0.07 => 1.983  [ ((29.9 / 365 + -0.07) * 120 - 0.075 - 0.02) / 120 / 2 = 0.005 ]
+   ema apr: -25.646, 3 months apr: -9.541, current rate: 0.0025
 0G                  | 29.9%   | Binance     | USDT  | 120 | locked - api
-   Binance 0GUSDT ema day funding rate: -0.123 => -7.703  [ ((29.9 / 365 + -0.123) * 120 - 0.075 - 0.018) / 120 / 2 = -0.021 ]
-   ema apr: -45.023, 3 maonths apr: -294.094, current rate: -0.003
-   Bybit 0GUSDT ema day funding rate: 0.03 => 20.281  [ ((29.9 / 365 + 0.03) * 120 - 0.075 - 0.02) / 120 / 2 = 0.056 ]
-   ema apr: 10.95, 3 maonths apr: 0.57, current rate: 0.001
+   Binance 0GUSDT ema day funding rate: -0.435 => -64.612  [ ((29.9 / 365 + -0.435) * 120 - 0.075 - 0.018) / 120 / 2 = -0.177 ]
+   ema apr: -158.84, 3 months apr: -290.036, current rate: -0.0755
+   Bybit 0GUSDT ema day funding rate: -1.159 => -196.761  [ ((29.9 / 365 + -1.159) * 120 - 0.075 - 0.02) / 120 / 2 = -0.539 ]
+   ema apr: -423.132, 3 months apr: -507.549, current rate: 0.0013
 NIL                 | 29.9%   | Binance     | USDT  | 120 | locked - api
-   Binance NILUSDT ema day funding rate: 0.029 => 20.087  [ ((29.9 / 365 + 0.029) * 120 - 0.075 - 0.018) / 120 / 2 = 0.055 ]
-   ema apr: 10.556, 3 maonths apr: -8.066, current rate: 0.005
-   Bybit NILUSDT ema day funding rate: 0.01 => 16.59  [ ((29.9 / 365 + 0.01) * 120 - 0.075 - 0.02) / 120 / 2 = 0.045 ]
-   ema apr: 3.568, 3 maonths apr: 0.299, current rate: 0.005
+   Binance NILUSDT ema day funding rate: 0.027 => 19.763  [ ((29.9 / 365 + 0.027) * 120 - 0.075 - 0.018) / 120 / 2 = 0.054 ]
+   ema apr: 9.91, 3 months apr: -7.641, current rate: 0.005
+   Bybit NILUSDT ema day funding rate: 0.023 => 19.008  [ ((29.9 / 365 + 0.023) * 120 - 0.075 - 0.02) / 120 / 2 = 0.052 ]
+   ema apr: 8.405, 3 months apr: -8.115, current rate: 0.005
 KERNEL              | 25.9%   | Binance     | USDT  | 60 | locked - api
-   Binance KERNELUSDT ema day funding rate: 0.009 => 14.266  [ ((25.9 / 365 + 0.009) * 60 - 0.075 - 0.018) / 60 / 2 = 0.039 ]
-   ema apr: 3.198, 3 maonths apr: -33.049, current rate: 0.005
-   Bybit KERNELUSDT ema day funding rate: -0.005 => 11.833  [ ((25.9 / 365 + -0.005) * 60 - 0.075 - 0.02) / 60 / 2 = 0.032 ]
-   ema apr: -1.655, 3 maonths apr: -0.621, current rate: -0.004
+   Binance KERNELUSDT ema day funding rate: -0.004 => 11.934  [ ((25.9 / 365 + -0.004) * 60 - 0.075 - 0.018) / 60 / 2 = 0.033 ]
+   ema apr: -1.466, 3 months apr: -31.976, current rate: 0.0018
+   Bybit KERNELUSDT ema day funding rate: -0.016 => 9.707  [ ((25.9 / 365 + -0.016) * 60 - 0.075 - 0.02) / 60 / 2 = 0.027 ]
+   ema apr: -5.907, 3 months apr: -68.738, current rate: -0.0128
 NIL                 | 25.9%   | Binance     | USDT  | 60 | locked - api
-   Binance NILUSDT ema day funding rate: 0.029 => 17.945  [ ((25.9 / 365 + 0.029) * 60 - 0.075 - 0.018) / 60 / 2 = 0.049 ]
-   ema apr: 10.556, 3 maonths apr: -8.066, current rate: 0.005
-   Bybit NILUSDT ema day funding rate: 0.01 => 14.445  [ ((25.9 / 365 + 0.01) * 60 - 0.075 - 0.02) / 60 / 2 = 0.04 ]
-   ema apr: 3.568, 3 maonths apr: 0.299, current rate: 0.005
+   Binance NILUSDT ema day funding rate: 0.027 => 17.622  [ ((25.9 / 365 + 0.027) * 60 - 0.075 - 0.018) / 60 / 2 = 0.048 ]
+   ema apr: 9.91, 3 months apr: -7.641, current rate: 0.005
+   Bybit NILUSDT ema day funding rate: 0.023 => 16.863  [ ((25.9 / 365 + 0.023) * 60 - 0.075 - 0.02) / 60 / 2 = 0.046 ]
+   ema apr: 8.405, 3 months apr: -8.115, current rate: 0.005
 FOGO                | 25.9%   | Binance     | USDT  | 60 | locked - api
-   Binance FOGOUSDT ema day funding rate: 0.02 => 16.246  [ ((25.9 / 365 + 0.02) * 60 - 0.075 - 0.018) / 60 / 2 = 0.045 ]
-   ema apr: 7.157, 3 maonths apr: -47.831, current rate: 0.005
-   Bybit FOGOUSDT ema day funding rate: -0.046 => 4.266  [ ((25.9 / 365 + -0.046) * 60 - 0.075 - 0.02) / 60 / 2 = 0.012 ]
-   ema apr: -16.791, 3 maonths apr: -2.239, current rate: 0.005
+   Binance FOGOUSDT ema day funding rate: 0.025 => 17.185  [ ((25.9 / 365 + 0.025) * 60 - 0.075 - 0.018) / 60 / 2 = 0.047 ]
+   ema apr: 9.035, 3 months apr: -47.694, current rate: 0.005
+   Bybit FOGOUSDT ema day funding rate: -0.005 => 11.799  [ ((25.9 / 365 + -0.005) * 60 - 0.075 - 0.02) / 60 / 2 = 0.032 ]
+   ema apr: -1.724, 3 months apr: -48.76, current rate: 0.005
 0G                  | 25.9%   | Binance     | USDT  | 90 | locked - api
-   Binance 0GUSDT ema day funding rate: -0.123 => -9.75  [ ((25.9 / 365 + -0.123) * 90 - 0.075 - 0.018) / 90 / 2 = -0.027 ]
-   ema apr: -45.023, 3 maonths apr: -294.094, current rate: -0.003
-   Bybit 0GUSDT ema day funding rate: 0.03 => 18.232  [ ((25.9 / 365 + 0.03) * 90 - 0.075 - 0.02) / 90 / 2 = 0.05 ]
-   ema apr: 10.95, 3 maonths apr: 0.57, current rate: 0.001
+   Binance 0GUSDT ema day funding rate: -0.435 => -66.659  [ ((25.9 / 365 + -0.435) * 90 - 0.075 - 0.018) / 90 / 2 = -0.183 ]
+   ema apr: -158.84, 3 months apr: -290.036, current rate: -0.0755
+   Bybit 0GUSDT ema day funding rate: -1.159 => -198.809  [ ((25.9 / 365 + -1.159) * 90 - 0.075 - 0.02) / 90 / 2 = -0.545 ]
+   ema apr: -423.132, 3 months apr: -507.549, current rate: 0.0013
 WAL                 | 24.9%   | Binance     | FDUSD | 60 | locked - api
-   Binance WALUSDT ema day funding rate: -0.136 => -12.496  [ ((24.9 / 365 + -0.136) * 60 - 0 - 0.018) / 60 / 2 = -0.034 ]
-   ema apr: -49.782, 3 maonths apr: -55.474, current rate: -0.026
-   Bybit WALUSDT ema day funding rate: -0.049 => 3.417  [ ((24.9 / 365 + -0.049) * 60 - 0 - 0.02) / 60 / 2 = 0.009 ]
-   ema apr: -17.944, 3 maonths apr: -3.157, current rate: 0.001
+   Binance WALUSDT ema day funding rate: -0.07 => -0.433  [ ((24.9 / 365 + -0.07) * 60 - 0 - 0.018) / 60 / 2 = -0.001 ]
+   ema apr: -25.657, 3 months apr: -55.484, current rate: -0.0111
+   Bybit WALUSDT ema day funding rate: -0.149 => -14.823  [ ((24.9 / 365 + -0.149) * 60 - 0 - 0.02) / 60 / 2 = -0.041 ]
+   ema apr: -54.425, 3 months apr: -43.938, current rate: -0.0036
 BABY                | 24%     | Binance     | USDT  | 60 | locked - api
-   Binance BABYUSDT ema day funding rate: 0.038 => 18.635  [ ((24 / 365 + 0.038) * 60 - 0.075 - 0.018) / 60 / 2 = 0.051 ]
-   ema apr: 13.836, 3 maonths apr: -8.693, current rate: 0.005
-   Bybit BABYUSDT ema day funding rate: -0.073 => -1.597  [ ((24 / 365 + -0.073) * 60 - 0.075 - 0.02) / 60 / 2 = -0.004 ]
-   ema apr: -26.615, 3 maonths apr: -0.696, current rate: 0.003
+   Binance BABYUSDT ema day funding rate: 0.029 => 17.094  [ ((24 / 365 + 0.029) * 60 - 0.075 - 0.018) / 60 / 2 = 0.047 ]
+   ema apr: 10.753, 3 months apr: -8.145, current rate: 0.005
+   Bybit BABYUSDT ema day funding rate: -0.07 => -1.112  [ ((24 / 365 + -0.07) * 60 - 0.075 - 0.02) / 60 / 2 = -0.003 ]
+   ema apr: -25.646, 3 months apr: -9.541, current rate: 0.0025
 BERA                | 22.8%   | Binance     | USDT  | 90 | locked - api
-   Binance BERAUSDT ema day funding rate: -0.64 => -105.645  [ ((22.8 / 365 + -0.64) * 90 - 0.075 - 0.018) / 90 / 2 = -0.289 ]
-   ema apr: -233.714, 3 maonths apr: -208.724, current rate: -0.056
-   Bybit BERAUSDT ema day funding rate: -0.201 => -25.427  [ ((22.8 / 365 + -0.201) * 90 - 0.075 - 0.02) / 90 / 2 = -0.07 ]
-   ema apr: -73.268, 3 maonths apr: -4.155, current rate: 0.001
+   Binance BERAUSDT ema day funding rate: -0.468 => -74.137  [ ((22.8 / 365 + -0.468) * 90 - 0.075 - 0.018) / 90 / 2 = -0.203 ]
+   ema apr: -170.697, 3 months apr: -209.427, current rate: -0.0553
+   Bybit BERAUSDT ema day funding rate: -0.567 => -92.336  [ ((22.8 / 365 + -0.567) * 90 - 0.075 - 0.02) / 90 / 2 = -0.253 ]
+   ema apr: -207.086, 3 months apr: -524.21, current rate: -0.0248
 KERNEL              | 21.9%   | Binance     | USDT  | 30 | locked - api
-   Binance KERNELUSDT ema day funding rate: 0.009 => 11.983  [ ((21.9 / 365 + 0.009) * 30 - 0.075 - 0.018) / 30 / 2 = 0.033 ]
-   ema apr: 3.198, 3 maonths apr: -33.049, current rate: 0.005
-   Bybit KERNELUSDT ema day funding rate: -0.005 => 9.544  [ ((21.9 / 365 + -0.005) * 30 - 0.075 - 0.02) / 30 / 2 = 0.026 ]
-   ema apr: -1.655, 3 maonths apr: -0.621, current rate: -0.004
+   Binance KERNELUSDT ema day funding rate: -0.004 => 9.651  [ ((21.9 / 365 + -0.004) * 30 - 0.075 - 0.018) / 30 / 2 = 0.026 ]
+   ema apr: -1.466, 3 months apr: -31.976, current rate: 0.0018
+   Bybit KERNELUSDT ema day funding rate: -0.016 => 7.419  [ ((21.9 / 365 + -0.016) * 30 - 0.075 - 0.02) / 30 / 2 = 0.02 ]
+   ema apr: -5.907, 3 months apr: -68.738, current rate: -0.0128
 CTK                 | 21.5%   | Binance     | USDT  | 90 | locked - api
-   Binance CTKUSDT ema day funding rate: 0.04 => 17.861  [ ((21.5 / 365 + 0.04) * 90 - 0.075 - 0.018) / 90 / 2 = 0.049 ]
-   ema apr: 14.6, 3 maonths apr: 6.914, current rate: 0.005
-   Bybit CTKUSDT ema day funding rate: 0.024 => 14.988  [ ((21.5 / 365 + 0.024) * 90 - 0.075 - 0.02) / 90 / 2 = 0.041 ]
-   ema apr: 8.862, 3 maonths apr: 0.481, current rate: 0.005
+   Binance CTKUSDT ema day funding rate: 0.023 => 14.709  [ ((21.5 / 365 + 0.023) * 90 - 0.075 - 0.018) / 90 / 2 = 0.04 ]
+   ema apr: 8.296, 3 months apr: 6.998, current rate: 0.005
+   Bybit CTKUSDT ema day funding rate: 0.028 => 15.674  [ ((21.5 / 365 + 0.028) * 90 - 0.075 - 0.02) / 90 / 2 = 0.043 ]
+   ema apr: 10.234, 3 months apr: 2.136, current rate: 0.005
 NIL                 | 20.9%   | Binance     | USDT  | 30 | locked - api
-   Binance NILUSDT ema day funding rate: 0.029 => 15.162  [ ((20.9 / 365 + 0.029) * 30 - 0.075 - 0.018) / 30 / 2 = 0.042 ]
-   ema apr: 10.556, 3 maonths apr: -8.066, current rate: 0.005
-   Bybit NILUSDT ema day funding rate: 0.01 => 11.656  [ ((20.9 / 365 + 0.01) * 30 - 0.075 - 0.02) / 30 / 2 = 0.032 ]
-   ema apr: 3.568, 3 maonths apr: 0.299, current rate: 0.005
+   Binance NILUSDT ema day funding rate: 0.027 => 14.839  [ ((20.9 / 365 + 0.027) * 30 - 0.075 - 0.018) / 30 / 2 = 0.041 ]
+   ema apr: 9.91, 3 months apr: -7.641, current rate: 0.005
+   Bybit NILUSDT ema day funding rate: 0.023 => 14.074  [ ((20.9 / 365 + 0.023) * 30 - 0.075 - 0.02) / 30 / 2 = 0.039 ]
+   ema apr: 8.405, 3 months apr: -8.115, current rate: 0.005
 FOGO                | 20.9%   | Binance     | USDT  | 30 | locked - api
-   Binance FOGOUSDT ema day funding rate: 0.02 => 13.463  [ ((20.9 / 365 + 0.02) * 30 - 0.075 - 0.018) / 30 / 2 = 0.037 ]
-   ema apr: 7.157, 3 maonths apr: -47.831, current rate: 0.005
-   Bybit FOGOUSDT ema day funding rate: -0.046 => 1.477  [ ((20.9 / 365 + -0.046) * 30 - 0.075 - 0.02) / 30 / 2 = 0.004 ]
-   ema apr: -16.791, 3 maonths apr: -2.239, current rate: 0.005
-ORCA                | 41.85%  | Binance     | USDT  | 1 | flexible - api
-   Binance ORCAUSDT ema day funding rate: -0.049 => -5.006  [ ((41.849 / 365 + -0.049) * 1 - 0.075 - 0.018) / 1 / 2 = -0.014 ]
-   ema apr: -17.916, 3 maonths apr: -179.451, current rate: -0.359
-   Bybit ORCAUSDT ema day funding rate: -5.691 => -1035.1  [ ((41.849 / 365 + -5.691) * 1 - 0.075 - 0.02) / 1 / 2 = -2.836 ]
-   ema apr: -2077.374, 3 maonths apr: -109.681, current rate: -0.858
-0G                  | 26.06%  | Binance     | USDT  | 1 | flexible - api
-   Binance 0GUSDT ema day funding rate: -0.123 => -26.456  [ ((26.056 / 365 + -0.123) * 1 - 0.075 - 0.018) / 1 / 2 = -0.072 ]
-   ema apr: -45.023, 3 maonths apr: -294.094, current rate: -0.003
-   Bybit 0GUSDT ema day funding rate: 0.03 => 1.165  [ ((26.056 / 365 + 0.03) * 1 - 0.075 - 0.02) / 1 / 2 = 0.003 ]
-   ema apr: 10.95, 3 maonths apr: 0.57, current rate: 0.001
-SXP                 | 24.63%  | Binance     | USDT  | 1 | flexible - api
-   Binance SXPUSDT ema day funding rate: -2.788 => -513.538  [ ((24.633 / 365 + -2.788) * 1 - 0.075 - 0.018) / 1 / 2 = -1.407 ]
-   ema apr: -1017.764, 3 maonths apr: -175.516, current rate: 0
-   Bybit SXPUSDT ema day funding rate: -0.055 => -15.013  [ ((24.633 / 365 + -0.055) * 1 - 0.075 - 0.02) / 1 / 2 = -0.041 ]
-   ema apr: -19.984, 3 maonths apr: -0.164, current rate: -0.503
-AWE                 | 37.69%  | Binance     | USDT  | 1 | flexible - api
-   Binance AWEUSDT ema day funding rate: -3.411 => -620.7  [ ((37.686 / 365 + -3.411) * 1 - 0.075 - 0.018) / 1 / 2 = -1.701 ]
-   ema apr: -1245.142, 3 maonths apr: -70.278, current rate: -0.374
-   Bybit AWEUSDT ema day funding rate: -2.28 => -414.611  [ ((37.686 / 365 + -2.28) * 1 - 0.075 - 0.02) / 1 / 2 = -1.136 ]
-   ema apr: -832.234, 3 maonths apr: -18.376, current rate: -0.271
-BERA                | 36.62%  | Binance     | USDT  | 1 | flexible - api
-   Binance BERAUSDT ema day funding rate: -0.64 => -115.517  [ ((36.625 / 365 + -0.64) * 1 - 0.075 - 0.018) / 1 / 2 = -0.316 ]
-   ema apr: -233.714, 3 maonths apr: -208.724, current rate: -0.056
-   Bybit BERAUSDT ema day funding rate: -0.201 => -35.659  [ ((36.625 / 365 + -0.201) * 1 - 0.075 - 0.02) / 1 / 2 = -0.098 ]
-   ema apr: -73.268, 3 maonths apr: -4.155, current rate: 0.001
-ONT                 | 24.13%  | Binance     | USDT  | 1 | flexible - api
-   Binance ONTUSDT ema day funding rate: -0.035 => -11.319  [ ((24.134 / 365 + -0.035) * 1 - 0.075 - 0.018) / 1 / 2 = -0.031 ]
-   ema apr: -12.826, 3 maonths apr: -60.997, current rate: 0.005
-   Bybit ONTUSDT ema day funding rate: -0.194 => -40.762  [ ((24.134 / 365 + -0.194) * 1 - 0.075 - 0.02) / 1 / 2 = -0.112 ]
-   ema apr: -70.984, 3 maonths apr: -3.618, current rate: -0.018
-RPL                 | 35.24%  | Binance     | USDT  | 1 | flexible - api
-   Binance RPLUSDT ema day funding rate: -0.556 => -100.777  [ ((35.243 / 365 + -0.556) * 1 - 0.075 - 0.018) / 1 / 2 = -0.276 ]
-   ema apr: -202.851, 3 maonths apr: -36.085, current rate: -0.018
-   Bybit RPLUSDT ema day funding rate: -0.277 => -50.309  [ ((35.243 / 365 + -0.277) * 1 - 0.075 - 0.02) / 1 / 2 = -0.138 ]
-   ema apr: -101.186, 3 maonths apr: -2.428, current rate: 0.001
-SENT                | 36.71%  | Binance     | USDT  | 1 | flexible - api
-   Binance SENTUSDT ema day funding rate: -1.127 => -204.228  [ ((36.708 / 365 + -1.127) * 1 - 0.075 - 0.018) / 1 / 2 = -0.56 ]
-   ema apr: -411.219, 3 maonths apr: -430.719, current rate: -0.059
-   Bybit SENTUSDT ema day funding rate: -1.883 => -342.706  [ ((36.708 / 365 + -1.883) * 1 - 0.075 - 0.02) / 1 / 2 = -0.939 ]
-   ema apr: -687.446, 3 maonths apr: -30.033, current rate: -0.139
-STEEM               | 41.6%   | Binance     | USDT  | 1 | flexible - api
-   Binance STEEMUSDT ema day funding rate: -0.924 => -164.857  [ ((41.596 / 365 + -0.924) * 1 - 0.075 - 0.018) / 1 / 2 = -0.452 ]
-   ema apr: -337.364, 3 maonths apr: -39.536, current rate: -0.041
-   Bybit STEEMUSDT ema day funding rate: -0.586 => -103.447  [ ((41.596 / 365 + -0.586) * 1 - 0.075 - 0.02) / 1 / 2 = -0.283 ]
-   ema apr: -213.815, 3 maonths apr: -33.32, current rate: -0.033
-ZKP                 | 20.38%  | Binance     | USDT  | 1 | flexible - api
-   Binance ZKPUSDT ema day funding rate: -0.044 => -14.758  [ ((20.38 / 365 + -0.044) * 1 - 0.075 - 0.018) / 1 / 2 = -0.04 ]
-   ema apr: -15.95, 3 maonths apr: -459.466, current rate: -0.026
-   Bybit ZKPUSDT ema day funding rate: -0.292 => -60.47  [ ((20.38 / 365 + -0.292) * 1 - 0.075 - 0.02) / 1 / 2 = -0.166 ]
-   ema apr: -106.645, 3 maonths apr: -7.204, current rate: 0.001
-AXS                 | 31.77%  | Binance     | USDT  | 1 | flexible - api
-   Binance AXSUSDT ema day funding rate: -3.098 => -566.45  [ ((31.768 / 365 + -3.098) * 1 - 0.075 - 0.018) / 1 / 2 = -1.552 ]
-   ema apr: -1130.722, 3 maonths apr: -296.292, current rate: -0.551
-   Bybit AXSUSDT ema day funding rate: -4.212 => -770.164  [ ((31.768 / 365 + -4.212) * 1 - 0.075 - 0.02) / 1 / 2 = -2.11 ]
-   ema apr: -1537.421, 3 maonths apr: -66.416, current rate: -0.304
-ENSO                | 25.78%  | Binance     | USDT  | 1 | flexible - api
-   Binance ENSOUSDT ema day funding rate: -1.436 => -266.229  [ ((25.781 / 365 + -1.436) * 1 - 0.075 - 0.018) / 1 / 2 = -0.729 ]
-   ema apr: -524.294, 3 maonths apr: -209.221, current rate: -0.171
-   Bybit ENSOUSDT ema day funding rate: -2.704 => -497.894  [ ((25.781 / 365 + -2.704) * 1 - 0.075 - 0.02) / 1 / 2 = -1.364 ]
-   ema apr: -986.895, 3 maonths apr: -61.776, current rate: -0.027
-LA                  | 31.91%  | Binance     | USDT  | 1 | flexible - api
-   Binance LAUSDT ema day funding rate: -1.202 => -220.422  [ ((31.911 / 365 + -1.202) * 1 - 0.075 - 0.018) / 1 / 2 = -0.604 ]
-   ema apr: -438.81, 3 maonths apr: -87.955, current rate: -0.197
-   Bybit LAUSDT ema day funding rate: -0.545 => -100.926  [ ((31.911 / 365 + -0.545) * 1 - 0.075 - 0.02) / 1 / 2 = -0.277 ]
-   ema apr: -199.089, 3 maonths apr: -11.623, current rate: -0.014
-SOPH                | 29.45%  | Binance     | FDUSD | 1 | flexible - api
-   Binance SOPHUSDT ema day funding rate: -0.094 => -5.74  [ ((29.448 / 365 + -0.094) * 1 - 0 - 0.018) / 1 / 2 = -0.016 ]
-   ema apr: -34.359, 3 maonths apr: -62.984, current rate: -0.006
-   Bybit SOPHUSDT ema day funding rate: 0.03 => 16.549  [ ((29.448 / 365 + 0.03) * 1 - 0 - 0.02) / 1 / 2 = 0.045 ]
-   ema apr: 10.95, 3 maonths apr: 0.57, current rate: 0.001
-CYBER               | 43.45%  | Binance     | FDUSD | 1 | flexible - api
-   Binance CYBERUSDT ema day funding rate: -1.563 => -266.737  [ ((43.449 / 365 + -1.563) * 1 - 0 - 0.018) / 1 / 2 = -0.731 ]
-   ema apr: -570.353, 3 maonths apr: -118.531, current rate: -0.1
-   Bybit CYBERUSDT ema day funding rate: -1.304 => -219.882  [ ((43.449 / 365 + -1.304) * 1 - 0 - 0.02) / 1 / 2 = -0.602 ]
-   ema apr: -475.913, 3 maonths apr: -46.486, current rate: -0.175
-DUSK                | 28.44%  | Binance     | USDT  | 1 | flexible - api
-   Binance DUSKUSDT ema day funding rate: -5.076 => -929.078  [ ((28.442 / 365 + -5.076) * 1 - 0.075 - 0.018) / 1 / 2 = -2.545 ]
-   ema apr: -1852.653, 3 maonths apr: -198.923, current rate: -1.272
-   Bybit DUSKUSDT ema day funding rate: -1.662 => -306.348  [ ((28.442 / 365 + -1.662) * 1 - 0.075 - 0.02) / 1 / 2 = -0.839 ]
-   ema apr: -606.464, 3 maonths apr: -20.698, current rate: -2.237
+   Binance FOGOUSDT ema day funding rate: 0.025 => 14.402  [ ((20.9 / 365 + 0.025) * 30 - 0.075 - 0.018) / 30 / 2 = 0.039 ]
+   ema apr: 9.035, 3 months apr: -47.694, current rate: 0.005
+   Bybit FOGOUSDT ema day funding rate: -0.005 => 9.01  [ ((20.9 / 365 + -0.005) * 30 - 0.075 - 0.02) / 30 / 2 = 0.025 ]   ema apr: -1.724, 3 months apr: -48.76, current rate: 0.005
+ORCA                | 41.59%  | Binance     | USDT  | 1 | flexible - api
+   Binance ORCAUSDT ema day funding rate: -0.027 => -1.06  [ ((41.585 / 365 + -0.027) * 1 - 0.075 - 0.018) / 1 / 2 = -0.003 ]
+   ema apr: -9.761, 3 months apr: -179.563, current rate: -0.1212
+   Bybit ORCAUSDT ema day funding rate: -2.75 => -498.395  [ ((41.585 / 365 + -2.75) * 1 - 0.075 - 0.02) / 1 / 2 = -1.365 ]
+   ema apr: -1003.7, 3 months apr: -2205.515, current rate: 0.0013
+0G                  | 26.38%  | Binance     | USDT  | 1 | flexible - api
+   Binance 0GUSDT ema day funding rate: -0.435 => -83.202  [ ((26.381 / 365 + -0.435) * 1 - 0.075 - 0.018) / 1 / 2 = -0.228 ]
+   ema apr: -158.84, 3 months apr: -290.036, current rate: -0.0755
+   Bybit 0GUSDT ema day funding rate: -1.159 => -215.713  [ ((26.381 / 365 + -1.159) * 1 - 0.075 - 0.02) / 1 / 2 = -0.591 ]
+   ema apr: -423.132, 3 months apr: -507.549, current rate: 0.0013
+SXP                 | 25.25%  | Binance     | USDT  | 1 | flexible - api
+   Binance SXPUSDT ema day funding rate: -2.788 => -513.228  [ ((25.253 / 365 + -2.788) * 1 - 0.075 - 0.018) / 1 / 2 = -1.406 ]
+   ema apr: -1017.764, 3 months apr: -190.446, current rate: 0
+   Bybit SXPUSDT ema day funding rate: -0.193 => -39.866  [ ((25.253 / 365 + -0.193) * 1 - 0.075 - 0.02) / 1 / 2 = -0.109 ]
+   ema apr: -70.31, 3 months apr: -92.417, current rate: -0.0469
+AWE                 | 37.23%  | Binance     | USDT  | 1 | flexible - api
+   Binance AWEUSDT ema day funding rate: -4.614 => -840.389  [ ((37.226 / 365 + -4.614) * 1 - 0.075 - 0.018) / 1 / 2 = -2.302 ]
+   ema apr: -1684.059, 3 months apr: -81.536, current rate: -0.9139
+   Bybit AWEUSDT ema day funding rate: -5.134 => -935.744  [ ((37.226 / 365 + -5.134) * 1 - 0.075 - 0.02) / 1 / 2 = -2.564 ]
+   ema apr: -1874.038, 3 months apr: -62.257, current rate: -0.8264
+BERA                | 35.85%  | Binance     | USDT  | 1 | flexible - api
+   Binance BERAUSDT ema day funding rate: -0.468 => -84.394  [ ((35.855 / 365 + -0.468) * 1 - 0.075 - 0.018) / 1 / 2 = -0.231 ]
+   ema apr: -170.697, 3 months apr: -209.427, current rate: -0.0553
+   Bybit BERAUSDT ema day funding rate: -0.567 => -102.953  [ ((35.855 / 365 + -0.567) * 1 - 0.075 - 0.02) / 1 / 2 = -0.282 ]
+   ema apr: -207.086, 3 months apr: -524.21, current rate: -0.0248
+BIO                 | 41.31%  | Binance     | USDT  | 1 | flexible - api
+   Binance BIOUSDT ema day funding rate: -0.657 => -116.14  [ ((41.314 / 365 + -0.657) * 1 - 0.075 - 0.018) / 1 / 2 = -0.318 ]
+   ema apr: -239.649, 3 months apr: -19.709, current rate: -1.0027
+   Binance BIOUSDC ema day funding rate: -0.575 => -97.972  [ ((41.314 / 365 + -0.575) * 1 - 0.075 - 0) / 1 / 2 = -0.268 ]
+   ema apr: -209.882, 3 months apr: -12.203, current rate: -0.9723
+   Bybit BIOUSDT ema day funding rate: -10.188 => -1855.973  [ ((41.314 / 365 + -10.188) * 1 - 0.075 - 0.02) / 1 / 2 = -5.085 ]
+   ema apr: -3718.585, 3 months apr: -69.903, current rate: -1.5454
+RPL                 | 32.46%  | Binance     | USDT  | 1 | flexible - api
+   Binance RPLUSDT ema day funding rate: -0.48 => -88.383  [ ((32.463 / 365 + -0.48) * 1 - 0.075 - 0.018) / 1 / 2 = -0.242 ]
+   ema apr: -175.284, 3 months apr: -37.352, current rate: -0.0074
+   Bybit RPLUSDT ema day funding rate: -0.097 => -18.727  [ ((32.463 / 365 + -0.097) * 1 - 0.075 - 0.02) / 1 / 2 = -0.051 ]
+   ema apr: -35.241, 3 months apr: -196.843, current rate: 0.0013
+SENT                | 35.49%  | Binance     | USDT  | 1 | flexible - api
+   Binance SENTUSDT ema day funding rate: -0.696 => -126.273  [ ((35.485 / 365 + -0.696) * 1 - 0.075 - 0.018) / 1 / 2 = -0.346 ]
+   ema apr: -254.085, 3 months apr: -432.753, current rate: -0.0276
+   Bybit SENTUSDT ema day funding rate: -1.176 => -214.216  [ ((35.485 / 365 + -1.176) * 1 - 0.075 - 0.02) / 1 / 2 = -0.587 ]
+   ema apr: -429.243, 3 months apr: -759.093, current rate: -0.0426
+STEEM               | 42.31%  | Binance     | USDT  | 1 | flexible - api
+   Binance STEEMUSDT ema day funding rate: -0.537 => -93.877  [ ((42.312 / 365 + -0.537) * 1 - 0.075 - 0.018) / 1 / 2 = -0.257 ]
+   ema apr: -196.12, 3 months apr: -39.782, current rate: -0.1286
+   Bybit STEEMUSDT ema day funding rate: -0.582 => -102.376  [ ((42.312 / 365 + -0.582) * 1 - 0.075 - 0.02) / 1 / 2 = -0.28 ]
+   ema apr: -212.389, 3 months apr: -53.459, current rate: -0.1236
+AXS                 | 38.49%  | Binance     | USDT  | 1 | flexible - api
+   Binance AXSUSDT ema day funding rate: -3.981 => -724.228  [ ((38.49 / 365 + -3.981) * 1 - 0.075 - 0.018) / 1 / 2 = -1.984 ]
+   ema apr: -1453.002, 3 months apr: -306.575, current rate: -0.4033
+   Bybit AXSUSDT ema day funding rate: -4.293 => -781.646  [ ((38.49 / 365 + -4.293) * 1 - 0.075 - 0.02) / 1 / 2 = -2.141 ]
+   ema apr: -1567.106, 3 months apr: -949.989, current rate: -0.0356
+ENSO                | 45.04%  | Binance     | USDT  | 1 | flexible - api
+   Binance ENSOUSDT ema day funding rate: -3.562 => -644.543  [ ((45.04 / 365 + -3.562) * 1 - 0.075 - 0.018) / 1 / 2 = -1.766 ]
+   ema apr: -1300.181, 3 months apr: -211.821, current rate: -0.7797
+   Bybit ENSOUSDT ema day funding rate: -6.784 => -1232.9  [ ((45.04 / 365 + -6.784) * 1 - 0.075 - 0.02) / 1 / 2 = -3.378 ]
+   ema apr: -2476.165, 3 months apr: -327.28, current rate: -0.0609
+LA                  | 31.37%  | Binance     | USDT  | 1 | flexible - api
+   Binance LAUSDT ema day funding rate: -0.382 => -71.049  [ ((31.371 / 365 + -0.382) * 1 - 0.075 - 0.018) / 1 / 2 = -0.195 ]
+   ema apr: -139.524, 3 months apr: -86.959, current rate: -0.1568
+   Bybit LAUSDT ema day funding rate: -0.84 => -155.035  [ ((31.371 / 365 + -0.84) * 1 - 0.075 - 0.02) / 1 / 2 = -0.425 ]
+   ema apr: -306.767, 3 months apr: -532.521, current rate: -0.0523
+SOPH                | 29.86%  | Binance     | FDUSD | 1 | flexible - api
+   Binance SOPHUSDT ema day funding rate: -0.705 => -117.057  [ ((29.864 / 365 + -0.705) * 1 - 0 - 0.018) / 1 / 2 = -0.321 ]
+   ema apr: -257.408, 3 months apr: -64.678, current rate: -0.2758
+   Bybit SOPHUSDT ema day funding rate: -0.074 => -2.311  [ ((29.864 / 365 + -0.074) * 1 - 0 - 0.02) / 1 / 2 = -0.006 ]
+   ema apr: -27.186, 3 months apr: -96.324, current rate: 0.0013
+CYBER               | 37.3%   | Binance     | FDUSD | 1 | flexible - api
+   Binance CYBERUSDT ema day funding rate: -0.677 => -108.25  [ ((37.304 / 365 + -0.677) * 1 - 0 - 0.018) / 1 / 2 = -0.297 ]
+   ema apr: -247.235, 3 months apr: -118.995, current rate: -0.0614
+   Bybit CYBERUSDT ema day funding rate: -0.717 => -115.922  [ ((37.304 / 365 + -0.717) * 1 - 0 - 0.02) / 1 / 2 = -0.318 ]
+   ema apr: -261.848, 3 months apr: -128.779, current rate: -0.1255
+DUSK                | 28.61%  | Binance     | USDT  | 1 | flexible - api
+   Binance DUSKUSDT ema day funding rate: -3.453 => -632.889  [ ((28.614 / 365 + -3.453) * 1 - 0.075 - 0.018) / 1 / 2 = -1.734 ]
+   ema apr: -1260.446, 3 months apr: -206.29, current rate: -0.3165
+   Bybit DUSKUSDT ema day funding rate: -2.769 => -508.355  [ ((28.614 / 365 + -2.769) * 1 - 0.075 - 0.02) / 1 / 2 = -1.393 ]
+   ema apr: -1010.65, 3 months apr: -259.395, current rate: -0.7747
 ARK                 | 20.85%  | Binance     | USDT  | 1 | flexible - api
-   Binance ARKUSDT ema day funding rate: -0.022 => -10.546  [ ((20.851 / 365 + -0.022) * 1 - 0.075 - 0.018) / 1 / 2 = -0.029 ]
-   ema apr: -7.997, 3 maonths apr: -66.368, current rate: 0.005
-   Bybit ARKUSDT ema day funding rate: 0.028 => -1.759  [ ((20.851 / 365 + 0.028) * 1 - 0.075 - 0.02) / 1 / 2 = -0.005 ]
-   ema apr: 10.306, 3 maonths apr: 0.524, current rate: 0.001
+   Binance ARKUSDT ema day funding rate: -0.053 => -16.284  [ ((20.854 / 365 + -0.053) * 1 - 0.075 - 0.018) / 1 / 2 = -0.045 ]
+   ema apr: -19.478, 3 months apr: -66.529, current rate: -0.0176
+   Bybit ARKUSDT ema day funding rate: 0.03 => -1.443  [ ((20.854 / 365 + 0.03) * 1 - 0.075 - 0.02) / 1 / 2 = -0.004 ]
+   ema apr: 10.935, 3 months apr: -86.567, current rate: 0.0013
 IMU_RC_tag          | 200%    | Bybit       | USDT  | 28 | from page - locked
 Crazy_Thursday_NewUser | 555%    | Bybit       | USDT  | 3 | from page - locked
 25Q2_555            | 555%    | Bybit       | USDT  | 1 | from page - locked
@@ -184,102 +180,125 @@ Crazy_Thursday_NewUser | 555%    | Bybit       | USDT  | 3 | from page - locked
 Crazy_Thursday_NewUser | 555%    | Bybit       | USDT  | 3 | from page - locked
 CIS_26Q1_V3         | 600%    | Bybit       | USDT  | 3 | from page - locked
 MA_26Q1_USDT_For_USDT | 666%    | Bybit       | USDT  | 3 | from page - locked
-0G                  | 38.05%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance 0GUSDT ema day funding rate: -0.123 => -6.772  [ ((38.05 / 365 + -0.123) * 1 - 0 - 0.018) / 1 / 2 = -0.019 ]
-   ema apr: -45.023, 3 maonths apr: -294.094, current rate: -0.003
-   Bybit 0GUSDT ema day funding rate: 0.03 => 20.85  [ ((38.05 / 365 + 0.03) * 1 - 0 - 0.02) / 1 / 2 = 0.057 ]
-   ema apr: 10.95, 3 maonths apr: 0.57, current rate: 0.001
-LA                  | 20.33%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance LAUSDT ema day funding rate: -1.202 => -212.525  [ ((20.33 / 365 + -1.202) * 1 - 0 - 0.018) / 1 / 2 = -0.582 ]
-   ema apr: -438.81, 3 maonths apr: -87.955, current rate: -0.197
-   Bybit LAUSDT ema day funding rate: -0.545 => -93.029  [ ((20.33 / 365 + -0.545) * 1 - 0 - 0.02) / 1 / 2 = -0.255 ]
-   ema apr: -199.089, 3 maonths apr: -11.623, current rate: -0.012
-SONIC               | 47.48%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance SONICUSDT ema day funding rate: -0.656 => -99.179  [ ((47.48 / 365 + -0.656) * 1 - 0 - 0.018) / 1 / 2 = -0.272 ]
-   ema apr: -239.269, 3 maonths apr: -110.292, current rate: -0.09
-   Bybit SONICUSDT ema day funding rate: -0.505 => -72.154  [ ((47.48 / 365 + -0.505) * 1 - 0 - 0.02) / 1 / 2 = -0.198 ]
-   ema apr: -184.488, 3 maonths apr: -17.259, current rate: -0.021
-BERA                | 75.39%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance BERAUSDT ema day funding rate: -0.64 => -82.447  [ ((75.39 / 365 + -0.64) * 1 - 0 - 0.018) / 1 / 2 = -0.226 ]
-   ema apr: -233.714, 3 maonths apr: -208.724, current rate: -0.056
-   Bybit BERAUSDT ema day funding rate: -0.201 => -2.589  [ ((75.39 / 365 + -0.201) * 1 - 0 - 0.02) / 1 / 2 = -0.007 ]
-   ema apr: -73.268, 3 maonths apr: -4.155, current rate: 0.002
-IO                  | 20.49%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance IOUSDT ema day funding rate: -0.556 => -94.582  [ ((20.49 / 365 + -0.556) * 1 - 0 - 0.018) / 1 / 2 = -0.259 ]
-   ema apr: -203.084, 3 maonths apr: -48.462, current rate: -0.066
-   Bybit IOUSDT ema day funding rate: -0.358 => -58.74  [ ((20.49 / 365 + -0.358) * 1 - 0 - 0.02) / 1 / 2 = -0.161 ]
-   ema apr: -130.67, 3 maonths apr: -4.266, current rate: -0.048
-ENJ                 | 31.26%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance ENJUSDT ema day funding rate: -0.114 => -8.4  [ ((31.26 / 365 + -0.114) * 1 - 0 - 0.018) / 1 / 2 = -0.023 ]
-   ema apr: -41.49, 3 maonths apr: -12.596, current rate: -0.029
-   Bybit ENJUSDT ema day funding rate: -0.252 => -33.996  [ ((31.26 / 365 + -0.252) * 1 - 0 - 0.02) / 1 / 2 = -0.093 ]
-   ema apr: -91.953, 3 maonths apr: -4.34, current rate: -0.044
-AXS                 | 127.98% | Bybit       | USDT  | 1 | from api - flexible
-   Binance AXSUSDT ema day funding rate: -3.098 => -504.656  [ ((127.98 / 365 + -3.098) * 1 - 0 - 0.018) / 1 / 2 = -1.383 ]
-   ema apr: -1130.722, 3 maonths apr: -296.292, current rate: -0.551
-   Bybit AXSUSDT ema day funding rate: -4.212 => -708.371  [ ((127.98 / 365 + -4.212) * 1 - 0 - 0.02) / 1 / 2 = -1.941 ]
-   ema apr: -1537.421, 3 maonths apr: -66.416, current rate: -0.299
-RVN                 | 42.59%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance RVNUSDT ema day funding rate: -0.027 => 13.12  [ ((42.59 / 365 + -0.027) * 1 - 0 - 0.018) / 1 / 2 = 0.036 ]
-   ema apr: -9.78, 3 maonths apr: 2.6, current rate: -0.019
-   Bybit RVNUSDT ema day funding rate: -0.11 => -2.371  [ ((42.59 / 365 + -0.11) * 1 - 0 - 0.02) / 1 / 2 = -0.006 ]
-   ema apr: -40.031, 3 maonths apr: -4.779, current rate: 0.001
-SNX                 | 26.41%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance SNXUSDT ema day funding rate: -0.444 => -71.073  [ ((26.41 / 365 + -0.444) * 1 - 0 - 0.018) / 1 / 2 = -0.195 ]
-   ema apr: -161.986, 3 maonths apr: -0.293, current rate: -0.835
-   Bybit SNXUSDT ema day funding rate: -0.482 => -78.378  [ ((26.41 / 365 + -0.482) * 1 - 0 - 0.02) / 1 / 2 = -0.215 ]
-   ema apr: -175.866, 3 maonths apr: -4.956, current rate: -0.739
-AGLD                | 20.46%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance AGLDUSDT ema day funding rate: 0.018 => 10.247  [ ((20.46 / 365 + 0.018) * 1 - 0 - 0.018) / 1 / 2 = 0.028 ]
-   ema apr: 6.604, 3 maonths apr: 0.38, current rate: 0.01
-   Bybit AGLDUSDT ema day funding rate: -0.033 => 0.616  [ ((20.46 / 365 + -0.033) * 1 - 0 - 0.02) / 1 / 2 = 0.002 ]
-   ema apr: -11.928, 3 maonths apr: -0.493, current rate: 0
-CYBER               | 33.98%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance CYBERUSDT ema day funding rate: -1.563 => -271.471  [ ((33.98 / 365 + -1.563) * 1 - 0 - 0.018) / 1 / 2 = -0.744 ]
-   ema apr: -570.353, 3 maonths apr: -118.531, current rate: -0.1
-   Bybit CYBERUSDT ema day funding rate: -1.304 => -224.617  [ ((33.98 / 365 + -1.304) * 1 - 0 - 0.02) / 1 / 2 = -0.615 ]
-   ema apr: -475.913, 3 maonths apr: -46.486, current rate: -0.174
-JTO                 | 50.32%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance JTOUSDT ema day funding rate: -1.138 => -185.781  [ ((50.32 / 365 + -1.138) * 1 - 0 - 0.018) / 1 / 2 = -0.509 ]
-   ema apr: -415.312, 3 maonths apr: -44.484, current rate: -0.04
-   Bybit JTOUSDT ema day funding rate: -0.522 => -73.749  [ ((50.32 / 365 + -0.522) * 1 - 0 - 0.02) / 1 / 2 = -0.202 ]
-   ema apr: -190.519, 3 maonths apr: -2.747, current rate: 0.001
-ZIL                 | 50.3%   | Bybit       | USDT  | 1 | from api - flexible
-   Binance ZILUSDT ema day funding rate: -0.495 => -68.444  [ ((50.3 / 365 + -0.495) * 1 - 0 - 0.018) / 1 / 2 = -0.188 ]
-   ema apr: -180.619, 3 maonths apr: -136.937, current rate: -0.045
-   Bybit ZILUSDT ema day funding rate: -0.031 => 15.927  [ ((50.3 / 365 + -0.031) * 1 - 0 - 0.02) / 1 / 2 = 0.044 ]
-   ema apr: -11.146, 3 maonths apr: -2.729, current rate: 0.001
-MINA                | 20.06%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance MINAUSDT ema day funding rate: -0.051 => -2.548  [ ((20.06 / 365 + -0.051) * 1 - 0 - 0.018) / 1 / 2 = -0.007 ]
-   ema apr: -18.586, 3 maonths apr: -23.658, current rate: -0.038
-   Bybit MINAUSDT ema day funding rate: -0.007 => 5.047  [ ((20.06 / 365 + -0.007) * 1 - 0 - 0.02) / 1 / 2 = 0.014 ]
-   ema apr: -2.666, 3 maonths apr: -0.797, current rate: 0.002
-INJ                 | 102.39% | Bybit       | USDT  | 1 | from api - flexible
-   Binance INJUSDT ema day funding rate: -1.679 => -258.459  [ ((102.39 / 365 + -1.679) * 1 - 0 - 0.018) / 1 / 2 = -0.708 ]
-   ema apr: -612.738, 3 maonths apr: -10.362, current rate: -1.644
-   Bybit INJUSDT ema day funding rate: -7.896 => -1393.513  [ ((102.39 / 365 + -7.896) * 1 - 0 - 0.02) / 1 / 2 = -3.818 ]
-   ema apr: -2882.115, 3 maonths apr: -19.946, current rate: -0.289
-OP                  | 50.87%  | Bybit       | USDT  | 1 | from api - flexible
-   Binance OPUSDT ema day funding rate: -0.217 => -17.38  [ ((50.87 / 365 + -0.217) * 1 - 0 - 0.018) / 1 / 2 = -0.048 ]
-   ema apr: -79.06, 3 maonths apr: -1.314, current rate: -0.282
-   Bybit OPUSDT ema day funding rate: -0.162 => -7.748  [ ((50.87 / 365 + -0.162) * 1 - 0 - 0.02) / 1 / 2 = -0.021 ]
-   ema apr: -59.067, 3 maonths apr: -1.163, current rate: -0.236
+2Z                  | 20.98%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance 2ZUSDT ema day funding rate: -0.107 => -12.374  [ ((20.98 / 365 + -0.107) * 1 - 0 - 0.018) / 1 / 2 = -0.034 ]
+   ema apr: -39.157, 3 months apr: -31.644, current rate: -0.0123
+   Bybit 2ZUSDT ema day funding rate: -0.103 => -11.883  [ ((20.98 / 365 + -0.103) * 1 - 0 - 0.02) / 1 / 2 = -0.033 ]
+   ema apr: -37.446, 3 months apr: -16.909, current rate: -0.0201
+AVNT                | 39.55%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance AVNTUSDT ema day funding rate: -0.115 => -4.467  [ ((39.55 / 365 + -0.115) * 1 - 0 - 0.018) / 1 / 2 = -0.012 ]
+   ema apr: -41.913, 3 months apr: -170.808, current rate: -0.0095
+   Bybit AVNTUSDT ema day funding rate: -0.007 => 14.835  [ ((39.55 / 365 + -0.007) * 1 - 0 - 0.02) / 1 / 2 = 0.041 ]
+   ema apr: -2.581, 3 months apr: -112.786, current rate: 0.0013
+LINEA               | 25.04%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance LINEAUSDT ema day funding rate: 0.007 => 10.565  [ ((25.04 / 365 + 0.007) * 1 - 0 - 0.018) / 1 / 2 = 0.029 ]
+   ema apr: 2.659, 3 months apr: -10.716, current rate: -0.0092
+   Bybit LINEAUSDT ema day funding rate: -0.058 => -1.648  [ ((25.04 / 365 + -0.058) * 1 - 0 - 0.02) / 1 / 2 = -0.005 ]
+   ema apr: -21.036, 3 months apr: -32.473, current rate: -0.0525
+0G                  | 42%     | Bybit       | USDT  | 1 | from api - flexible
+   Binance 0GUSDT ema day funding rate: -0.435 => -61.705  [ ((42 / 365 + -0.435) * 1 - 0 - 0.018) / 1 / 2 = -0.169 ]
+   ema apr: -158.84, 3 months apr: -290.036, current rate: -0.0755
+   Bybit 0GUSDT ema day funding rate: -1.159 => -194.216  [ ((42 / 365 + -1.159) * 1 - 0 - 0.02) / 1 / 2 = -0.532 ]
+   ema apr: -423.132, 3 months apr: -507.549, current rate: 0.0013
+TOSHI               | 57.42%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance TOSHIUSDT ema day funding rate: -0.165 => -4.736  [ ((57.42 / 365 + -0.165) * 1 - 0 - 0.018) / 1 / 2 = -0.013 ]
+   ema apr: -60.321, 3 months apr: -115.381, current rate: -0.0652
+LA                  | 28.84%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance LAUSDT ema day funding rate: -0.382 => -58.627  [ ((28.84 / 365 + -0.382) * 1 - 0 - 0.018) / 1 / 2 = -0.161 ]
+   ema apr: -139.524, 3 months apr: -86.959, current rate: -0.1568
+   Bybit LAUSDT ema day funding rate: -0.84 => -142.613  [ ((28.84 / 365 + -0.84) * 1 - 0 - 0.02) / 1 / 2 = -0.391 ]
+   ema apr: -306.767, 3 months apr: -532.521, current rate: -0.0523
+NXPC                | 30.48%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance NXPCUSDT ema day funding rate: -0.056 => 1.786  [ ((30.48 / 365 + -0.056) * 1 - 0 - 0.018) / 1 / 2 = 0.005 ]
+   ema apr: -20.338, 3 months apr: 4.815, current rate: 0.005
+   Bybit NXPCUSDT ema day funding rate: -0.035 => 5.184  [ ((30.48 / 365 + -0.035) * 1 - 0 - 0.02) / 1 / 2 = 0.014 ]
+   ema apr: -12.811, 3 months apr: -4.115, current rate: -0.0156
+SONIC               | 58.08%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance SONICUSDT ema day funding rate: -0.564 => -77.239  [ ((58.08 / 365 + -0.564) * 1 - 0 - 0.018) / 1 / 2 = -0.212 ]
+   ema apr: -205.989, 3 months apr: -111.425, current rate: -0.0376
+   Bybit SONICUSDT ema day funding rate: -0.567 => -78.154  [ ((58.08 / 365 + -0.567) * 1 - 0 - 0.02) / 1 / 2 = -0.214 ]
+   ema apr: -207.088, 3 months apr: -247.305, current rate: -0.03
+BERA                | 67.11%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance BERAUSDT ema day funding rate: -0.468 => -55.078  [ ((67.11 / 365 + -0.468) * 1 - 0 - 0.018) / 1 / 2 = -0.151 ]
+   ema apr: -170.697, 3 months apr: -209.427, current rate: -0.0553
+   Bybit BERAUSDT ema day funding rate: -0.567 => -73.638  [ ((67.11 / 365 + -0.567) * 1 - 0 - 0.02) / 1 / 2 = -0.202 ]
+   ema apr: -207.086, 3 months apr: -524.21, current rate: -0.0248
+VANA                | 97.53%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance VANAUSDT ema day funding rate: -0.246 => 0.639  [ ((97.53 / 365 + -0.246) * 1 - 0 - 0.018) / 1 / 2 = 0.002 ]
+   ema apr: -89.683, 3 months apr: -81.187, current rate: -0.0396
+   Bybit VANAUSDT ema day funding rate: -0.164 => 15.095  [ ((97.53 / 365 + -0.164) * 1 - 0 - 0.02) / 1 / 2 = 0.041 ]
+   ema apr: -60.04, 3 months apr: -55.89, current rate: 0.0013
+MOVE                | 34.49%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance MOVEUSDT ema day funding rate: -0.127 => -9.145  [ ((34.49 / 365 + -0.127) * 1 - 0 - 0.018) / 1 / 2 = -0.025 ]
+   ema apr: -46.209, 3 months apr: -207.436, current rate: -0.0169
+   Bybit MOVEUSDT ema day funding rate: 0.028 => 18.769  [ ((34.49 / 365 + 0.028) * 1 - 0 - 0.02) / 1 / 2 = 0.051 ]
+   ema apr: 10.347, 3 months apr: -710.509, current rate: 0.0013
+ATH                 | 32.22%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance ATHUSDT ema day funding rate: 0.025 => 17.298  [ ((32.22 / 365 + 0.025) * 1 - 0 - 0.018) / 1 / 2 = 0.047 ]
+   ema apr: 8.946, 3 months apr: -10.978, current rate: 0.005
+   Bybit ATHUSDT ema day funding rate: 0.017 => 15.622  [ ((32.22 / 365 + 0.017) * 1 - 0 - 0.02) / 1 / 2 = 0.043 ]
+   ema apr: 6.325, 3 months apr: -30.447, current rate: 0.005
+ENJ                 | 31.53%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance ENJUSDT ema day funding rate: -0.108 => -7.155  [ ((31.53 / 365 + -0.108) * 1 - 0 - 0.018) / 1 / 2 = -0.02 ]
+   ema apr: -39.271, 3 months apr: -12.904, current rate: -0.0397
+   Bybit ENJUSDT ema day funding rate: -0.184 => -21.473  [ ((31.53 / 365 + -0.184) * 1 - 0 - 0.02) / 1 / 2 = -0.059 ]
+   ema apr: -67.175, 3 months apr: -17.902, current rate: -0.1022
+AXS                 | 128.43% | Bybit       | USDT  | 1 | from api - flexible
+   Binance AXSUSDT ema day funding rate: -3.981 => -665.571  [ ((128.43 / 365 + -3.981) * 1 - 0 - 0.018) / 1 / 2 = -1.823 ]
+   ema apr: -1453.002, 3 months apr: -306.575, current rate: -0.4033
+   Bybit AXSUSDT ema day funding rate: -4.293 => -722.988  [ ((128.43 / 365 + -4.293) * 1 - 0 - 0.02) / 1 / 2 = -1.981 ]
+   ema apr: -1567.106, 3 months apr: -949.989, current rate: -0.0356
+AXL                 | 20.82%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance AXLUSDT ema day funding rate: -0.061 => -3.971  [ ((20.82 / 365 + -0.061) * 1 - 0 - 0.018) / 1 / 2 = -0.011 ]
+   ema apr: -22.192, 3 months apr: -94.144, current rate: -0.0043
+   Bybit AXLUSDT ema day funding rate: 0.03 => 12.171  [ ((20.82 / 365 + 0.03) * 1 - 0 - 0.02) / 1 / 2 = 0.033 ]
+   ema apr: 10.823, 3 months apr: -44.723, current rate: 0.0013
+SNX                 | 25.04%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance SNXUSDT ema day funding rate: -0.941 => -162.431  [ ((25.04 / 365 + -0.941) * 1 - 0 - 0.018) / 1 / 2 = -0.445 ]
+   ema apr: -343.332, 3 months apr: -4.252, current rate: -0.5785
+   Bybit SNXUSDT ema day funding rate: -1.036 => -180.196  [ ((25.04 / 365 + -1.036) * 1 - 0 - 0.02) / 1 / 2 = -0.494 ]
+   ema apr: -378.131, 3 months apr: -11.83, current rate: -1.0963
+KSM                 | 28.66%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance KSMUSDT ema day funding rate: -0.014 => 8.418  [ ((28.66 / 365 + -0.014) * 1 - 0 - 0.018) / 1 / 2 = 0.023 ]
+   ema apr: -5.253, 3 months apr: -0.551, current rate: -0.0148
+   Bybit KSMUSDT ema day funding rate: -0.022 => 6.729  [ ((28.66 / 365 + -0.022) * 1 - 0 - 0.02) / 1 / 2 = 0.018 ]
+   ema apr: -7.902, 3 months apr: 2.469, current rate: -0.0156
+JTO                 | 91.76%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance JTOUSDT ema day funding rate: -0.615 => -69.584  [ ((91.76 / 365 + -0.615) * 1 - 0 - 0.018) / 1 / 2 = -0.191 ]
+   ema apr: -224.359, 3 months apr: -45.497, current rate: -0.2391
+   Bybit JTOUSDT ema day funding rate: -1.824 => -290.66  [ ((91.76 / 365 + -1.824) * 1 - 0 - 0.02) / 1 / 2 = -0.796 ]
+   ema apr: -665.779, 3 months apr: -208.48, current rate: -0.1126
+ZIL                 | 54.37%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance ZILUSDT ema day funding rate: -0.396 => -48.312  [ ((54.37 / 365 + -0.396) * 1 - 0 - 0.018) / 1 / 2 = -0.132 ]
+   ema apr: -144.424, 3 months apr: -137.868, current rate: -0.0508
+   Bybit ZILUSDT ema day funding rate: -0.338 => -38.223  [ ((54.37 / 365 + -0.338) * 1 - 0 - 0.02) / 1 / 2 = -0.105 ]
+   ema apr: -123.517, 3 months apr: -78.248, current rate: -0.0277
+INJ                 | 91.21%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance INJUSDT ema day funding rate: -1.927 => -309.32  [ ((91.21 / 365 + -1.927) * 1 - 0 - 0.018) / 1 / 2 = -0.847 ]
+   ema apr: -703.279, 3 months apr: -16.725, current rate: -0.3676
+   Bybit INJUSDT ema day funding rate: -1.64 => -257.411  [ ((91.21 / 365 + -1.64) * 1 - 0 - 0.02) / 1 / 2 = -0.705 ]
+   ema apr: -598.732, 3 months apr: -26.922, current rate: -0.0134
+OP                  | 51.05%  | Bybit       | USDT  | 1 | from api - flexible
+   Binance OPUSDT ema day funding rate: -0.441 => -58.33  [ ((51.05 / 365 + -0.441) * 1 - 0 - 0.018) / 1 / 2 = -0.16 ]
+   ema apr: -161.14, 3 months apr: -3.217, current rate: -0.1278
+   Bybit OPUSDT ema day funding rate: -0.343 => -40.733  [ ((51.05 / 365 + -0.343) * 1 - 0 - 0.02) / 1 / 2 = -0.112 ]
+   ema apr: -125.216, 3 months apr: 0.143, current rate: -0.1859
 USDT                | 20%     | Mexc        | USDT  | 1 | from page
 USDT                | 15%     | Mexc        | USDT  | 7 | from page
 ETH                 | 20%     | Mexc        | USDT  | 7 | from page
-   Binance ETHUSDT ema day funding rate: -0.015 => 6.761  [ ((20 / 365 + -0.015) * 7 - 0 - 0.018) / 7 / 2 = 0.019 ]
-   ema apr: -5.54, 3 maonths apr: 2.418, current rate: -0.008
-   Binance ETHUSDC ema day funding rate: -0.019 => 6.485  [ ((20 / 365 + -0.019) * 7 - 0 - 0) / 7 / 2 = 0.018 ]
-   ema apr: -7.03, 3 maonths apr: 2.102, current rate: -0.004
-   Bybit ETHUSDT ema day funding rate: -0.004 => 8.695  [ ((20 / 365 + -0.004) * 7 - 0 - 0.02) / 7 / 2 = 0.024 ]
-   ema apr: -1.566, 3 maonths apr: -0.012, current rate: 0.001
+   Binance ETHUSDT ema day funding rate: -0.013 => 7.116  [ ((20 / 365 + -0.013) * 7 - 0 - 0.018) / 7 / 2 = 0.019 ]
+   ema apr: -4.829, 3 months apr: 2.357, current rate: -0.0052
+   Binance ETHUSDC ema day funding rate: -0.01 => 8.113  [ ((20 / 365 + -0.01) * 7 - 0 - 0) / 7 / 2 = 0.022 ]
+   ema apr: -3.774, 3 months apr: 2.08, current rate: -0.0019
+   Bybit ETHUSDT ema day funding rate: 0.001 => 9.642  [ ((20 / 365 + 0.001) * 7 - 0 - 0.02) / 7 / 2 = 0.026 ]
+   ema apr: 0.326, 3 months apr: 2.166, current rate: -0.0035
 SOL                 | 20%     | Mexc        | USDT  | 7 | from page
-   Binance SOLUSDT ema day funding rate: -0.023 => 5.405  [ ((20 / 365 + -0.023) * 7 - 0 - 0.018) / 7 / 2 = 0.015 ]
-   ema apr: -8.252, 3 maonths apr: -1.695, current rate: 0.005
-   Binance SOLUSDC ema day funding rate: -0.019 => 6.546  [ ((20 / 365 + -0.019) * 7 - 0 - 0) / 7 / 2 = 0.018 ]
-   ema apr: -6.908, 3 maonths apr: -0.963, current rate: -0.001
-   Bybit SOLUSDT ema day funding rate: -0.02 => 5.77  [ ((20 / 365 + -0.02) * 7 - 0 - 0.02) / 7 / 2 = 0.016 ]
-   ema apr: -7.418, 3 maonths apr: -0.34, current rate: 0.003
+   Binance SOLUSDT ema day funding rate: -0.018 => 6.205  [ ((20 / 365 + -0.018) * 7 - 0 - 0.018) / 7 / 2 = 0.017 ]
+   ema apr: -6.651, 3 months apr: -1.709, current rate: -0.0118
+   Binance SOLUSDC ema day funding rate: -0.014 => 7.421  [ ((20 / 365 + -0.014) * 7 - 0 - 0) / 7 / 2 = 0.02 ]
+   ema apr: -5.157, 3 months apr: -0.963, current rate: -0.0072
+   Bybit SOLUSDT ema day funding rate: -0.01 => 7.739  [ ((20 / 365 + -0.01) * 7 - 0 - 0.02) / 7 / 2 = 0.021 ]
+   ema apr: -3.478, 3 months apr: -1.028, current rate: 0.0042
 ECHELON             | 300%    | Mexc        | USDT  | 1 | from page
 MOVA                | 300%    | Mexc        | USDT  | 1 | from page
 TEM                 | 300%    | Mexc        | USDT  | 1 | from page
@@ -289,69 +308,70 @@ BRL                 | 20%     | Mexc        | USDT  | 1 | from page
 USDC                | 15%     | Mexc        | USDT  | 7 | from page
 USDC                | 12%     | Mexc        | USDT  | 1 | from page
 ZAMA                | 300%    | Mexc        | USDT  | 1 | from page
-   Binance ZAMAUSDT ema day funding rate: 0.01 => 148.603  [ ((300 / 365 + 0.01) * 1 - 0 - 0.018) / 1 / 2 = 0.407 ]
-   ema apr: 3.776, 3 maonths apr: -0.176, current rate: 0.005
-   Bybit ZAMAUSDT ema day funding rate: 0.007 => 147.639  [ ((300 / 365 + 0.007) * 1 - 0 - 0.02) / 1 / 2 = 0.404 ]
-   ema apr: 2.578, 3 maonths apr: 0.335, current rate: -0.04
+   Binance ZAMAUSDT ema day funding rate: 0.004 => 147.375  [ ((300 / 365 + 0.004) * 1 - 0 - 0.018) / 1 / 2 = 0.404 ]
+   ema apr: 1.32, 3 months apr: -0.157, current rate: -0.0015
+   Bybit ZAMAUSDT ema day funding rate: 0.001 => 146.617  [ ((300 / 365 + 0.001) * 1 - 0 - 0.02) / 1 / 2 = 0.402 ]
+   ema apr: 0.534, 3 months apr: -3.764, current rate: 0.005
 3KDS                | 300%    | Mexc        | USDT  | 1 | from page
 SENT                | 50%     | Mexc        | USDT  | 30 | from page
-   Binance SENTUSDT ema day funding rate: -1.127 => -180.719  [ ((50 / 365 + -1.127) * 30 - 0 - 0.018) / 30 / 2 = -0.495 ]
-   ema apr: -411.219, 3 maonths apr: -430.719, current rate: -0.06
-   Bybit SENTUSDT ema day funding rate: -1.883 => -318.845  [ ((50 / 365 + -1.883) * 30 - 0 - 0.02) / 30 / 2 = -0.874 ]
-   ema apr: -687.446, 3 maonths apr: -30.033, current rate: -0.138
+   Binance SENTUSDT ema day funding rate: -0.696 => -102.152  [ ((50 / 365 + -0.696) * 30 - 0 - 0.018) / 30 / 2 = -0.28 ]
+   ema apr: -254.085, 3 months apr: -432.753, current rate: -0.0274
+   Bybit SENTUSDT ema day funding rate: -1.176 => -189.743  [ ((50 / 365 + -1.176) * 30 - 0 - 0.02) / 30 / 2 = -0.52 ]
+   ema apr: -429.243, 3 months apr: -759.093, current rate: -0.0436
 CKUSDT              | 25%     | Mexc        | USDT  | 30 | from page
 SUMR                | 100%    | Mexc        | USDT  | 30 | from page
 IP                  | 30%     | Mexc        | USDT  | 90 | from page
-   Binance IPUSDT ema day funding rate: -0.342 => -47.367  [ ((30 / 365 + -0.342) * 90 - 0 - 0.018) / 90 / 2 = -0.13 ]
-   ema apr: -124.66, 3 maonths apr: -79.375, current rate: -0.065
-   Binance IPUSDC ema day funding rate: -0.313 => -42.196  [ ((30 / 365 + -0.313) * 90 - 0 - 0) / 90 / 2 = -0.116 ]
-   ema apr: -114.391, 3 maonths apr: -71.334, current rate: -0.055
-   Bybit IPUSDT ema day funding rate: -0.515 => -79.096  [ ((30 / 365 + -0.515) * 90 - 0 - 0.02) / 90 / 2 = -0.217 ]
-   ema apr: -188.11, 3 maonths apr: -7.924, current rate: -0.02
+   Binance IPUSDT ema day funding rate: -0.143 => -11.146  [ ((30 / 365 + -0.143) * 90 - 0 - 0.018) / 90 / 2 = -0.031 ]
+   ema apr: -52.218, 3 months apr: -79.639, current rate: 0.0001
+   Binance IPUSDC ema day funding rate: -0.12 => -6.815  [ ((30 / 365 + -0.12) * 90 - 0 - 0) / 90 / 2 = -0.019 ]
+   ema apr: -43.63, 3 months apr: -71.597, current rate: 0.005
+   Bybit IPUSDT ema day funding rate: 0.01 => 16.739  [ ((30 / 365 + 0.01) * 90 - 0 - 0.02) / 90 / 2 = 0.046 ]
+   ema apr: 3.558, 3 months apr: -77.345, current rate: 0.0013
 IP                  | 25%     | Mexc        | USDT  | 180 | from page
-   Binance IPUSDT ema day funding rate: -0.342 => -49.848  [ ((25 / 365 + -0.342) * 180 - 0 - 0.018) / 180 / 2 = -0.137 ]
-   ema apr: -124.66, 3 maonths apr: -79.375, current rate: -0.065
-   Binance IPUSDC ema day funding rate: -0.313 => -44.696  [ ((25 / 365 + -0.313) * 180 - 0 - 0) / 180 / 2 = -0.122 ]
-   ema apr: -114.391, 3 maonths apr: -71.334, current rate: -0.055
-   Bybit IPUSDT ema day funding rate: -0.515 => -81.575  [ ((25 / 365 + -0.515) * 180 - 0 - 0.02) / 180 / 2 = -0.223 ]
-   ema apr: -188.11, 3 maonths apr: -7.924, current rate: -0.02
+   Binance IPUSDT ema day funding rate: -0.143 => -13.627  [ ((25 / 365 + -0.143) * 180 - 0 - 0.018) / 180 / 2 = -0.037 ]
+   ema apr: -52.218, 3 months apr: -79.639, current rate: 0.0001
+   Binance IPUSDC ema day funding rate: -0.12 => -9.315  [ ((25 / 365 + -0.12) * 180 - 0 - 0) / 180 / 2 = -0.026 ]
+   ema apr: -43.63, 3 months apr: -71.597, current rate: 0.005
+   Bybit IPUSDT ema day funding rate: 0.01 => 14.259  [ ((25 / 365 + 0.01) * 180 - 0 - 0.02) / 180 / 2 = 0.039 ]
+   ema apr: 3.558, 3 months apr: -77.345, current rate: 0.0013
 CORE                | 25%     | Mexc        | USDT  | 1 | from page
-   Bybit COREUSDT ema day funding rate: 0.002 => 9.181  [ ((25 / 365 + 0.002) * 1 - 0 - 0.02) / 1 / 2 = 0.025 ]
-   ema apr: 0.661, 3 maonths apr: 0.2, current rate: 0.01
+   Bybit COREUSDT ema day funding rate: 0.016 => 11.804  [ ((25 / 365 + 0.016) * 1 - 0 - 0.02) / 1 / 2 = 0.032 ]
+   ema apr: 5.908, 3 months apr: 7.911, current rate: 0.01
 
 ===========================
 
-ZAMA                    | 148.603   | Mexc    | USDT  | Binance | USDT  | 1   | 16667
-BABY                    | 21.726    | Binance | USDT  | Binance | USDT  | 120 | 0
-0G                      | 20.85     | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
-0G                      | 20.281    | Binance | USDT  | Bybit   | USDT  | 120 | 0
-NIL                     | 20.087    | Binance | USDT  | Binance | USDT  | 120 | 0
+ZAMA                    | 147.375   | Mexc    | USDT  | Binance | USDT  | 1   | 16667
+BABY                    | 20.185    | Binance | USDT  | Binance | USDT  | 120 | 0
 USDT                    | 20        | Mexc    | USDT  |         |       | 1   | 20000000
-BABY                    | 18.635    | Binance | USDT  | Binance | USDT  | 60  | 0
-FOGO                    | 18.34     | Binance | USDT  | Binance | USDT  | 90  | 0
-0G                      | 18.232    | Binance | USDT  | Bybit   | USDT  | 90  | 0
-NIL                     | 17.945    | Binance | USDT  | Binance | USDT  | 60  | 0
-CTK                     | 17.861    | Binance | USDT  | Binance | USDT  | 90  | 0
-SOPH                    | 16.549    | Binance | FDUSD | Bybit   | USDT  | 1   | 0
-KERNEL                  | 16.36     | Binance | USDT  | Binance | USDT  | 90  | 0
-FOGO                    | 16.246    | Binance | USDT  | Binance | USDT  | 60  | 0
-ZIL                     | 15.927    | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
-NIL                     | 15.162    | Binance | USDT  | Binance | USDT  | 30  | 0
+NIL                     | 19.763    | Binance | USDT  | Binance | USDT  | 120 | 0
+FOGO                    | 19.279    | Binance | USDT  | Binance | USDT  | 90  | 0
+MOVE                    | 18.769    | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
+NIL                     | 17.622    | Binance | USDT  | Binance | USDT  | 60  | 0
+ATH                     | 17.298    | Bybit   | USDT  | Binance | USDT  | 1   | 0
+FOGO                    | 17.185    | Binance | USDT  | Binance | USDT  | 60  | 0
+BABY                    | 17.094    | Binance | USDT  | Binance | USDT  | 60  | 0
+IP                      | 16.739    | Mexc    | USDT  | Bybit   | USDT  | 90  | 800000
+CTK                     | 15.674    | Binance | USDT  | Bybit   | USDT  | 90  | 0
+VANA                    | 15.095    | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
 USDT                    | 15        | Mexc    | USDT  |         |       | 7   | 100000
 USDC                    | 15        | Mexc    | USDT  |         |       | 7   | 50000
-KERNEL                  | 14.266    | Binance | USDT  | Binance | USDT  | 60  | 0
-FOGO                    | 13.463    | Binance | USDT  | Binance | USDT  | 30  | 0
-RVN                     | 13.12     | Bybit   | USDT  | Binance | USDT  | 1   | 0
+NIL                     | 14.839    | Binance | USDT  | Binance | USDT  | 30  | 0
+AVNT                    | 14.835    | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
+FOGO                    | 14.402    | Binance | USDT  | Binance | USDT  | 30  | 0
+IP                      | 14.259    | Mexc    | USDT  | Bybit   | USDT  | 180 | 800000
+KERNEL                  | 14.028    | Binance | USDT  | Binance | USDT  | 90  | 0
+AXL                     | 12.171    | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
 USDC                    | 12        | Mexc    | USDT  |         |       | 1   | 20000000
-KERNEL                  | 11.983    | Binance | USDT  | Binance | USDT  | 30  | 0
-AGLD                    | 10.247    | Bybit   | USDT  | Binance | USDT  | 1   | 0
-CORE                    | 9.181     | Mexc    | USDT  | Bybit   | USDT  | 1   | -1
-ETH                     | 8.695     | Mexc    | USDT  | Bybit   | USDT  | 7   | 35
-SOL                     | 6.546     | Mexc    | USDT  | Binance | USDC  | 7   | 770
-WAL                     | 5.937     | Binance | FDUSD | Bybit   | USDT  | 90  | 0
-MINA                    | 5.047     | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
-WAL                     | 3.417     | Binance | FDUSD | Bybit   | USDT  | 60  | 0
-0G                      | 1.165     | Binance | USDT  | Bybit   | USDT  | 1   | 0
+KERNEL                  | 11.934    | Binance | USDT  | Binance | USDT  | 60  | 0
+CORE                    | 11.804    | Mexc    | USDT  | Bybit   | USDT  | 1   | -1
+LINEA                   | 10.565    | Bybit   | USDT  | Binance | USDT  | 1   | 0
+
+KERNEL                  | 9.651     | Binance | USDT  | Binance | USDT  | 30  | 0
+ETH                     | 9.642     | Mexc    | USDT  | Bybit   | USDT  | 7   | 35
+KSM                     | 8.418     | Bybit   | USDT  | Binance | USDT  | 1   | 0
+SOL                     | 7.739     | Mexc    | USDT  | Bybit   | USDT  | 7   | 770
+NXPC                    | 5.184     | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
+WAL                     | 2.085     | Binance | FDUSD | Binance | USDT  | 90  | 0
 IMU_RC_tag              | 0         | Bybit   | USDT  |         |       | 28  | 0
 Crazy_Thursday_NewUser  | 0         | Bybit   | USDT  |         |       | 3   | 0
 25Q2_555                | 0         | Bybit   | USDT  |         |       | 1   | 0
@@ -368,35 +388,41 @@ BRL                     | 0         | Mexc    | USDT  |         |       | 1   | 
 3KDS                    | 0         | Mexc    | USDT  |         |       | 1   | 200000
 CKUSDT                  | 0         | Mexc    | USDT  |         |       | 30  | 1000000
 SUMR                    | 0         | Mexc    | USDT  |         |       | 30  | 400000
-ARK                     | -1.759    | Binance | USDT  | Bybit   | USDT  | 1   | 0
-BERA                    | -2.589    | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
-ORCA                    | -5.006    | Binance | USDT  | Binance | USDT  | 1   | 0
-OP                      | -7.748    | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
-ENJ                     | -8.4      | Bybit   | USDT  | Binance | USDT  | 1   | 0
-ONT                     | -11.319   | Binance | USDT  | Binance | USDT  | 1   | 0
-ZKP                     | -14.758   | Binance | USDT  | Binance | USDT  | 1   | 0
-SXP                     | -15.013   | Binance | USDT  | Bybit   | USDT  | 1   | 0
-BERA                    | -25.427   | Binance | USDT  | Bybit   | USDT  | 90  | 0
-BERA                    | -35.659   | Binance | USDT  | Bybit   | USDT  | 1   | 0
-IP                      | -42.196   | Mexc    | USDT  | Binance | USDC  | 90  | 800000
-IP                      | -44.696   | Mexc    | USDT  | Binance | USDC  | 180 | 800000
-RPL                     | -50.309   | Binance | USDT  | Bybit   | USDT  | 1   | 0
-IO                      | -58.74    | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
-SNX                     | -71.073   | Bybit   | USDT  | Binance | USDT  | 1   | 0
-SONIC                   | -72.154   | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
-JTO                     | -73.749   | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
-LA                      | -93.029   | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
-LA                      | -100.926  | Binance | USDT  | Bybit   | USDT  | 1   | 0
-STEEM                   | -103.447  | Binance | USDT  | Bybit   | USDT  | 1   | 0
-SENT                    | -180.719  | Mexc    | USDT  | Binance | USDT  | 30  | 10000000
-SENT                    | -204.228  | Binance | USDT  | Binance | USDT  | 1   | 0
-CYBER                   | -219.882  | Binance | FDUSD | Bybit   | USDT  | 1   | 0
-CYBER                   | -224.617  | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
-INJ                     | -258.459  | Bybit   | USDT  | Binance | USDT  | 1   | 0
-ENSO                    | -266.229  | Binance | USDT  | Binance | USDT  | 1   | 0
-DUSK                    | -306.348  | Binance | USDT  | Bybit   | USDT  | 1   | 0
-AWE                     | -414.611  | Binance | USDT  | Bybit   | USDT  | 1   | 0
-AXS                     | -504.656  | Bybit   | USDT  | Binance | USDT  | 1   | 0
-AXS                     | -566.45   | Binance | USDT  | Binance | USDT  | 1   | 0
+WAL                     | -0.433    | Binance | FDUSD | Binance | USDT  | 60  | 0
+ORCA                    | -1.06     | Binance | USDT  | Binance | USDT  | 1   | 0
+ARK                     | -1.443    | Binance | USDT  | Bybit   | USDT  | 1   | 0
+SOPH                    | -2.311    | Binance | FDUSD | Bybit   | USDT  | 1   | 0
+TOSHI                   | -4.736    | Bybit   | USDT  | Binance | USDT  | 1   | 0
+ENJ                     | -7.155    | Bybit   | USDT  | Binance | USDT  | 1   | 0
+2Z                      | -11.883   | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
+RPL                     | -18.727   | Binance | USDT  | Bybit   | USDT  | 1   | 0
+ZIL                     | -38.223   | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
+SXP                     | -39.866   | Binance | USDT  | Bybit   | USDT  | 1   | 0
+OP                      | -40.733   | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
+BERA                    | -55.078   | Bybit   | USDT  | Binance | USDT  | 1   | 0
+LA                      | -58.627   | Bybit   | USDT  | Binance | USDT  | 1   | 0
+0G                      | -61.705   | Bybit   | USDT  | Binance | USDT  | 1   | 0
+0G                      | -64.612   | Binance | USDT  | Binance | USDT  | 120 | 0
+0G                      | -66.659   | Binance | USDT  | Binance | USDT  | 90  | 0
+JTO                     | -69.584   | Bybit   | USDT  | Binance | USDT  | 1   | 0
+LA                      | -71.049   | Binance | USDT  | Binance | USDT  | 1   | 0
+BERA                    | -74.137   | Binance | USDT  | Binance | USDT  | 90  | 0
+SONIC                   | -77.239   | Bybit   | USDT  | Binance | USDT  | 1   | 0
+0G                      | -83.202   | Binance | USDT  | Binance | USDT  | 1   | 0
+BERA                    | -84.394   | Binance | USDT  | Binance | USDT  | 1   | 0
+STEEM                   | -93.877   | Binance | USDT  | Binance | USDT  | 1   | 0
+BIO                     | -97.972   | Binance | USDT  | Binance | USDC  | 1   | 0
+SENT                    | -102.152  | Mexc    | USDT  | Binance | USDT  | 30  | 10000000
+CYBER                   | -108.25   | Binance | FDUSD | Binance | USDT  | 1   | 0
+SENT                    | -126.273  | Binance | USDT  | Binance | USDT  | 1   | 0
+SNX                     | -162.431  | Bybit   | USDT  | Binance | USDT  | 1   | 0
+INJ                     | -257.411  | Bybit   | USDT  | Bybit   | USDT  | 1   | 0
+DUSK                    | -508.355  | Binance | USDT  | Bybit   | USDT  | 1   | 0
+ENSO                    | -644.543  | Binance | USDT  | Binance | USDT  | 1   | 0
+AXS                     | -665.571  | Bybit   | USDT  | Binance | USDT  | 1   | 0
+AXS                     | -724.228  | Binance | USDT  | Binance | USDT  | 1   | 0
+AWE                     | -840.389  | Binance | USDT  | Binance | USDT  | 1   | 0
 
-D:\bnn\bnncmd\bin\Debug\net8.0-windows>
+C:\bnn\Bnncmd\bin\Debug\net8.0-windows\bnncmd.exe (process 8252) exited with code 0 (0x0).
+To automatically close the console when debugging stops, enable Tools->Options->Debugging->Automatically close the console when debugging stops.
+Press any key to close this window . . .

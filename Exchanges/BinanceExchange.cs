@@ -424,16 +424,17 @@ namespace bnncmd.Exchanges
         {
             var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now, 1000).Result; // 72
             if (fundingRates.Data.Length < 2) return;
-            var fundingInterval = (fundingRates.Data[^1].FundingTime - fundingRates.Data[^2].FundingTime).Hours;
+            var fundingInterval = (int)Math.Round((fundingRates.Data[^1].FundingTime - fundingRates.Data[^2].FundingTime).TotalHours);
             var ratesArr = fundingRates.Data.Select(r => r.FundingRate).Reverse().ToArray(); // then process EMA -- .Take(10)
             var emaFr = 100 * GetEmaFundingRate(ratesArr) * 24 / fundingInterval;
+            var statDays = (fundingRates.Data[^1].FundingTime - fundingRates.Data[0].FundingTime).Days;
 
             hedges.Add(new HedgeInfo(this)
             {
                 Symbol = symbol,
                 EmaFundingRate = emaFr,
                 EmaApr = emaFr * 365,
-                ThreeMonthsApr = 100 * ratesArr.Sum() / (fundingRates.Data[^1].FundingTime - fundingRates.Data[0].FundingTime).Days * 365,
+                ThreeMonthsApr = 100 * ratesArr.Sum() / (statDays == 0 ? 1 : statDays) * 365,
                 CurrentFundingRate = 100 * GetCurrentFundingRate(symbol),
                 Fee = fee
             });
