@@ -90,7 +90,8 @@ NIL                 | 20.9%   | Binance     | USDT  | 30 | locked - api
 FOGO                | 20.9%   | Binance     | USDT  | 30 | locked - api
    Binance FOGOUSDT ema day funding rate: 0.025 => 14.402  [ ((20.9 / 365 + 0.025) * 30 - 0.075 - 0.018) / 30 / 2 = 0.039 ]
    ema apr: 9.035, 3 months apr: -47.694, current rate: 0.005
-   Bybit FOGOUSDT ema day funding rate: -0.005 => 9.01  [ ((20.9 / 365 + -0.005) * 30 - 0.075 - 0.02) / 30 / 2 = 0.025 ]   ema apr: -1.724, 3 months apr: -48.76, current rate: 0.005
+   Bybit FOGOUSDT ema day funding rate: -0.005 => 9.01  [ ((20.9 / 365 + -0.005) * 30 - 0.075 - 0.02) / 30 / 2 = 0.025 ]   
+   ema apr: -1.724, 3 months apr: -48.76, current rate: 0.005
 ORCA                | 41.59%  | Binance     | USDT  | 1 | flexible - api
    Binance ORCAUSDT ema day funding rate: -0.027 => -1.06  [ ((41.585 / 365 + -0.027) * 1 - 0.075 - 0.018) / 1 / 2 = -0.003 ]
    ema apr: -9.761, 3 months apr: -179.563, current rate: -0.1212
