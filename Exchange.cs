@@ -157,6 +157,16 @@ namespace Bnncmd
             return File.ReadAllText(Path.ChangeExtension(batchDir + batchFile, "json"));
         }
 
+        private readonly Dictionary<string, HedgeInfo[]> _ratesStorage = [];
+
+        public HedgeInfo[] GetDayFundingRateFromStorage(string coin)
+        {
+            if (_ratesStorage.TryGetValue(coin, out var rates)) return rates;
+            var newRates = GetDayFundingRate(coin);
+            _ratesStorage.Add(coin, newRates);
+            return newRates;
+        }
+
         /// <summary>
         /// Now get last funding rate, later planned to make kind of EMA FR
         /// </summary>

@@ -96,18 +96,19 @@ namespace bnncmd.Exchanges
                 if (fixedProducts.Data == null) throw new Exception("fixed product returned no data");
                 foreach (var r in fixedProducts.Data.Rows)
                 {
+                    if (r.Details.IsSoldOut) continue;
                     var apr = r.Details.Apr * 100;
-                    if (apr > minApr)
+                    if (apr < minApr) continue;
+
+                    var stable = GetChipSymbol(r.Details.Asset, out decimal fee);
+                    var lockedProduct = new EarnProduct(Exchange.Binance, r.Details.Asset, apr, "locked - api")
                     {
-                        var stable = GetChipSymbol(r.Details.Asset, out decimal fee);
-                        var lockedProduct = new EarnProduct(Exchange.Binance, r.Details.Asset, apr, "locked - api")
-                        {
-                            Term = r.Details.Duration,
-                            StableCoin = stable,
-                            SpotFee = fee
-                        };
-                        products.Add(lockedProduct);
-                    }
+                        Term = r.Details.Duration,
+                        StableCoin = stable,
+                        SpotFee = fee,
+                        LimitMax = r.Quota.TotalPersonalQuota
+                    };
+                    products.Add(lockedProduct);
                 }
                 pageNum++;
             }
@@ -127,6 +128,7 @@ namespace bnncmd.Exchanges
                 if (!flexibleProducts.Success) throw new Exception(flexibleProducts.Error == null ? $"{Name} throw exception while get data" : flexibleProducts.Error.Message);
                 foreach (var r in flexibleProducts.Data.Rows)
                 {
+                    if (r.IsSoldOut) continue;
                     var apr = r.LatestAnnualPercentageRate * 100;
                     if (apr > minApr)
                     {

@@ -170,8 +170,8 @@ namespace Bnncmd.Strategy
             var minApr = 20;
 
             // Get earn products from all exchanges
-            var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc };
-            // var exchanges = new List<AbstractExchange> { Exchange.Mexc };
+            // var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc };
+            var exchanges = new List<AbstractExchange> { Exchange.Binance };
             foreach (var e in exchanges)
             {
                 e.GetEarnProducts(products, minApr);
@@ -197,7 +197,8 @@ namespace Bnncmd.Strategy
                 foreach (var e in shortExchanges)
                 {
                     e.FundingRateDepth = fundingRateDepth;
-                    var his = e.GetDayFundingRate(p.ProductName);
+                    // var his = e.GetDayFundingRate(p.ProductName);
+                    var his = e.GetDayFundingRateFromStorage(p.ProductName);                   
                     foreach (var hi in his)
                     {
                         var actualFundingRate = p.Term == 1 ? hi.EmaFundingRate : hi.ThreeMonthsApr / 365;
