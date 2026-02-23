@@ -58,7 +58,7 @@ namespace bnncmd.Exchanges
         private string GetChipSymbol(string coin, out decimal fee)
         {
             fee = 0; // fdusd
-            if (_spotSymbols == null) throw new Exception("Coins sotre not found");
+            if (_spotSymbols == null) throw new Exception("Coins store not found");
             var symbolInfo = _spotSymbols.FirstOrDefault(s => s.Name.Equals($"{coin}{StableCoin.FDUSD}", StringComparison.OrdinalIgnoreCase));
             if (symbolInfo != null && symbolInfo.Status == SymbolStatus.Trading) return StableCoin.FDUSD;
 
@@ -137,7 +137,7 @@ namespace bnncmd.Exchanges
                         var flexibleProduct = new EarnProduct(Exchange.Binance, r.Asset, apr, "flexible - api")
                         {
                             StableCoin = stable,
-                            SpotFee = fee,
+                            SpotFee = fee
                         };
                         products.Add(flexibleProduct);
                     }
@@ -424,7 +424,8 @@ namespace bnncmd.Exchanges
 
         private void AddHedge(List<HedgeInfo> hedges, string symbol, decimal fee)
         {
-            var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now, 1000).Result; // 72
+            // var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-FundingRateDepth), DateTime.Now, 1000).Result; // 72
+            var fundingRates = _apiClient.UsdFuturesApi.ExchangeData.GetFundingRatesAsync(symbol, DateTime.Now.AddDays(-41), DateTime.Now, 1000).Result; // 72
             if (fundingRates.Data.Length < 2) return;
             var fundingInterval = (int)Math.Round((fundingRates.Data[^1].FundingTime - fundingRates.Data[^2].FundingTime).TotalHours);
             var ratesArr = fundingRates.Data.Select(r => r.FundingRate).Reverse().ToArray(); // then process EMA -- .Take(10)

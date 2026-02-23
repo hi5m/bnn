@@ -170,8 +170,8 @@ namespace Bnncmd.Strategy
             var minApr = 20;
 
             // Get earn products from all exchanges
-            // var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc };
-            var exchanges = new List<AbstractExchange> { Exchange.Binance };
+            var exchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit, Exchange.Mexc };
+            // var exchanges = new List<AbstractExchange> { Exchange.Bybit };
             foreach (var e in exchanges)
             {
                 e.GetEarnProducts(products, minApr);
@@ -180,10 +180,10 @@ namespace Bnncmd.Strategy
             // Get funding rates for hedging from available futures
             Console.WriteLine("\r\n===========================\r\n");
             var shortExchanges = new List<AbstractExchange> { Exchange.Binance, Exchange.Bybit };
-            // var shortExchanges = [Exchange.Bybit];
+            // var shortExchanges = new List<AbstractExchange> { Exchange.Binance };
             foreach (var p in products)
             {
-                // if (p.ProductName != "RPL") continue;
+                // if (p.ProductName != "LA") continue;
                 Console.WriteLine($"{p}");
 
                 // stablecoin
@@ -202,9 +202,9 @@ namespace Bnncmd.Strategy
                     foreach (var hi in his)
                     {
                         var actualFundingRate = p.Term == 1 ? hi.EmaFundingRate : hi.ThreeMonthsApr / 365;
-                        var dayProfit = ((p.Apr / 365 + hi.EmaFundingRate) * p.Term - p.SpotFee - hi.Fee) / p.Term / 2;
+                        var dayProfit = ((p.Apr / 365 + actualFundingRate) * p.Term - p.SpotFee - hi.Fee) / p.Term / 2;
                         var realApr = 365 * dayProfit;
-                        Console.WriteLine($"   {e.Name} {hi.Symbol} ema day funding rate: {hi.EmaFundingRate:0.###} => {realApr:0.###}  [ (({p.Apr:0.###} / 365 + {hi.EmaFundingRate:0.###}) * {p.Term} - {p.SpotFee} - {hi.Fee}) / {p.Term} / 2 = {dayProfit:0.###} ]");
+                        Console.WriteLine($"   {e.Name} {hi.Symbol} {(p.Term == 1 ? "ema" : "3 month")} day funding rate: {actualFundingRate:0.###} => {realApr:0.###}  [ (({p.Apr:0.###} / 365 + {actualFundingRate:0.###}) * {p.Term} - {p.SpotFee} - {hi.Fee}) / {p.Term} / 2 = {dayProfit:0.###} ]");
                         Console.WriteLine($"   ema apr: {hi.EmaApr:0.###}, 3 months apr: {hi.ThreeMonthsApr:0.###}, current rate: {hi.CurrentFundingRate:0.####}");
                         if ((p.HedgeInfo == null) || (p.RealApr < realApr))
                         {
@@ -226,6 +226,45 @@ namespace Bnncmd.Strategy
                 var futuresCoin = $"{(p.HedgeInfo == null ? string.Empty : p.HedgeInfo.Symbol[p.ProductName.Length..])}";
                 Console.WriteLine($"{p.ProductName,-23} | {arpStr,-9} | {p.Exchange.Name,-7} | {p.StableCoin,-5} | {futuresExchange,-7} | {futuresCoin,-5} | {term,-3} | {p.LimitMax}");
             }
+        }
+
+        private static void OutCalendar()
+        {
+            Console.WriteLine($"\n\r *** Calendar *** \n\r");
+
+            var snpDay = new DateTime(2026, 03, 01);
+            Console.WriteLine($"S&P500: {snpDay:dd.MM.yyyy}{(snpDay <= DateTime.Now ? "!!!" : string.Empty)}");
+            if (snpDay > DateTime.Now) Console.Beep();
+
+            var bondsDay = new DateTime(2026, 05, 01);
+            Console.WriteLine($"Bonds: {bondsDay:dd.MM.yyyy}{(bondsDay <= DateTime.Now ? "!!!" : string.Empty)}");
+            if (bondsDay > DateTime.Now) Console.Beep();
+        }
+
+        private static void OutAssetsPrices()
+        {
+            Console.WriteLine($"\n\r *** Assets *** \n\r");
+
+            var goldPrice = Exchange.Bybit.GetSpotPrice("XAUT");
+        }
+
+        private static void OutMonitorInfo(object? state)
+        {
+            Console.Clear();
+            OutCalendar();
+            OutAssetsPrices();
+
+            // check atives lows 
+
+            // curr active earns state
+
+            // new best earn
+        }
+
+        public static void Monitor()
+        {
+            _ = new System.Threading.Timer(OutMonitorInfo, null, 10 * 60 * 1000, Timeout.Infinite);
+            OutMonitorInfo(null);
         }
 
         #region Parent Methods

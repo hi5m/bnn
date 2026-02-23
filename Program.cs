@@ -57,10 +57,10 @@ internal class Program
         if (s_isTerminate) Environment.Exit(0);
     }
 
-    static void Monitor()
+    /*static void Monitor()
     {
         s_am.Start();
-    }
+    }*/
 
     static void Backtest()
     {
@@ -169,6 +169,9 @@ internal class Program
                     Console.WriteLine();
                 }
                 Environment.Exit(0);
+                break;
+            case 'm':
+                Earn.Monitor();
                 break;
             default: throw new Exception($"Unknown operation: {operation}");
         }
@@ -299,9 +302,9 @@ internal class Program
                 case 'b':
                     Backtest();
                     break;
-                case 'm':
+                /*case 'm':
                     Monitor();
-                    break;
+                    break;*/
                 case 'q':
                     Environment.Exit(0);
                     break;
