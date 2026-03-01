@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.ComponentModel;
 using Binance.Net.Clients;
 using Binance.Net.Enums;
 using Binance.Net.Objects.Models;
@@ -15,11 +16,6 @@ using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Objects.Sockets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualBasic;
-using Org.BouncyCastle.Asn1.X509;
-using System.Runtime.CompilerServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static System.Windows.Forms.AxHost;
 
 namespace bnncmd.Exchanges
 {
@@ -37,7 +33,14 @@ namespace bnncmd.Exchanges
                 ApiCredentials = new ApiCredentials(ak, asc)
             });
             // var httpClient = BnnUtils.BuildLoggingClient();
-            _apiClient = new BinanceRestClient(null, null, options); 
+            _apiClient = new BinanceRestClient(null, null, options);
+            var so = Options.Create(new BinanceSocketOptions
+            {
+                OutputOriginalData = true,
+                ApiCredentials = new ApiCredentials(ak, asc)
+            });
+            // _socketClient = new BinanceSocketClient();
+            _socketClient = new BinanceSocketClient(so, null);
         }
 
         public override string Name { get; } = "Binance";
@@ -49,7 +52,7 @@ namespace bnncmd.Exchanges
 
         private readonly BinanceRestClient _apiClient;
 
-        private readonly BinanceSocketClient _socketClient = new();
+        private readonly BinanceSocketClient _socketClient; // = new();
 
         #endregion
 
@@ -187,11 +190,23 @@ namespace bnncmd.Exchanges
             coin ??= StableCoin.USDT;
             var accInfo = _apiClient.UsdFuturesApi.Account.GetAccountInfoV3Async().Result;
             if (accInfo.Error != null && !accInfo.Success) throw new Exception(accInfo.Error.Message);
-            foreach (var a in accInfo.Data.Assets)
+            if (StableCoin.Is(coin))
             {
-                // Console.WriteLine(a);
-                // if (a.Asset.Equals(coin, StringComparison.OrdinalIgnoreCase)) return a.WalletBalance;
-                if (a.Asset.Equals(coin, StringComparison.OrdinalIgnoreCase)) return a.MaxWithdrawQuantity;
+                foreach (var a in accInfo.Data.Assets)
+                {
+                    if (a.Asset.Equals(coin, StringComparison.OrdinalIgnoreCase)) return a.MaxWithdrawQuantity;
+                }
+            }
+            else
+            {
+                foreach (var p in accInfo.Data.Positions)
+                {
+                    if (p.Symbol[0..^4].Equals(coin, StringComparison.OrdinalIgnoreCase))
+                    {
+                        FuturesStableCoin = p.Symbol[^4..];
+                        return Math.Abs(p.PositionAmount);
+                    }
+                }
             }
             return 0;
             // return accInfo.Data.AvailableBalance;
@@ -455,7 +470,82 @@ namespace bnncmd.Exchanges
 
         #region Spot Routines
 
-        public override void BuySpot(string coin, decimal amount) => throw new NotImplementedException();
+        private async void SubscribeUserSpotData()
+        {
+            if (_userSpotDataSubscription != null) return;
+            _userSpotDataSubscription = (await _socketClient.SpotApi.Account.SubscribeToUserDataUpdatesAsync(
+                onOrderUpdateMessage: data =>
+                {
+                    if (data.Data.Status == Binance.Net.Enums.OrderStatus.Filled) ExecOrder(true);
+                    BnnUtils.ClearCurrentConsoleLine();
+                    Console.WriteLine($"Spot order updated: {data.Data.Symbol}, ID: {data.Data.Id}, Status: {data.Data.Status}");
+                })).Data;
+        }
+
+        public override void BuySpot(string coin, decimal amount, string stableCoin = EmptyString)
+        {
+            var symbol = coin + (stableCoin == string.Empty ? StableCoin.USDT : stableCoin);
+            ScanOrderBook(symbol, amount, true, false);
+        }
+
+        public override void SellSpot(string coin, decimal amount, string stableCoin = EmptyString) => throw new NotImplementedException();
+
+        protected override void SubscribeSpotOrderBook(string symbol) // async 
+        {
+            SubscribeUserSpotData();
+            // symbol = "BTCUSDT";
+            _spotOrderBookSubscription = (_socketClient.SpotApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e =>
+            {
+                if (!IsSpot) return;
+                // Console.WriteLine($"{e.Data.Asks[2].Price}/{e.Data.Asks[2].Quantity} {e.Data.Asks[1].Price}/{e.Data.Asks[1].Quantity} {e.Data.Asks[0].Price}/{e.Data.Asks[0].Quantity} | {e.Data.Bids[0].Price}/{e.Data.Bids[0].Quantity} {e.Data.Bids[1].Price}/{e.Data.Bids[1].Quantity} {e.Data.Bids[2].Price}/{e.Data.Bids[2].Quantity} [ {Environment.CurrentManagedThreadId} ]", false); // / {contractSize * bestAsk * asks[0][1]:0.###}
+                var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
+                var bids = e.Data.Bids.Select(b => new[] { b.Price, b.Quantity }).ToArray();
+                ProcessOrderBook(symbol, asks, bids);
+            })).Result.Data;
+        }
+
+        protected override void UnsubscribeSpotOrderBook()
+        {
+            if (_spotOrderBookSubscription == null) return;
+            _socketClient.UnsubscribeAsync(_spotOrderBookSubscription); // await
+            _spotOrderBookSubscription = null;
+        }
+
+        protected override Order PlaceSpotOrder(string symbol, decimal amount, decimal price)
+        {
+            if (IsTest)
+            {
+                var testOrderResult = _apiClient.SpotApi.Trading.PlaceTestOrderAsync(symbol, IsSell ? OrderSide.Sell : OrderSide.Buy, SpotOrderType.LimitMaker, amount, null, null, price).Result;
+                if (!testOrderResult.Success) throw new Exception($"Error while test placing order: {testOrderResult.Error}");
+
+                return new Order()
+                {
+                    Id = "test_bnn_order_" + testOrderResult.RequestId.ToString(),
+                    Price = price,
+                    Amount = amount,
+                    Symbol = symbol,
+                    IsBuyer = !IsSell
+                };
+            }
+            else
+            {
+                var orderResult = _apiClient.SpotApi.Trading.PlaceOrderAsync(symbol, IsSell ? OrderSide.Sell : OrderSide.Buy, SpotOrderType.LimitMaker, amount, null, null, price).Result;
+                if (!orderResult.Success) throw new Exception($"Error while placing order: {orderResult.Error}");
+
+                Console.WriteLine($"New {Name} spot order status: {orderResult.Data.Status}");
+                return new Order()
+                {
+                    Id = orderResult.Data.Id.ToString(),
+                    Price = orderResult.Data.Price,
+                    Amount = orderResult.Data.Quantity,
+                    Symbol = orderResult.Data.Symbol,
+                    IsFutures = false,
+                    IsBuyer = orderResult.Data.Side == OrderSide.Buy
+                };
+            }
+        }
+
+        protected override Order CancelSpotOrder(Order order) => throw new NotImplementedException();
 
         #endregion
 
@@ -463,11 +553,12 @@ namespace bnncmd.Exchanges
 
         private async void SubscribeUserFuturesData()
         {
+            if (_userFuturesDataSubscription != null) return;
             var listenKeyResult = _apiClient.UsdFuturesApi.Account.StartUserStreamAsync().Result;
             if (!listenKeyResult.Success) throw new Exception($"Error while getting listenKey: {listenKeyResult.Error}");
             var listenKey = listenKeyResult.Data;
 
-            var subscribeResult = await _socketClient.UsdFuturesApi.Account.SubscribeToUserDataUpdatesAsync(
+            _userFuturesDataSubscription = (await _socketClient.UsdFuturesApi.Account.SubscribeToUserDataUpdatesAsync(
                 listenKey,
                 /* onAccountUpdate: data =>
                 {
@@ -479,10 +570,9 @@ namespace bnncmd.Exchanges
                 },*/
                 onOrderUpdate: data =>
                 {
-                    // if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.New) return;
                     if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.Filled)
                     {
-                        ExecFuturesOrder();
+                        ExecOrder(false);
                         /* UnsubscribeOrderBookData();
                         _showRealtimeData = false;
                         _isLock = true;
@@ -491,68 +581,61 @@ namespace bnncmd.Exchanges
                         FireShortEntered(); // in real environment fired via subsription */
 
                         BnnUtils.ClearCurrentConsoleLine();
-                        Console.WriteLine($"Order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
+                        Console.WriteLine($"Futures order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
                     }
                 }
-            );
+            )).Data;
         }
 
         public override void EnterShort(string coin, decimal amount, string stableCoin = EmptyString)
         {
             var symbol = coin + (stableCoin == string.Empty ? StableCoin.USDT : stableCoin);
-            ScanFutures(symbol, amount);
+            ScanOrderBook(symbol, amount, false, true);
         }
 
-        protected override async void SubscribeOrderBookData(string symbol)
+        public override void ExitShort(string coin, decimal amount)
         {
-            /*var positionResult = _apiClient.UsdFuturesApi.Account.GetPositionInformationAsync(symbol).Result;
-            Console.WriteLine($"Position: {positionResult.Data.First()}");
-            Console.WriteLine($"Leverage: {positionResult.Data.First().Leverage}");
-            Console.WriteLine($"Notional: {positionResult.Data.First().Notional}");
-            // return;*/
+            var symbol = coin + (FuturesStableCoin == string.Empty ? StableCoin.USDT : FuturesStableCoin);
+            ScanOrderBook(symbol, amount, false, false);
+        }
 
+        protected override void SubscribeFuturesOrderBook(string symbol)
+        {
             SubscribeUserFuturesData();
-
-            _orderBookSubscription = (await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e =>
+            _futuresOrderBookSubscription = _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e =>
             {
+                if (IsSpot) return;
                 var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
                 var bids = e.Data.Bids.Select(b => new[] { b.Price, b.Quantity }).ToArray();
-                ProcessFuturesOrderBook(symbol, asks, bids);
-            })).Data;
+                ProcessOrderBook(symbol, asks, bids);
+            }).Result.Data; // await
+            // Console.WriteLine($"{Name} SubscribeFuturesOrderBook: {_futuresOrderBookSubscription.Id} [ {Environment.CurrentManagedThreadId} ]");
         }
 
-        protected override async void UnsubscribeOrderBookData()
+        protected override async void UnsubscribeFuturesOrderBook()
         {
-            if (_orderBookSubscription == null) return;
-            await _socketClient.UnsubscribeAsync(_orderBookSubscription);
-            _orderBookSubscription = null;
+            // Console.WriteLine($"{Name} UnsubscribeFuturesOrderBook start [ {Environment.CurrentManagedThreadId} ]");
+            if (_futuresOrderBookSubscription == null) return;
+            // await _socketClient.UnsubscribeAsync(_futuresOrderBookSubscription); // await
+            await _socketClient.UnsubscribeAllAsync();
+            _futuresOrderBookSubscription = null;
         }
 
         protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
         {
-            if (IsTest)
+            if (IsTest) return CreateTestOrder(symbol, amount, price);
+
+            var orderResult = _apiClient.UsdFuturesApi.Trading.PlaceOrderAsync(symbol, IsSell ? OrderSide.Sell : OrderSide.Buy, FuturesOrderType.Limit, amount, price, null, TimeInForce.GoodTillCanceled).Result;
+            if (!orderResult.Success) throw new Exception($"Error while placing order: {orderResult.Error}");
+            Console.WriteLine($"New {Name} futures order status: {orderResult.Data.Status}");
+            return new Order()
             {
-                return new Order()
-                {
-                    Id = $"test_order_{Name}",
-                    Price = price,
-                    Amount = amount,
-                    Symbol = symbol
-                };
-            }
-            else
-            {
-                var orderResult = _apiClient.UsdFuturesApi.Trading.PlaceOrderAsync(symbol, OrderSide.Sell, FuturesOrderType.Limit, amount, price, null, TimeInForce.GoodTillCanceled).Result;
-                if (!orderResult.Success) throw new Exception($"Error while placing order: {orderResult.Error}");
-                Console.WriteLine($"New {Name} futures order status: {orderResult.Data.Status}");
-                return new Order()
-                {
-                    Id = orderResult.Data.Id.ToString(),
-                    Price = orderResult.Data.Price,
-                    Amount = orderResult.Data.Quantity,
-                    Symbol = orderResult.Data.Symbol
-                };
-            }
+                Id = orderResult.Data.Id.ToString(),
+                Price = orderResult.Data.Price,
+                Amount = orderResult.Data.Quantity,
+                Symbol = orderResult.Data.Symbol,
+                IsBuyer = orderResult.Data.Side == OrderSide.Buy
+            };
         }
 
         protected override Order CancelFuturesOrder(Order order)

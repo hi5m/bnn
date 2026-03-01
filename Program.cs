@@ -16,7 +16,11 @@ using System;
 using bnncmd.Strategy;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-// using CryptoExchange.Net.CommonObjects;
+using System.Web;
+
+
+using Binance.Net.Clients;
+using CryptoExchange.Net.Objects.Sockets;
 
 internal class Program
 {
@@ -39,6 +43,7 @@ internal class Program
         Console.WriteLine("c                       - candlesticks");
         Console.WriteLine("e                       - earn: ");
         Console.WriteLine("                                b - buy pair (b xo spotExch futExch 10000)");
+        Console.WriteLine("                                s - sell pair (s xo spotExch futExch)");
         Console.WriteLine("                                f - find best offers");
         Console.WriteLine("                                r - get funding rate statisctics (r symbol1,symbol2,symbol3 [daysCount])");
         Console.WriteLine("                                m - monitor");
@@ -134,6 +139,11 @@ internal class Program
     {
         var operation = s_secondParam[0];
         var args = Environment.GetCommandLineArgs();
+        var spotExchange = args.Length > 4 ? Exchange.GetExchangeByName(args[4]) : null;
+        var futuresExchange = args.Length > 5 ? Exchange.GetExchangeByName(args[5]) : null;
+        var earn = new Earn(string.Empty, s_am);
+        Console.Clear();
+
         switch (operation)
         {
             case 'f':
@@ -142,17 +152,30 @@ internal class Program
                 break;
             case 'b':
                 if (args.Length < 7) throw new Exception("wrong params number (example: bnncmd e b ZAMA Mexc Binance 1000)");
-                var spotExchange = Exchange.GetExchangeByName(args[4]) ?? throw new Exception($"exchange not found {args[4]}");
-                var futuresExchange = Exchange.GetExchangeByName(args[5]) ?? throw new Exception($"exchange not found {args[5]}");
+                if (spotExchange == null) throw new Exception($"spot exchange not found {args[4]}");
+                if (futuresExchange == null) throw new Exception($"futures exchange not found {args[5]}");
                 if (!decimal.TryParse(args[6], out var quantity)) throw new Exception($"amount format is wrong: {args[6]}");
 
                 var spotStablecoin = ((args.Length < 8) || args[7] == '-'.ToString()) ? string.Empty : args[7];
                 var futuresStablecoin = ((args.Length < 9) || args[8] == '-'.ToString()) ? string.Empty : args[8];
-
                 // Console.WriteLine($"coin: {args[3].ToUpper()}, spot exch: {spotExchange.Name}, futures exch: {futuresExchange.Name}, amount: {quantity}");
                 try
                 {
-                    Earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity, spotStablecoin, futuresStablecoin);
+                    earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity, spotStablecoin, futuresStablecoin);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Environment.Exit(0);
+                }
+                break;
+            case 's':
+                if (args.Length < 6) throw new Exception("wrong params number (example: bnncmd e s ZAMA Mexc Binance)");
+                if (spotExchange == null) throw new Exception($"spot exchange not found {args[4]}");
+                if (futuresExchange == null) throw new Exception($"futures exchange not found {args[5]}");
+                try
+                {
+                    earn.SellPair(args[3].ToUpper(), spotExchange, futuresExchange);
                 }
                 catch (Exception ex)
                 {
@@ -183,12 +206,45 @@ internal class Program
     const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
     const uint MOUSEEVENTF_LEFTUP = 0x0004;
 
-    private static void Test() // async 
-    {
-        // Exchange.Binance.FindFunds(AbstractExchange.UsdtName);
+    private static BinanceSocketClient socketClient = new BinanceSocketClient();
+    private static UpdateSubscription? futuresOrderBookSubscription = null;
 
-        _ = new FundingHedge(string.Empty, s_am);
-        Environment.Exit(0);
+    private static async void Unsubscribe()
+    {
+        // Console.WriteLine($"Unsubscribe start [ {Environment.CurrentManagedThreadId} ]");
+        if (futuresOrderBookSubscription == null) return;
+        await socketClient.UnsubscribeAsync(futuresOrderBookSubscription); // await
+        // await socketClient.UnsubscribeAllAsync();
+        Console.WriteLine($"Unsubscribed: [ {Environment.CurrentManagedThreadId} ]"); // {futuresOrderBookSubscription.Id} 
+        // Console.WriteLine($"Unsubscribed: {futuresOrderBookSubscription.Id} [ {Environment.CurrentManagedThreadId} ]");
+        futuresOrderBookSubscription = null; // {futuresOrderBookSubscription.Id} 
+    }
+
+    private static async void Test() // async 
+    {
+        var tempCounter = 0;
+        var subResult = (await socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync("BTCUSDT", 20, 100, e => // async 
+        {
+            ////////////////////////
+            // lock (Locker)
+            //{
+            if (tempCounter > 5) return;
+            tempCounter++;
+            // }
+            Console.WriteLine($"{tempCounter}: {e.StreamId} [ {Environment.CurrentManagedThreadId} ]");
+            // Console.WriteLine($"{tempCounter}: {e.Data} [ {Environment.CurrentManagedThreadId} ]");
+            // Console.WriteLine($"{tempCounter}: {e.Data.Asks[2].Price}/{e.Data.Asks[2].Quantity} {e.Data.Asks[1].Price}/{e.Data.Asks[1].Quantity} {e.Data.Asks[0].Price}/{e.Data.Asks[0].Quantity} | {e.Data.Bids[0].Price}/{e.Data.Bids[0].Quantity} {e.Data.Bids[1].Price}/{e.Data.Bids[1].Quantity} {e.Data.Bids[2].Price}/{e.Data.Bids[2].Quantity} [ {Environment.CurrentManagedThreadId} ]", false); // / {contractSize * bestAsk * asks[0][1]:0.###}
+            if (tempCounter >= 5)
+            {
+                var intThread = new Thread(Unsubscribe);
+                intThread.Start();
+                // Unsubscribe();Unsubscribe
+            }
+            ////////////////////////
+        })); // await Result
+        if (subResult.Success) futuresOrderBookSubscription = subResult.Data;
+
+        // Console.WriteLine($"SubscribeFuturesOrderBook: {futuresOrderBookSubscription.Id} [ {Environment.CurrentManagedThreadId} ]");
 
         /*for (var i = 0; i < 100; i++)
         {

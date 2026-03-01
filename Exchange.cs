@@ -4,8 +4,10 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using bnncmd.Exchanges;
 using Bnncmd.Strategy;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace Bnncmd
 {
@@ -99,6 +101,8 @@ namespace Bnncmd
 
     internal abstract class AbstractExchange
     {
+        #region Variables
+
         // Exchange Info
         public abstract string Name { get; }
         public abstract int Code { get; }
@@ -110,19 +114,34 @@ namespace Bnncmd
         public bool IsTest { get; set; }
         public double FundingRateDepth { get; set; } = 90;
 
-        protected readonly Dictionary<decimal, DateTime> _bookState = [];
+        protected readonly Dictionary<decimal, DateTime> BookState = [];
+
+        protected string FuturesStableCoin { get; set; } = string.Empty;
 
         protected decimal _priceStep;
 
-        protected CryptoExchange.Net.Objects.Sockets.UpdateSubscription? _orderBookSubscription = null;
+        protected CryptoExchange.Net.Objects.Sockets.UpdateSubscription? _spotOrderBookSubscription = null;
 
-        protected static readonly object Locker = new();
+        protected CryptoExchange.Net.Objects.Sockets.UpdateSubscription? _futuresOrderBookSubscription = null;
+
+        protected CryptoExchange.Net.Objects.Sockets.UpdateSubscription? _userFuturesDataSubscription = null;
+
+        protected CryptoExchange.Net.Objects.Sockets.UpdateSubscription? _userSpotDataSubscription = null;
+
+        protected readonly object Locker = new(); // static
 
         protected bool _isLock = false;
+        protected bool IsSell { get; set; } = true;
+        protected bool IsSpot { get; set; } = true;
 
         public const string EmptyString = "";
 
-        // Utils
+        private readonly Dictionary<string, HedgeInfo[]> _ratesStorage = [];
+
+        #endregion
+
+        #region Utils
+
         /// <summary>
         /// Get something like a EMA for FR. Last FR by time is the first item in array
         /// </summary>
@@ -157,7 +176,24 @@ namespace Bnncmd
             return File.ReadAllText(Path.ChangeExtension(batchDir + batchFile, "json"));
         }
 
-        private readonly Dictionary<string, HedgeInfo[]> _ratesStorage = [];
+        #endregion
+
+        #region Balances
+
+        /// <summary>
+        /// Now get last funding rate, later planned to make kind of EMA FR
+        /// </summary>
+        /// <param name="coin"></param>
+        /// <returns></returns>
+        public abstract void GetEarnProducts(List<EarnProduct> products, decimal minApr);
+        public abstract void GetFundingRates(List<FundingRate> rates, decimal minRate);
+        public abstract decimal GetSpotBalance(string? coin = null);
+        public abstract decimal FindFunds(string stableCoin, bool forSpot = true, decimal amount = 0);
+        public abstract decimal GetFuturesBalance(string? coin = null);
+
+        #endregion
+
+        #region  Exchange Info
 
         public HedgeInfo[] GetDayFundingRateFromStorage(string coin)
         {
@@ -166,120 +202,195 @@ namespace Bnncmd
             _ratesStorage.Add(coin, newRates);
             return newRates;
         }
-
-        /// <summary>
-        /// Now get last funding rate, later planned to make kind of EMA FR
-        /// </summary>
-        /// <param name="coin"></param>
-        /// <returns></returns>
         public abstract HedgeInfo[] GetDayFundingRate(string coin);
-        public abstract void GetEarnProducts(List<EarnProduct> products, decimal minApr);
-        public abstract void GetFundingRates(List<FundingRate> rates, decimal minRate);
-        public abstract decimal GetSpotBalance(string? coin = null);
-        public abstract decimal GetFuturesBalance(string? coin = null);
-
-        // Exchange Info
         public abstract decimal GetSpotPrice(string coin, string stablecoin = EmptyString);
-        public abstract decimal FindFunds(string stableCoin, bool forSpot = true, decimal amount = 0);
         public abstract decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString);
         public abstract decimal GetMinLimit(string coin, bool isSpot, string stablecoin = EmptyString);
         public abstract decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk);
 
-        // Order routines
+        #endregion
+
+        #region Order Routines
+
         public event Action<AbstractExchange>? ShortEntered;
+        protected Order? _futuresOrder = null;
+        private decimal _currAmount = 0;
+        protected bool _showRealtimeData = true;
         protected void FireShortEntered() => ShortEntered?.Invoke(this);
         public abstract void EnterShort(string coin, decimal amount, string stableCoin = EmptyString);
-        public abstract void BuySpot(string coin, decimal amount);
+        public abstract void ExitShort(string coin, decimal amount);
         protected abstract Order PlaceFuturesOrder(string symbol, decimal amount, decimal price);
         protected abstract Order CancelFuturesOrder(Order order);
+        protected abstract void SubscribeFuturesOrderBook(string symbol);
+        protected abstract void UnsubscribeFuturesOrderBook();
 
-        protected Order? _futuresOrder = null;
-        protected abstract void SubscribeOrderBookData(string symbol);
-        protected abstract void UnsubscribeOrderBookData();
+        protected Order? _spotOrder = null;
+        protected abstract Order PlaceSpotOrder(string symbol, decimal amount, decimal price);
+        protected abstract Order CancelSpotOrder(Order order);
 
-        private decimal _currAmount = 0;
+        public event Action<AbstractExchange>? SpotSold;
+        protected void FireSpotSold() => SpotSold?.Invoke(this);
 
-        protected bool _showRealtimeData = true;
-
-        protected void ExecFuturesOrder()
+        protected void ExecOrder(bool isSpot)
         {
-            if (_futuresOrder == null) return; // if event fired from different places
-            UnsubscribeOrderBookData();
+            if ((isSpot && (_spotOrder == null)) || (!isSpot && (_futuresOrder == null))) return; // if event fired from different places
             _showRealtimeData = false;
             _isLock = true;
-            BnnUtils.ClearCurrentConsoleLine();
-            _futuresOrder = null;
-            FireShortEntered(); // in real environment fired via subsription
+            if (isSpot)
+            {
+                _spotOrder = null;
+                UnsubscribeSpotOrderBook();
+                FireSpotSold();
+            }
+            else
+            {
+                _futuresOrder = null;
+                // UnsubscribeFuturesOrderBook();
+                Task.Run(() => UnsubscribeFuturesOrderBook()); // to prevent "Recursive write lock acquisitions not allowed in this mode"
+                FireShortEntered(); // in real environment fired via subsription ?
+            }
+        }
+
+        private Order PlaceAnOrder(string symbol, decimal amount, decimal price)
+        {
+            _showRealtimeData = false;
+            Console.WriteLine($"New {(IsSpot ? "spot" : "futures")} {(IsSell ? "sell" : "buy")} order: {symbol}, {price} x {amount}...");
+            // Console.WriteLine($"Placing {(IsSpot ? "spot" : "futures")} {(IsSell ? "sell" : "buy")} order: {symbol}, {price} x {amount}...");
+            try
+            {
+                if (IsSpot)
+                {
+                    _spotOrder = PlaceSpotOrder(symbol, amount, price);
+                    if (IsTest) Console.WriteLine($"Test order placed: {_spotOrder.Id}");
+                    _showRealtimeData = true;
+                    return _spotOrder;
+                }
+                else
+                {
+                    _futuresOrder = PlaceFuturesOrder(symbol, amount, price);
+                    if (IsTest) Console.WriteLine($"Test order placed: {_futuresOrder.Id}");
+                    _showRealtimeData = true;
+                    return _futuresOrder;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Beep();
+                Console.WriteLine(ex.Message); // "Error while order placing: " + 
+                Environment.Exit(0);
+                return CreateTestOrder(symbol, amount, price); // to provent Not all code return a value
+            }
+        }
+
+        protected void ProcessOrderBook(string symbol, decimal[][] asks, decimal[][] bids) // acquiring
+        {
+            symbol = symbol.ToUpper();
+            if (IsSell) ProcessOrderBookForSale(symbol, asks, bids);
+            else ProcessOrderBookForAcquiring(symbol, asks, bids);
+        }
+
+        /// <summary>
+        /// Get the first price
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="asks">array of [price, quontity]</param>
+        /// <param name="bids"></param>
+        protected void ProcessOrderBookForAcquiring(string symbol, decimal[][] asks, decimal[][] bids)
+        {
+            var order = IsSpot ? _spotOrder : _futuresOrder;
+            var bestBid = bids[0][0];
+            if (bestBid + _priceStep < asks[0][0]) bestBid += _priceStep;
+
+            // Console.WriteLine($"{asks[0][0]} | {bids[0][0]} {bids[1][0]} {bids[2][0]} => {bestBid} [ {_priceStep} ]", false);
+            // return;
+
+            if (_showRealtimeData)
+            {
+                BnnUtils.ClearCurrentConsoleLine();
+                Console.Write($"{asks[0][0]} | {bids[0][0]} {bids[1][0]} {bids[2][0]} => {bestBid} [ {_priceStep} ]", false);
+            }
+            if ((IsSpot && _spotOrderBookSubscription == null) || (!IsSpot && (_futuresOrderBookSubscription == null))) return;
+
+            if (_isLock) return; // Recursive read lock acquisitions not allowed in this mode.
+            lock (Locker)
+            {
+                if (_isLock) return;
+                _isLock = true;
+            }
+
+            if (order == null)
+            {
+                BnnUtils.ClearCurrentConsoleLine();
+                PlaceAnOrder(symbol, _currAmount, bestBid);
+            }
+            else
+            {
+                if (bestBid < order.Price)
+                {
+                    BnnUtils.ClearCurrentConsoleLine();
+                    Console.WriteLine($"Price dropped ({bestBid}), it seems the order is filled ({order})\r\n");
+                    ExecOrder(IsSpot);
+                    return;
+                }
+            }
+
+            _isLock = false;
         }
 
         /// <summary>
         /// Get constant price
         /// </summary>
         /// <param name="symbol"></param>
-        /// <param name="amount"></param>
         /// <param name="asks">array of [price, quontity]</param>
         /// <param name="bids"></param>
-        protected void ProcessFuturesOrderBook(string symbol, decimal[][] asks, decimal[][] bids)
+        protected void ProcessOrderBookForSale(string symbol, decimal[][] asks, decimal[][] bids) // acquiring
         {
             // var contractSize = 1; //  _contractInfo == null ? 1M : _contractInfo.ContractSize; // 0.0001M; // btc
-            symbol = symbol.ToUpper();
+            var order = IsSpot ? _spotOrder : _futuresOrder;
             var bestAsk = asks[0][0];
             var bestRealAsk = GetTrueBestAsk([.. asks.Select(a => a[0])]);
             if ((bestRealAsk > 0) && (bestRealAsk - _priceStep > bids.First()[0])) bestRealAsk -= _priceStep;
             if (_showRealtimeData)
             {
                 BnnUtils.ClearCurrentConsoleLine();
-                // Console.Write($"{bestAsk} | {asks[0][1]} => {(bestRealAsk == -1 ? "searching" : bestRealAsk)} [ {_priceStep} ]", false); // / {contractSize * bestAsk * asks[0][1]:0.###}
                 Console.Write($"{asks[2][0]} {asks[1][0]} {bestAsk} | {bids[0][0]} => {(bestRealAsk == -1 ? "searching..." : bestRealAsk)} [ {_priceStep} ]", false); // / {contractSize * bestAsk * asks[0][1]:0.###}
+                // Console.WriteLine($"{tempCounter}: {asks[2][0]}/{asks[2][1]} {asks[1][0]}/{asks[1][1]} {asks[0][0]}/{asks[0][1]} | {bids[0][0]}/{bids[0][1]} {bids[1][0]}/{bids[1][1]} {bids[2][0]}/{bids[2][1]} => {(bestRealAsk == -1 ? "searching..." : bestRealAsk)} [ {_priceStep} ]", false); // / {contractSize * bestAsk * asks[0][1]:0.###}
             }
+            if ((bestRealAsk <= 0) || (IsSpot && (_spotOrderBookSubscription == null)) || (!IsSpot && (_futuresOrderBookSubscription == null))) return;
 
-            if ((bestRealAsk > 0) && (_orderBookSubscription != null))
+            lock (Locker)
             {
-                lock (Locker)
-                {
-                    if (_isLock) return;
-                    _isLock = true;
-                }
-
-                // bestRealAsk = 0.07M;
-                if (_futuresOrder == null)
-                {
-                    _showRealtimeData = false;
-                    BnnUtils.ClearCurrentConsoleLine();
-                    Console.WriteLine($"Placing short order: {symbol}, {bestRealAsk} x {_currAmount}...");
-                    _futuresOrder = PlaceFuturesOrder(symbol, _currAmount, bestRealAsk);
-                    if (IsTest) Console.WriteLine($"Test order placed: {_futuresOrder.Id}");
-                    _showRealtimeData = true;
-                }
-                else
-                {
-                    if (bestAsk > _futuresOrder.Price)
-                    {
-                        ExecFuturesOrder();
-                        Console.WriteLine($"Price raised ({bestAsk}), it seems the order is filled ({_futuresOrder})");
-                        Console.WriteLine();
-                        return;
-                    }
-
-                    if (bestRealAsk < _futuresOrder.Price)
-                    {
-                        // UnsubscribeOrderBookData();
-                        // _showRealtimeData = false;
-                        BnnUtils.ClearCurrentConsoleLine();
-                        Console.WriteLine($"The best ask dropped ({bestAsk}), the order cancelling...");
-                        CancelFuturesOrder(_futuresOrder);
-                        // Console.WriteLine($"The order cancelled");
-
-                        Console.WriteLine($"Placing new short order: {symbol}, {bestRealAsk} x {_currAmount}...");
-                        _futuresOrder = PlaceFuturesOrder(symbol, _currAmount, bestRealAsk);
-                        if (IsTest) Console.WriteLine($"Test order placed: {_futuresOrder.Id}");
-                        // _futuresOrder = null;
-                        // return;
-                    }
-                }
-
-                _isLock = false;
+                if (_isLock) return;
+                _isLock = true;
             }
+
+            if (order == null)
+            {
+                BnnUtils.ClearCurrentConsoleLine();
+                PlaceAnOrder(symbol, _currAmount, bestRealAsk);
+            }
+            else
+            {
+                if (bestAsk > order.Price)
+                {
+                    BnnUtils.ClearCurrentConsoleLine();
+                    Console.WriteLine($"Price raised ({bestAsk}), it seems the order is filled ({order})");
+                    ExecOrder(IsSpot);
+                    return;
+                }
+
+                if (bestRealAsk < order.Price)
+                {
+                    if (IsSpot) CancelSpotOrder(order);
+                    else CancelFuturesOrder(order);
+
+                    BnnUtils.ClearCurrentConsoleLine();
+                    Console.WriteLine($"The best ask dropped ({bestAsk}), the order cancelled: {order.Id}");
+                    PlaceAnOrder(symbol, _currAmount, bestRealAsk);
+                }
+            }
+
+            _isLock = false;
         }
 
         protected decimal GetTrueBestAsk(decimal[] asks)
@@ -287,18 +398,18 @@ namespace Bnncmd
             // add the best new price
             foreach (var a in asks)
             {
-                if (!_bookState.ContainsKey(a)) _bookState.Add(a, DateTime.Now);
+                if (!BookState.ContainsKey(a)) BookState.Add(a, DateTime.Now);
             }
 
             // remove all prices that are out of order book ( blinked prices )
-            var keysToRemove = _bookState.Keys.Except(asks); // .Select(a => a[0]))
+            var keysToRemove = BookState.Keys.Except(asks); // .Select(a => a[0]))
             foreach (var k in keysToRemove)
             {
-                _bookState.Remove(k);
+                BookState.Remove(k);
             }
 
             // get orders older than 10 seconds
-            var niceAsks = _bookState
+            var niceAsks = BookState
                 .Where(a => a.Value < DateTime.Now.AddSeconds(-10))
                 .OrderBy(a => a.Key);
 
@@ -312,14 +423,47 @@ namespace Bnncmd
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="amount"></param>
-        public void ScanFutures(string symbol, decimal amount)
+        public void ScanOrderBook(string symbol, decimal amount, bool isSpot, bool isSell)
         {
             _currAmount = amount;
-            _bookState.Clear();
+            IsSpot = isSpot;
+            IsSell = isSell;
+            BookState.Clear();
             _isLock = false;
-            _futuresOrder = null;
             _showRealtimeData = true;
-            SubscribeOrderBookData(symbol);
+            if (isSpot)
+            {
+                _spotOrder = null;
+                SubscribeSpotOrderBook(symbol);
+            }
+            else
+            {
+                _futuresOrder = null;
+                SubscribeFuturesOrderBook(symbol);
+            }
         }
+
+        protected Order CreateTestOrder(string symbol, decimal amount, decimal price)
+        {
+            return new Order()
+            {
+                Id = $"test_order_{Name.ToLower()}",
+                Price = price,
+                Amount = amount,
+                Symbol = symbol,
+                IsBuyer = !IsSell
+            };
+        }
+
+        #endregion
+
+        #region Spot Routines
+
+        protected abstract void SubscribeSpotOrderBook(string symbol);
+        protected abstract void UnsubscribeSpotOrderBook();
+        public abstract void BuySpot(string coin, decimal amount, string stableCoin = EmptyString);
+        public abstract void SellSpot(string coin, decimal amount, string stableCoin = EmptyString);
+
+        #endregion
     }
 }

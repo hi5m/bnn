@@ -215,7 +215,7 @@ namespace Bnncmd
 
         public static void GetFundingRates()
         {
-            Console.WriteLine($"{DateTime.Now}\n\t");
+            /* Console.WriteLine($"{DateTime.Now}\n\t");
             var futuresClient = new BinanceRestClient();
             StringBuilder profitsFile = new();
             // var fundingInfo = futuresClient.UsdFuturesApi.ExchangeData.GetMarkPricesAsync().Result;
@@ -248,12 +248,12 @@ namespace Bnncmd
                 profitsFile.AppendLine($"{s};{yearRateSum};{monthRateSum};");
                 Console.WriteLine($"{s}: year rate sum: {yearRateSum * 100: 0.###}%; month rate cum: {monthRateSum * 100: 0.###}%");
                 // queryCount++;
-                // if (queryCount > 2) break;*/
+                // if (queryCount > 2) break;
             }
 
             // Console.WriteLine(symbolsArray);
             File.WriteAllText($"funding-rates-{symbolsArray[0].ToLower()}.csv", profitsFile.ToString());
-            Environment.Exit(0);
+            Environment.Exit(0);*/
         }
 
         public async void ConnectToUserStream(Func<string, Task> onMessageReceived) // async 
@@ -392,7 +392,7 @@ namespace Bnncmd
 
         public long FuturesLimitOrder(string symbolName, Side side, decimal sum, decimal price)
         {
-            try
+            /*try
             {
                 BinanceUsdFuturesOrder answer;
                 // var orderType = OrderType.LIMIT_MAKER;
@@ -418,7 +418,8 @@ namespace Bnncmd
             {
                 ProcessServerError($"FuturesLimitOrder ({symbolName}, side={side}, sum={sum}, price={price}): " + ex.Message);
             }
-            return BnnUtils.GetUnixNow();
+            return BnnUtils.GetUnixNow();*/
+            return 0;
         }
 
         public long ReplaceOrder(long cancelOrderId, string symbolName, Side side, decimal sum, decimal price, decimal stopStep = 0)

@@ -411,7 +411,17 @@ namespace bnncmd.Exchanges
 
         #region Spot Routines
 
-        public override void BuySpot(string coin, decimal amount) => throw new NotImplementedException();
+        public override void BuySpot(string coin, decimal amount, string stableCoin = EmptyString) => throw new NotImplementedException();
+
+        public override void SellSpot(string coin, decimal amount, string stableCoin = EmptyString) => throw new NotImplementedException();
+
+        protected override void SubscribeSpotOrderBook(string symbol) => throw new NotImplementedException();
+
+        protected override void UnsubscribeSpotOrderBook() => throw new NotImplementedException();
+
+        protected override Order PlaceSpotOrder(string symbol, decimal amount, decimal price) => throw new NotImplementedException();
+
+        protected override Order CancelSpotOrder(Order order) => throw new NotImplementedException();
 
         #endregion
 
@@ -425,7 +435,7 @@ namespace bnncmd.Exchanges
                 {
                     if (o.Status == Bybit.Net.Enums.OrderStatus.Filled)
                     {
-                        ExecFuturesOrder();
+                        ExecOrder(false);
                         BnnUtils.ClearCurrentConsoleLine();
                         Console.WriteLine($"{Name} order updated: {o.Symbol}, ID: {o.OrderId}, Status: {o.Status}");
                     }
@@ -435,15 +445,7 @@ namespace bnncmd.Exchanges
 
         protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
         {
-            if (IsTest)
-            {
-                return new Order()
-                {
-                    Id = $"test_order_{Name.ToLower()}",
-                    Price = price,
-                    Amount = amount
-                };
-            }
+            if (IsTest) return CreateTestOrder(symbol, amount, price);
             else
             {
                 var orderResult = _apiClient.V5Api.Trading.PlaceOrderAsync(Category.Linear, symbol, OrderSide.Sell, NewOrderType.Limit, amount, price, false).Result;
@@ -471,8 +473,10 @@ namespace bnncmd.Exchanges
         {
             var symbol = coin + (stableCoin == string.Empty ? StableCoin.USDT : stableCoin);
             _apiClient.V5Api.Account.SetLeverageAsync(Category.Linear, symbol, 1, 1);
-            ScanFutures(symbol, amount);
+            ScanOrderBook(symbol, amount, false, true);
         }
+
+        public override void ExitShort(string coin, decimal amount) => throw new NotImplementedException();
 
         private List<BybitOrderbookEntry> _asks = [];
 
@@ -492,9 +496,8 @@ namespace bnncmd.Exchanges
             }
         }
 
-        protected override async void SubscribeOrderBookData(string symbol)
+        protected override async void SubscribeFuturesOrderBook(string symbol)
         {
-            // throw new Exception("SubscribeUserFuturesData not implemented");
             SubscribeUserFuturesData();
 
             _isLock = false;
@@ -516,17 +519,17 @@ namespace bnncmd.Exchanges
                 var asks = _asks.Select(a => new[] { a.Price, a.Quantity }).OrderBy(a => a[0]).ToArray();
                 var bids = _bids.Select(b => new[] { b.Price, b.Quantity }).OrderByDescending(b => b[0]).ToArray();
 
-                ProcessFuturesOrderBook(symbol, asks, bids);
+                ProcessOrderBook(symbol, asks, bids);
             });
             if (!subsResult.Success && subsResult.Error != null) throw new Exception(subsResult.Error.Message);
-            _orderBookSubscription = subsResult.Data;
+            _futuresOrderBookSubscription = subsResult.Data;
         }
 
-        protected override async void UnsubscribeOrderBookData()
+        protected override async void UnsubscribeFuturesOrderBook()
         {
-            if (_orderBookSubscription == null) return;
-            await _socketClient.UnsubscribeAsync(_orderBookSubscription);
-            _orderBookSubscription = null;
+            if (_futuresOrderBookSubscription == null) return;
+            await _socketClient.UnsubscribeAsync(_futuresOrderBookSubscription);
+            _futuresOrderBookSubscription = null;
         }
 
         #endregion
