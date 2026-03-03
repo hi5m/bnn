@@ -423,6 +423,8 @@ namespace bnncmd.Exchanges
 
         protected override Order CancelSpotOrder(Order order) => throw new NotImplementedException();
 
+        public override void SubscribeBookTickerSpot(string symbol, OnBookTickerReceived onTickerReceived) => throw new NotImplementedException();
+
         #endregion
 
         #region Futures Routines
@@ -531,6 +533,8 @@ namespace bnncmd.Exchanges
             await _socketClient.UnsubscribeAsync(_futuresOrderBookSubscription);
             _futuresOrderBookSubscription = null;
         }
+
+        public override void SubscribeBookTickerFutures(string symbol, OnBookTickerReceived onTickerReceived) => throw new NotImplementedException();
 
         #endregion
     }

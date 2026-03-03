@@ -77,6 +77,8 @@ namespace bnncmd.Exchanges
         public override decimal FuturesTakerFee { get; } = 0.02M;
         public override decimal FuturesMakerFee { get; } = 0.01M; // sometimes 0
 
+        private decimal _spotPrice = 0M;
+
         #endregion
 
         #region Earn Routines
@@ -334,16 +336,20 @@ namespace bnncmd.Exchanges
 
         public override decimal GetSpotPrice(string coin, string stablecoin = EmptyString)
         {
+            if (stablecoin == EmptyString) stablecoin = StableCoin.USDT;
             if (_prices == null)
             {
                 var tickerInfo = _apiClient.SpotApi.ExchangeData.GetPricesAsync().Result; // [coin + UsdtName]
                 if (!tickerInfo.Success) throw new Exception(tickerInfo.Error == null ? string.Empty : tickerInfo.Error.Message);
                 _prices = tickerInfo.Data;
             }
-            var ourSymbol = _prices.FirstOrDefault(s => s.Symbol == coin.ToUpper() + StableCoin.USDT);
-            // if (tickerInfo.Data.Length == 0) throw new Exception($"{Name} returned no data for {coin}");
+            var ourSymbol = _prices.FirstOrDefault(s => s.Symbol == coin.ToUpper() + stablecoin);
             if (ourSymbol == null) return 0;
-            else return ourSymbol.Price;
+            else
+            {
+                _spotPrice = ourSymbol.Price;
+                return _spotPrice;
+            };
         }
 
         public override decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0)
@@ -365,7 +371,7 @@ namespace bnncmd.Exchanges
                 if (!exchangeResult.Success) throw new Exception(exchangeResult.Error == null ? string.Empty : exchangeResult.Error.Message);
                 if (exchangeResult.Data.Symbols.Length == 0) throw new Exception($"{Name} returned no max limit for {coin}");
                 _spotSymbolInfo = exchangeResult.Data.Symbols[0];
-                return _spotSymbolInfo.MaxQuoteQuantity;
+                return _spotSymbolInfo.MaxQuoteQuantity / _spotPrice;
             }
             else
             {
@@ -386,7 +392,7 @@ namespace bnncmd.Exchanges
             if (!isSpot) throw new NotImplementedException();
             if (_spotSymbolInfo == null) throw new Exception($"{Name} has no {coin} information");
             // return _spotSymbolInfo.BaseAssetPrecision;
-            return _spotSymbolInfo.QuoteQuantityPrecision;
+            return _spotSymbolInfo.QuoteQuantityPrecision / _spotPrice;
         }
 
         public override decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk)
@@ -438,14 +444,12 @@ namespace bnncmd.Exchanges
             });
         }
 
-        private MexcOrder? _order = null;
-
-        private MexcOrder PlaceOrder(string symbol, decimal amount, decimal price)
+        /*private MexcOrder PlaceOrder(string symbol, decimal amount, decimal price)
         {
             Console.WriteLine($"Placing spot buy order: {symbol}, {price} x {amount}...");
             if (IsTest)
             {
-                var testOrderResult = _apiClient.SpotApi.Trading.PlaceTestOrderAsync(symbol, OrderSide.Buy, OrderType.LimitMaker, amount, null, price).Result;
+                var testOrderResult = _apiClient.SpotApi.Trading.PlaceTestOrderAsync(symbol, IsSell ? OrderSide.Sell : OrderSide.Buy, OrderType.LimitMaker, amount, null, price).Result;
                 if (!testOrderResult.Success) throw new Exception($"Error while placing {Name} spot order: {testOrderResult.Error}");
                 return new MexcOrder()
                 {
@@ -456,19 +460,21 @@ namespace bnncmd.Exchanges
             }
             else
             {
-                var orderResult = _apiClient.SpotApi.Trading.PlaceOrderAsync(symbol, OrderSide.Buy, OrderType.LimitMaker, amount, null, price).Result;
+                var orderResult = _apiClient.SpotApi.Trading.PlaceOrderAsync(symbol, IsSell ? OrderSide.Sell : OrderSide.Buy, OrderType.LimitMaker, amount, null, price).Result;
                 if (!orderResult.Success) throw new Exception($"Error while placing {Name} spot order: {orderResult.Error}");
                 Console.WriteLine($"Order Status: {orderResult.Data.Status}; id: {orderResult.Data.OrderId}");
                 return orderResult.Data;
             }
-        }
+        }*/
 
         public override void BuySpot(string coin, decimal amount, string stableCoin = EmptyString)
         {
             SubscribeUserSpotData();
 
-            var symbol = coin + '_' + StableCoin.USDT;
-            _isLock = false;
+            var symbol = coin + (stableCoin == string.Empty ? StableCoin.USDT : stableCoin);
+            ScanOrderBook(symbol, amount, true, false);
+
+            /*_isLock = false;
             _order = null;
             _spotOrderBookSubscription = _socketClient.SpotApi.SubscribeToBookTickerUpdatesAsync($"{symbol}", update =>
             {
@@ -502,7 +508,7 @@ namespace bnncmd.Exchanges
                 };
 
                 _isLock = false;
-            }).Result.Data;
+            }).Result.Data;*/
         }
 
         public override void SellSpot(string coin, decimal amount, string stableCoin = EmptyString)
@@ -529,14 +535,14 @@ namespace bnncmd.Exchanges
         {
             if (IsTest)
             {
-                var testOrderResult = _apiClient.SpotApi.Trading.PlaceTestOrderAsync(symbol, OrderSide.Sell, OrderType.LimitMaker, amount, null, price).Result;
+                var testOrderResult = _apiClient.SpotApi.Trading.PlaceTestOrderAsync(symbol, IsSell ? OrderSide.Sell : OrderSide.Buy, OrderType.LimitMaker, amount, null, price).Result;
                 if (!testOrderResult.Success) throw new Exception($"Error while placing {Name} spot order: {testOrderResult.Error}");
                 // Console.WriteLine($"Test order is placed: {testOrderResult.OriginalData}");
                 return CreateTestOrder(symbol, amount, price);
             }
             else
             {
-                var orderResult = _apiClient.SpotApi.Trading.PlaceOrderAsync(symbol, OrderSide.Sell, OrderType.LimitMaker, amount, null, price).Result;
+                var orderResult = _apiClient.SpotApi.Trading.PlaceOrderAsync(symbol, IsSell ? OrderSide.Sell : OrderSide.Buy, OrderType.LimitMaker, amount, null, price).Result;
                 if (!orderResult.Success) throw new Exception($"Error while placing {Name} spot order: {orderResult.Error}");
                 Console.WriteLine($"Order Status: {orderResult.Data.Status}; id: {orderResult.Data.OrderId}");
                 return new Order()
@@ -558,6 +564,14 @@ namespace bnncmd.Exchanges
             return order;
         }
 
+        public override void SubscribeBookTickerSpot(string symbol, OnBookTickerReceived onTickerReceived)
+        {
+            _socketClient.SpotApi.SubscribeToBookTickerUpdatesAsync(symbol, data =>
+            {
+                onTickerReceived(data.Data.BestAskPrice, data.Data.BestAskQuantity, data.Data.BestBidPrice, data.Data.BestBidQuantity);
+            });
+        }
+
         #endregion
 
         #region Futures Routines
@@ -571,6 +585,8 @@ namespace bnncmd.Exchanges
         protected override void SubscribeFuturesOrderBook(string symbol) => throw new NotImplementedException();
 
         public override void ExitShort(string coin, decimal amount) => throw new NotImplementedException();
+
+        public override void SubscribeBookTickerFutures(string symbol, OnBookTickerReceived onTickerReceived) => throw new NotImplementedException();
 
         #endregion
     }

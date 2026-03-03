@@ -42,7 +42,7 @@ internal class Program
         Console.WriteLine("a                       - account information");
         Console.WriteLine("c                       - candlesticks");
         Console.WriteLine("e                       - earn: ");
-        Console.WriteLine("                                b - buy pair (b xo spotExch futExch 10000)");
+        Console.WriteLine("                                b - buy pair (b xo spotExch futExch 10000 fdusd usdc)");
         Console.WriteLine("                                s - sell pair (s xo spotExch futExch)");
         Console.WriteLine("                                f - find best offers");
         Console.WriteLine("                                r - get funding rate statisctics (r symbol1,symbol2,symbol3 [daysCount])");
@@ -158,7 +158,7 @@ internal class Program
 
                 var spotStablecoin = ((args.Length < 8) || args[7] == '-'.ToString()) ? string.Empty : args[7];
                 var futuresStablecoin = ((args.Length < 9) || args[8] == '-'.ToString()) ? string.Empty : args[8];
-                // Console.WriteLine($"coin: {args[3].ToUpper()}, spot exch: {spotExchange.Name}, futures exch: {futuresExchange.Name}, amount: {quantity}");
+                // Console.WriteLine($"coin: {args[3].ToUpper()}, spot exch: {spotExchange.Name}, futures exch: {futuresExchange.Name}, amount: {quantity}, spot stable: {spotStablecoin}, futures stable: {futuresStablecoin}");
                 try
                 {
                     earn.BuyPair(args[3].ToUpper(), spotExchange, futuresExchange, quantity, spotStablecoin, futuresStablecoin);

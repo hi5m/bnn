@@ -194,7 +194,7 @@ namespace Bnncmd.Strategy
             _dealParams = new DummyParams();
         }
 
-        private readonly List<SfSpread> _spreads = new();
+        private readonly List<SfSpread> _spreads = [];
 
         private SpreadState _state = SpreadState.Updating;
 

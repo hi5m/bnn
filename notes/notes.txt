@@ -310,3 +310,5 @@ C:\bnn\Bnncmd\bin\Debug\net8.0-windows>
 
 
 earn b nil binance binance 750 usdt usdt
+earn b CTK binance binance 250 usdt usdt
+earn b eth mexc binance 0.05 usdt usdc

@@ -99,6 +99,8 @@ namespace Bnncmd
         }
     }
 
+    public delegate void OnBookTickerReceived(decimal bestAskPrice, decimal bestAskQuantity, decimal bestBidPrice, decimal bestBidQuantity);
+
     internal abstract class AbstractExchange
     {
         #region Variables
@@ -106,9 +108,6 @@ namespace Bnncmd
         // Exchange Info
         public abstract string Name { get; }
         public abstract int Code { get; }
-
-        // public abstract decimal SpotTakerFee { get; }
-        // public abstract decimal SpotMakerFee { get; }
         public abstract decimal FuturesTakerFee { get; }
         public abstract decimal FuturesMakerFee { get; }
         public bool IsTest { get; set; }
@@ -137,6 +136,14 @@ namespace Bnncmd
         public const string EmptyString = "";
 
         private readonly Dictionary<string, HedgeInfo[]> _ratesStorage = [];
+
+        protected Order? _spotOrder = null;
+
+        public event Action<AbstractExchange>? ShortEntered;
+        public event Action<AbstractExchange>? SpotSold;
+        protected Order? _futuresOrder = null;
+        private decimal _currAmount = 0;
+        protected bool _showRealtimeData = true;
 
         #endregion
 
@@ -210,26 +217,7 @@ namespace Bnncmd
 
         #endregion
 
-        #region Order Routines
-
-        public event Action<AbstractExchange>? ShortEntered;
-        protected Order? _futuresOrder = null;
-        private decimal _currAmount = 0;
-        protected bool _showRealtimeData = true;
-        protected void FireShortEntered() => ShortEntered?.Invoke(this);
-        public abstract void EnterShort(string coin, decimal amount, string stableCoin = EmptyString);
-        public abstract void ExitShort(string coin, decimal amount);
-        protected abstract Order PlaceFuturesOrder(string symbol, decimal amount, decimal price);
-        protected abstract Order CancelFuturesOrder(Order order);
-        protected abstract void SubscribeFuturesOrderBook(string symbol);
-        protected abstract void UnsubscribeFuturesOrderBook();
-
-        protected Order? _spotOrder = null;
-        protected abstract Order PlaceSpotOrder(string symbol, decimal amount, decimal price);
-        protected abstract Order CancelSpotOrder(Order order);
-
-        public event Action<AbstractExchange>? SpotSold;
-        protected void FireSpotSold() => SpotSold?.Invoke(this);
+        #region General Order Routines
 
         protected void ExecOrder(bool isSpot)
         {
@@ -300,9 +288,7 @@ namespace Bnncmd
             var order = IsSpot ? _spotOrder : _futuresOrder;
             var bestBid = bids[0][0];
             if (bestBid + _priceStep < asks[0][0]) bestBid += _priceStep;
-
             // Console.WriteLine($"{asks[0][0]} | {bids[0][0]} {bids[1][0]} {bids[2][0]} => {bestBid} [ {_priceStep} ]", false);
-            // return;
 
             if (_showRealtimeData)
             {
@@ -311,7 +297,7 @@ namespace Bnncmd
             }
             if ((IsSpot && _spotOrderBookSubscription == null) || (!IsSpot && (_futuresOrderBookSubscription == null))) return;
 
-            if (_isLock) return; // Recursive read lock acquisitions not allowed in this mode.
+            // if (_isLock) return; // Recursive read lock acquisitions not allowed in this mode. => new thread
             lock (Locker)
             {
                 if (_isLock) return;
@@ -457,12 +443,29 @@ namespace Bnncmd
 
         #endregion
 
+        #region Futures
+
+        protected abstract void SubscribeFuturesOrderBook(string symbol);
+        protected abstract void UnsubscribeFuturesOrderBook();
+        protected abstract Order PlaceFuturesOrder(string symbol, decimal amount, decimal price);
+        protected abstract Order CancelFuturesOrder(Order order);
+        protected void FireShortEntered() => ShortEntered?.Invoke(this);
+        public abstract void EnterShort(string coin, decimal amount, string stableCoin = EmptyString);
+        public abstract void ExitShort(string coin, decimal amount);
+        protected void FireSpotSold() => SpotSold?.Invoke(this);
+        public abstract void SubscribeBookTickerFutures(string symbol, OnBookTickerReceived onTickerReceived);
+
+        #endregion
+
         #region Spot Routines
 
+        protected abstract Order PlaceSpotOrder(string symbol, decimal amount, decimal price);
+        protected abstract Order CancelSpotOrder(Order order);
         protected abstract void SubscribeSpotOrderBook(string symbol);
         protected abstract void UnsubscribeSpotOrderBook();
         public abstract void BuySpot(string coin, decimal amount, string stableCoin = EmptyString);
         public abstract void SellSpot(string coin, decimal amount, string stableCoin = EmptyString);
+        public abstract void SubscribeBookTickerSpot(string symbol, OnBookTickerReceived onTickerReceived);
 
         #endregion
     }

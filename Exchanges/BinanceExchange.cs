@@ -472,7 +472,7 @@ namespace bnncmd.Exchanges
 
         private async void SubscribeUserSpotData()
         {
-            if (_userSpotDataSubscription != null) return;
+            if (IsTest || (_userSpotDataSubscription != null)) return;
             _userSpotDataSubscription = (await _socketClient.SpotApi.Account.SubscribeToUserDataUpdatesAsync(
                 onOrderUpdateMessage: data =>
                 {
@@ -490,10 +490,8 @@ namespace bnncmd.Exchanges
 
         public override void SellSpot(string coin, decimal amount, string stableCoin = EmptyString) => throw new NotImplementedException();
 
-        protected override void SubscribeSpotOrderBook(string symbol) // async 
+        protected override void SubscribeSpotOrderBook(string symbol)
         {
-            SubscribeUserSpotData();
-            // symbol = "BTCUSDT";
             _spotOrderBookSubscription = (_socketClient.SpotApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e =>
             {
                 if (!IsSpot) return;
@@ -547,13 +545,15 @@ namespace bnncmd.Exchanges
 
         protected override Order CancelSpotOrder(Order order) => throw new NotImplementedException();
 
+        public override void SubscribeBookTickerSpot(string symbol, OnBookTickerReceived onTickerReceived) => throw new NotImplementedException();
+
         #endregion
 
         #region Futures Routines
 
         private async void SubscribeUserFuturesData()
         {
-            if (_userFuturesDataSubscription != null) return;
+            if (IsTest || (_userFuturesDataSubscription != null)) return;
             var listenKeyResult = _apiClient.UsdFuturesApi.Account.StartUserStreamAsync().Result;
             if (!listenKeyResult.Success) throw new Exception($"Error while getting listenKey: {listenKeyResult.Error}");
             var listenKey = listenKeyResult.Data;
@@ -570,19 +570,13 @@ namespace bnncmd.Exchanges
                 },*/
                 onOrderUpdate: data =>
                 {
-                    if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.Filled)
+                    if (data.Data.UpdateData.Status != Binance.Net.Enums.OrderStatus.New)
                     {
-                        ExecOrder(false);
-                        /* UnsubscribeOrderBookData();
-                        _showRealtimeData = false;
-                        _isLock = true;
-                        BnnUtils.ClearCurrentConsoleLine();
-                        _futuresOrder = null;
-                        FireShortEntered(); // in real environment fired via subsription */
-
                         BnnUtils.ClearCurrentConsoleLine();
                         Console.WriteLine($"Futures order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
                     }
+
+                    if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.Filled) ExecOrder(false);
                 }
             )).Data;
         }
@@ -599,17 +593,17 @@ namespace bnncmd.Exchanges
             ScanOrderBook(symbol, amount, false, false);
         }
 
-        protected override void SubscribeFuturesOrderBook(string symbol)
+        protected override async void SubscribeFuturesOrderBook(string symbol)
         {
             SubscribeUserFuturesData();
-            _futuresOrderBookSubscription = _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e =>
+            var subscribtion = await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e =>
             {
                 if (IsSpot) return;
                 var asks = e.Data.Asks.Select(a => new[] { a.Price, a.Quantity }).ToArray();
                 var bids = e.Data.Bids.Select(b => new[] { b.Price, b.Quantity }).ToArray();
                 ProcessOrderBook(symbol, asks, bids);
-            }).Result.Data; // await
-            // Console.WriteLine($"{Name} SubscribeFuturesOrderBook: {_futuresOrderBookSubscription.Id} [ {Environment.CurrentManagedThreadId} ]");
+            });
+            _futuresOrderBookSubscription = subscribtion.Data; //.Result.Data
         }
 
         protected override async void UnsubscribeFuturesOrderBook()
@@ -619,6 +613,14 @@ namespace bnncmd.Exchanges
             // await _socketClient.UnsubscribeAsync(_futuresOrderBookSubscription); // await
             await _socketClient.UnsubscribeAllAsync();
             _futuresOrderBookSubscription = null;
+        }
+
+        public override void SubscribeBookTickerFutures(string symbol, OnBookTickerReceived onTickerReceived)
+        {
+            _socketClient.UsdFuturesApi.ExchangeData.SubscribeToBookTickerUpdatesAsync(symbol, data =>
+            {
+                onTickerReceived(data.Data.BestAskPrice, data.Data.BestAskQuantity, data.Data.BestBidPrice, data.Data.BestBidQuantity);
+            });
         }
 
         protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
