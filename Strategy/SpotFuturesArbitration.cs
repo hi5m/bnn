@@ -25,7 +25,7 @@ namespace Bnncmd.Strategy
         public string BaseAsset { get; set; } = string.Empty;
         public SymbolInfo Spot { get; set; } = new SymbolInfo();
         public SymbolInfo Futures { get; set; } = new SymbolInfo();
-        public SpreadState State { get; set; } = SpreadState.WaitingForNarrowSpread;
+        public SpreadState State { get; set; } = SpreadState.WaitingForExit;
         public decimal MaxSpread { get; set; } = decimal.MinValue;
         public decimal MinSpread { get; set; } = decimal.MaxValue;
         public decimal CurrSpread { get; set; } = 0;
@@ -179,7 +179,7 @@ namespace Bnncmd.Strategy
                     break;
             }*/
 
-            var exitStatuses = new[] { SpreadState.WaitingForWideSpread, SpreadState.FuturesExitOrderCreated, SpreadState.SpotExitOrderCreated };
+            var exitStatuses = new[] { SpreadState.WaitingForEnter, SpreadState.FuturesExitOrderCreated, SpreadState.SpotExitOrderCreated };
             var bestBidAsk = exitStatuses.Contains(State) ? $"{Spot.BestAsk:0.#######}/{Futures.BestBid:0.#######}" : $"{Spot.BestBid:0.#######}/{Futures.BestAsk:0.#######}";
             return $"{Spot.ExchangeName.ToUpper()}-{Futures.ExchangeName.ToUpper()} {BaseAsset} {bestBidAsk}|{MinSpread:0.##}<{CurrSpread:0.##}<{MaxSpread:0.##}"; // {addInfo}
         }

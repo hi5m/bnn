@@ -269,10 +269,7 @@ namespace bnncmd.Exchanges
             return 0;*/
         }
 
-        public override decimal GetFuturesBalance(string? coin = null)
-        {
-            return GetSpotBalance(coin);
-        }
+        public override decimal GetFuturesBalance(string? coin = null) => GetSpotBalance(coin);
 
         public override decimal GetSpotPrice(string coin, string stablecoin = EmptyString)
         {
@@ -445,7 +442,7 @@ namespace bnncmd.Exchanges
             });
         }
 
-        protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
+        public override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
         {
             if (IsTest) return CreateTestOrder(symbol, amount, price);
             else
@@ -463,7 +460,7 @@ namespace bnncmd.Exchanges
             }
         }
 
-        protected override Order CancelFuturesOrder(Order order)
+        public override Order CancelFuturesOrder(Order order)
         {
             if (IsTest) return order;
             var cancelResult = _apiClient.V5Api.Trading.CancelOrderAsync(Category.Linear, order.Symbol, order.Id).Result;

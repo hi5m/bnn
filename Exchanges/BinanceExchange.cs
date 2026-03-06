@@ -623,7 +623,7 @@ namespace bnncmd.Exchanges
             });
         }
 
-        protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
+        public override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)
         {
             if (IsTest) return CreateTestOrder(symbol, amount, price);
 
@@ -640,7 +640,7 @@ namespace bnncmd.Exchanges
             };
         }
 
-        protected override Order CancelFuturesOrder(Order order)
+        public override Order CancelFuturesOrder(Order order)
         {
             if (IsTest) return order;
             var cancelResult = _apiClient.UsdFuturesApi.Trading.CancelOrderAsync(order.Symbol, long.Parse(order.Id)).Result;

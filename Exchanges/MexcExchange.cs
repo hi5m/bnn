@@ -576,9 +576,9 @@ namespace bnncmd.Exchanges
 
         #region Futures Routines
 
-        protected override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price) => throw new NotImplementedException();
+        public override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price) => throw new NotImplementedException();
 
-        protected override Order CancelFuturesOrder(Order order) => throw new NotImplementedException();
+        public override Order CancelFuturesOrder(Order order) => throw new NotImplementedException();
 
         protected override void UnsubscribeFuturesOrderBook() => throw new NotImplementedException();
 

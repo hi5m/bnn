@@ -299,65 +299,119 @@ namespace Bnncmd.Strategy
         #region High Liquid Routines
 
         private decimal _bestFuturesAskPrice = decimal.MaxValue;
-
         private decimal _bestSpotBidPrice = decimal.MaxValue;
-
         private decimal _currDelta = 0;
-
         private decimal _minDelta = decimal.MinValue;
-
         private decimal _maxDelta = decimal.MaxValue;
-
         private decimal _medianDelta = 0;
-
         private decimal _enterDelta = 0;
-
         private decimal _exitDelta = 0;
-
+        private readonly decimal _enterThreshold = 0.01M;
         private readonly StringBuilder _deltaFile = new();
-
         private readonly object _locker = new(); // static
-
+        private readonly bool _writeLog = false;
         private DateTime _lastLogUpdate = DateTime.Now;
-
+        private decimal _balance = 0;
         // private DateTime _lastBeepTime = DateTime.Now;
 
-        private readonly bool _writeLog = false;
+        private System.Threading.Timer? _printTimer = null; // declare as GC disposed timer
 
-        private static System.Threading.Timer? _printTimer = null; // declare as GC disposed timer
+        private Dictionary<DateTime, decimal> _deltas = [];
 
-        private static Dictionary<DateTime, decimal> _deltas = [];
-
-        private static readonly int _analysedSpan = 10;
+        private readonly int _spanToAnalyze = 7;
 
         private static DateTime _lastAnalyseTime = DateTime.Now;
 
-        private void CalcDelta()
+        private SpreadState _state = SpreadState.CollectInformation;
+
+        private void SaveStatistics()
+        {
+            _deltaFile.AppendLine($"{BnnUtils.GetUnixNow()};{_bestFuturesAskPrice};{_bestSpotBidPrice};{_currDelta};");
+            if ((DateTime.Now.Minute != _lastLogUpdate.Minute) && (DateTime.Now.Minute % 10 == 0))
+            {
+                var csvFileName = $"f-s-deltas-{DateTime.Now.ToString().Replace('.', '-').Replace('/', '-').Replace(':', '-').Replace(' ', '-')}.csv";
+                File.WriteAllText(csvFileName, _deltaFile.ToString());
+                _deltaFile.Clear();
+            };
+            _lastLogUpdate = DateTime.Now;
+        }
+
+        private void CalcDelta(string coin, string spotStablecoin, string futuresStablecoin)
         {
             if ((_bestFuturesAskPrice == decimal.MaxValue) || (_bestSpotBidPrice == decimal.MaxValue)) return;
             _currDelta = (_bestFuturesAskPrice - _bestSpotBidPrice) / _bestSpotBidPrice * 100;
-            // if (_currDelta < _minDelta) _minDelta = _currDelta;
-            // if (_currDelta > _maxDelta) _maxDelta = _currDelta;
-
             _deltas.Add(DateTime.Now, _currDelta);
 
-            // orders
-            if ((DateTime.Now - _deltas.First().Key).TotalMinutes > 3)
+
+            if ((_state == SpreadState.WaitingForEnter) && (_currDelta > _enterDelta)) // && (_futuresExchange.FuturesOrder == null)
             {
-                // check limits
+                _state = SpreadState.Updating;
+                OutCurrentState();
+                Console.WriteLine();
+                _futuresExchange.IsSpot = false;
+                _futuresExchange.IsSell = true;
+                // BnnUtils.Log();
+                _futuresExchange.PlaceAnOrder(coin, futuresStablecoin, _amount, _bestFuturesAskPrice);
+                _state = SpreadState.FuturesEnterOrderCreated;
+                // Console.Beep();
             }
 
-            // save statistics
-            if (_writeLog)
+            if (_writeLog) SaveStatistics();
+        }
+
+        private void ProcessFuturesOrder(string coin, string spotStablecoin)
+        {
+            if (_futuresExchange.FuturesOrder == null) return;
+
+            if (_bestFuturesAskPrice > _futuresExchange.FuturesOrder.Price)
             {
-                _deltaFile.AppendLine($"{BnnUtils.GetUnixNow()};{_bestFuturesAskPrice};{_bestSpotBidPrice};{_currDelta};");
-                if ((DateTime.Now.Minute != _lastLogUpdate.Minute) && (DateTime.Now.Minute % 10 == 0))
+                _state = SpreadState.Updating;
+                BnnUtils.Log($"Price raised ({_bestFuturesAskPrice}), it seems the futures order is filled ({_futuresExchange.FuturesOrder})");
+                _spotExchange.IsSpot = true;
+                _spotExchange.IsSell = false;
+                _spotExchange.PlaceAnOrder(coin, spotStablecoin, _amount, _bestSpotBidPrice);
+                // _futuresExchange.FuturesOrder = null;
+                _state = SpreadState.SpotEnterOrderCreated;
+                return;
+            }
+
+            if ((_bestFuturesAskPrice < _futuresExchange.FuturesOrder.Price) || (_currDelta < _enterDelta))
+            {
+                if (_bestFuturesAskPrice < _futuresExchange.FuturesOrder.Price) BnnUtils.Log($"The best ask dropped ({_bestFuturesAskPrice}), the futures order cancelled: {_futuresExchange.FuturesOrder.Id}"); // ; CD: {_currDelta}
+                if (_currDelta < _enterDelta) BnnUtils.Log($"Current delta dropped ({_currDelta:0.###}), the order cancelled: {_futuresExchange.FuturesOrder.Id}");
+                // _futuresExchange.FuturesOrder = null;
+                _state = SpreadState.WaitingForEnter;
+            }
+        }
+
+        private void ProcessSpotOrder(string coin, string spotStablecoin)
+        {
+            if (_spotExchange.SpotOrder == null) return;
+
+            if (_bestSpotBidPrice < _spotExchange.SpotOrder.Price)
+            {
+                _state = SpreadState.Updating;
+                BnnUtils.Log($"Price droped ({_bestSpotBidPrice}), it seems the order is filled ({_spotExchange.SpotOrder})");
+
+                // _state = SpreadState.WaitingForExit;
+                if (_futuresExchange.FuturesOrder != null)
                 {
-                    var csvFileName = $"f-s-deltas-{DateTime.Now.ToString().Replace('.', '-').Replace('/', '-').Replace(':', '-').Replace(' ', '-')}.csv";
-                    File.WriteAllText(csvFileName, _deltaFile.ToString());
-                    _deltaFile.Clear();
-                };
-                _lastLogUpdate = DateTime.Now;
+                    var dealResult = (_futuresExchange.FuturesOrder.Price / _spotExchange.SpotOrder.Price - 1) * 100;
+                    _balance = _balance + dealResult - _medianDelta;
+                    BnnUtils.Log($"Deal delta: {dealResult:0.###} => {_balance:0.###}", false);
+                    BnnUtils.Log(string.Empty, false);
+                    BnnUtils.Log(string.Empty, false);
+                    _state = SpreadState.WaitingForEnter;
+
+                }
+            }
+
+            if (_bestSpotBidPrice > _spotExchange.SpotOrder.Price)
+            {
+                _state = SpreadState.Updating;
+                BnnUtils.Log($"The best ask raised ({_bestSpotBidPrice}), the order cancelled: {_spotExchange.SpotOrder.Id}");
+                _spotExchange.PlaceAnOrder(coin, spotStablecoin, _amount, _bestSpotBidPrice);
+                _state = SpreadState.SpotEnterOrderCreated;
             }
         }
 
@@ -368,26 +422,37 @@ namespace Bnncmd.Strategy
             {
                 if (_bestFuturesAskPrice == bestAskPrice) return;
                 _bestFuturesAskPrice = bestAskPrice;
-                CalcDelta();
+
+                if (_state == SpreadState.FuturesEnterOrderCreated) ProcessFuturesOrder(coin, spotStablecoin);
+
+                CalcDelta(coin, spotStablecoin, futuresStablecoin);
             });
 
             _spotExchange.SubscribeBookTickerSpot(coin + spotStablecoin, (bestAskPrice, bestAskQuantity, bestBidPrice, bestBidQuantity) =>
             {
                 if (_bestSpotBidPrice == bestBidPrice) return;
                 _bestSpotBidPrice = bestBidPrice;
-                CalcDelta();
+
+                if (_state == SpreadState.SpotEnterOrderCreated) ProcessSpotOrder(coin, spotStablecoin);
+
+                CalcDelta(coin, spotStablecoin, futuresStablecoin);
             });
 
-            _printTimer = new System.Threading.Timer(e => Task.Run(() => PrintCurrentState()), null, 0, 150);
+            _printTimer = new System.Threading.Timer(e => Task.Run(() => ProcessData()), null, 0, 150);
         }
 
-        private void PrintCurrentState()
+        private void OutCurrentState()
         {
-            if ((_bestFuturesAskPrice == decimal.MaxValue) || (_bestSpotBidPrice == decimal.MaxValue)) return;
+            BnnUtils.ClearCurrentConsoleLine();
+            Console.Write($"{_futuresExchange.Name} futures {_bestFuturesAskPrice} | {_bestSpotBidPrice} {_spotExchange.Name} spot => {_currDelta:0.###}% [{_minDelta:0.###}..{_exitDelta:0.###}..{_medianDelta:0.###}..{_enterDelta:0.###}..{_maxDelta:0.###}] {_state}...");
+        }
+
+        private void ProcessData()
+        {
+            if ((_bestFuturesAskPrice == decimal.MaxValue) || (_bestSpotBidPrice == decimal.MaxValue) || (_state == SpreadState.Updating)) return;
             lock (_locker)
             {
-                BnnUtils.ClearCurrentConsoleLine();
-                Console.Write($"{_futuresExchange.Name} futures {_bestFuturesAskPrice} | {_bestSpotBidPrice} {_spotExchange.Name} spot => {_currDelta:0.###}% [{_minDelta:0.###}..{_exitDelta:0.###}..{_medianDelta:0.###}..{_enterDelta:0.###}..{_maxDelta:0.###}]");
+                OutCurrentState();
                 // Console.Write($"{_futuresExchange.Name} futures {_bestFuturesAskPrice} | {_bestSpotBidPrice} {_spotExchange.Name} spot => {_currDelta:0.#####}% [{_minDelta:0.###}..{_maxDelta:0.###}]");
             }
 
@@ -398,10 +463,11 @@ namespace Bnncmd.Strategy
                 _medianDelta = sortedDeltas[sortedDeltas.Length / 2];
                 _minDelta = sortedDeltas[0];
                 _maxDelta = sortedDeltas[^1];
-                _enterDelta = sortedDeltas[(int)(sortedDeltas.Length * 0.95)];
-                _exitDelta = sortedDeltas[(int)(sortedDeltas.Length * 0.05)];
+                _enterDelta = sortedDeltas[(int)(sortedDeltas.Length * (1 - _enterThreshold))];
+                _exitDelta = sortedDeltas[(int)(sortedDeltas.Length * _enterThreshold)];
 
                 // delete the first minute data !!!
+                if (((DateTime.Now - _deltas.First().Key).TotalMinutes > _spanToAnalyze) && (_state == SpreadState.CollectInformation)) _state = SpreadState.WaitingForEnter;
             }
             _lastAnalyseTime = DateTime.Now;
 

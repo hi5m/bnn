@@ -20,10 +20,10 @@ namespace Bnncmd.Strategy
     {
         Updating,
         CollectInformation,
-        WaitingForNarrowSpread,
-        SpotEnterOrderCreated,
+        WaitingForEnter,
         FuturesEnterOrderCreated,
-        WaitingForWideSpread,
+        SpotEnterOrderCreated,
+        WaitingForExit,
         SpotExitOrderCreated,
         FuturesExitOrderCreated
     }
@@ -61,7 +61,7 @@ namespace Bnncmd.Strategy
         public string BaseAsset { get; set; }
         public SymbolInfo Spot { get; set; } = new SymbolInfo();
         public SymbolInfo Futures { get; set; } = new SymbolInfo();
-        public SpreadState State { get; set; } = SpreadState.WaitingForNarrowSpread;
+        public SpreadState State { get; set; } = SpreadState.WaitingForExit;
         public decimal MaxSpread { get; set; } = decimal.MinValue;
         public decimal MinSpread { get; set; } = decimal.MaxValue;
         public decimal CurrSpread { get; set; } = 0;
@@ -194,7 +194,7 @@ namespace Bnncmd.Strategy
 
             switch (State)
             {
-                case SpreadState.WaitingForNarrowSpread:
+                case SpreadState.WaitingForExit:
                     // if ((CurrSpread < _spreadToEnter - _spreadDelta) && (CurrSpread < _maxSpreadToEnter)) MinSpreadReached?.Invoke(this);
                     if ((QueueRates.Count > 0) && (CurrSpread < QueueRates.Average() - _richDeltaSpread)) MinSpreadReached?.Invoke(this);
                     if (State == SpreadState.SpotEnterOrderCreated)
@@ -204,7 +204,7 @@ namespace Bnncmd.Strategy
                     }
                     break;
 
-                case SpreadState.WaitingForWideSpread:
+                case SpreadState.WaitingForEnter:
                     // EnterSpread = (Spot.EnterPrice - Futures.EnterPrice) / Futures.EnterPrice * 100;
                     //_spreadToExit = EnterSpread + DiffToExit + _spreadDelta;
                     //if (_spreadToExit > MaxSpread - _spreadDelta) _spreadToExit = MaxSpread - _spreadDelta;
@@ -338,12 +338,12 @@ namespace Bnncmd.Strategy
             {
                 // case SpreadState.CollectInformation:
                 SpreadState.Updating => string.Empty,
-                SpreadState.WaitingForNarrowSpread => $"=>{QueueRates.Average():0.###}",
+                SpreadState.WaitingForExit => $"=>{QueueRates.Average():0.###}",
                 // SpreadState.WaitingForWideSpread => $"=>{_spreadToExit:0.##}",
-                SpreadState.WaitingForWideSpread => $"=>{QueueRates.Average():0.###}",
+                SpreadState.WaitingForEnter => $"=>{QueueRates.Average():0.###}",
                 _ => $"/{State}",
             };
-            var exitStatuses = new[] { SpreadState.WaitingForWideSpread, SpreadState.FuturesExitOrderCreated, SpreadState.SpotExitOrderCreated };
+            var exitStatuses = new[] { SpreadState.WaitingForEnter, SpreadState.FuturesExitOrderCreated, SpreadState.SpotExitOrderCreated };
             var bestBidAsk = exitStatuses.Contains(State) ? $"{Spot.BestAsk:0.#######}/{Futures.BestBid:0.#######}" : $"{Spot.BestBid:0.#######}/{Futures.BestAsk:0.#######}";
             return $"{BaseAsset} {bestBidAsk}|{MinSpread:0.##}<{CurrSpread:0.###}<{MaxSpread:0.##}{addInfo}";
         }
@@ -554,7 +554,7 @@ namespace Bnncmd.Strategy
             spread.UnsubscribeTradeStream();
             BnnUtils.Log($"{spread} [futures] max spread lost", true);
             if (spread.Order != null) CancelOrder(spread.Order);
-            UpdateState(spread, SpreadState.WaitingForWideSpread);
+            UpdateState(spread, SpreadState.WaitingForEnter);
         }
 
         private void Spread_MinSpreadLost(Spread spread)
@@ -563,13 +563,13 @@ namespace Bnncmd.Strategy
             BnnUtils.Log($"{spread} [spot]", true);
             spread.UnsubscribeTradeStream();
             if (spread.Order != null) CancelOrder(spread.Order);
-            UpdateState(spread, SpreadState.WaitingForNarrowSpread);
+            UpdateState(spread, SpreadState.WaitingForExit);
             Log(string.Empty); //, false
         }
 
         private void Spread_MaxSpreadReached(Spread spread)
         {
-            if (!CheckAndUpdateState(spread, SpreadState.WaitingForWideSpread, SpreadState.Updating)) return;
+            if (!CheckAndUpdateState(spread, SpreadState.WaitingForEnter, SpreadState.Updating)) return;
 
             // if (_state != SpreadState.WaitingForWideSpread) return;
             // UpdateState(spread, SpreadState.Updating);
@@ -592,7 +592,7 @@ namespace Bnncmd.Strategy
         private void Spread_MinSpreadReached(Spread spread)
         {
             // var tempState = _state;
-            if (!CheckAndUpdateState(spread, SpreadState.WaitingForNarrowSpread, SpreadState.Updating)) return;
+            if (!CheckAndUpdateState(spread, SpreadState.WaitingForExit, SpreadState.Updating)) return;
             // if (_state != SpreadState.WaitingForNarrowSpread) return;
             // UpdateState(spread, SpreadState.Updating);
 
@@ -628,7 +628,7 @@ namespace Bnncmd.Strategy
                 BnnUtils.Log($"exit order executed {spread} [spot]; exit spread: {exitSpread:0.###}%; deal spread: {dealSpread:0.###}%; spot amount: {spread.SpotOrderAmount * spread.Spot.ExitPrice:0.##} => +{dealProfit:0.###} ={_totalProfit:0.###}", true); // . deal spread: {}
                 spread.MinSpread = decimal.MaxValue;
                 spread.MaxSpread = 0;
-                UpdateState(spread, SpreadState.WaitingForNarrowSpread);
+                UpdateState(spread, SpreadState.WaitingForExit);
                 Log(string.Empty);
             }
 
@@ -688,7 +688,7 @@ namespace Bnncmd.Strategy
                 if (spread.Order != null) ExecuteOrder(spread.Order);
                 spread.EnterSpread = (spread.Spot.EnterPrice - spread.Futures.EnterPrice) / spread.Futures.EnterPrice * 100;
                 BnnUtils.Log($"enter order executed {spread} [futures]; enter spread: {spread.EnterSpread:0.###}%", true);
-                UpdateState(spread, SpreadState.WaitingForWideSpread);
+                UpdateState(spread, SpreadState.WaitingForEnter);
             }
 
             if (CheckAndUpdateState(spread, SpreadState.SpotEnterOrderCreated, SpreadState.Updating))
@@ -741,11 +741,11 @@ namespace Bnncmd.Strategy
 
         public override string GetCurrentInfo()
         {
-            if ((_state == SpreadState.CollectInformation) && (DateTime.Now.Subtract(_collectStart).TotalSeconds > _collectSeconds)) _state = SpreadState.WaitingForNarrowSpread;
+            if ((_state == SpreadState.CollectInformation) && (DateTime.Now.Subtract(_collectStart).TotalSeconds > _collectSeconds)) _state = SpreadState.WaitingForExit;
             if (_state == SpreadState.Updating) return "updating...";
             var spreadsInfo = string.Empty;
             // var spreads = _spreads;
-            var activeSpreadStates = new[] { SpreadState.SpotEnterOrderCreated, SpreadState.FuturesEnterOrderCreated, SpreadState.WaitingForWideSpread, SpreadState.SpotExitOrderCreated, SpreadState.FuturesExitOrderCreated, SpreadState.Updating };
+            var activeSpreadStates = new[] { SpreadState.SpotEnterOrderCreated, SpreadState.FuturesEnterOrderCreated, SpreadState.WaitingForEnter, SpreadState.SpotExitOrderCreated, SpreadState.FuturesExitOrderCreated, SpreadState.Updating };
             var spreads = _spreads.OrderByDescending(r => activeSpreadStates.Contains(r.State)).ToList(); // OrderByDescending
 
             foreach (var spread in spreads)
