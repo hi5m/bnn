@@ -21,6 +21,8 @@ using System.Web;
 
 using Binance.Net.Clients;
 using CryptoExchange.Net.Objects.Sockets;
+using Binance.Net.Objects.Models.Futures.Socket;
+using Mexc.Net.Clients;
 
 internal class Program
 {
@@ -206,87 +208,58 @@ internal class Program
     const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
     const uint MOUSEEVENTF_LEFTUP = 0x0004;
 
-    private static BinanceSocketClient socketClient = new BinanceSocketClient();
-    private static UpdateSubscription? futuresOrderBookSubscription = null;
+    private static readonly BinanceSocketClient _socketClient = new();
+    private static bool _isOutSpan = false;
+    private static int _outCounter = 1;
+    private static decimal _bestAskPricePerf = 0M;
+    private static decimal _updateIdPerf = 0M;
+    // private static UpdateSubscription? futuresOrderBookSubscription = null;
 
-    private static async void Unsubscribe()
+    private static void ProcessTick(DataEvent<BinanceFuturesStreamBookPrice> data)
     {
-        // Console.WriteLine($"Unsubscribe start [ {Environment.CurrentManagedThreadId} ]");
-        if (futuresOrderBookSubscription == null) return;
-        await socketClient.UnsubscribeAsync(futuresOrderBookSubscription); // await
-        // await socketClient.UnsubscribeAllAsync();
-        Console.WriteLine($"Unsubscribed: [ {Environment.CurrentManagedThreadId} ]"); // {futuresOrderBookSubscription.Id} 
-        // Console.WriteLine($"Unsubscribed: {futuresOrderBookSubscription.Id} [ {Environment.CurrentManagedThreadId} ]");
-        futuresOrderBookSubscription = null; // {futuresOrderBookSubscription.Id} 
+        // BnnUtils.ClearCurrentConsoleLine();
+        // Console.Write($"{data.Data.BestAskPrice} | {data.Data.BestBidPrice} [ Thread: {Environment.CurrentManagedThreadId}, DataTime: {data.DataTime:HH:mm:ss.fff} / ReceiveTime: {data.ReceiveTime:HH:mm:ss.fff} / Now: {DateTime.Now:HH:mm:ss.fff} / DataAge: {(data.DataAge == null ? string.Empty : data.DataAge.Value.TotalMicroseconds)} ms / Event Time: {data.Data.EventTime:HH:mm:ss.fff} / TransactionTime: {data.Data.TransactionTime:HH:mm:ss.fff} ]");
+        // Console.WriteLine($"{data.Data.BestAskPrice} | {data.Data.BestBidPrice} [ Thread: {Environment.CurrentManagedThreadId}, DataTime: {data.DataTime:HH:mm:ss.fff} / ReceiveTime: {data.ReceiveTime:HH:mm:ss.fff} / Now: {DateTime.Now:HH:mm:ss.fff} / DataAge: {(data.DataAge == null ? string.Empty : data.DataAge.Value.TotalMicroseconds)} ms / Event Time: {data.Data.EventTime:HH:mm:ss.fff} / TransactionTime: {data.Data.TransactionTime:HH:mm:ss.fff} ]");
+
+        // Console.WriteLine($"{data.BestAskPrice} | {data.BestBidPrice} [ Thread: {Environment.CurrentManagedThreadId} / data: {data} / Now: {DateTime.Now:HH:mm:ss.fff} ]");
+
+        var tempIsOut = (DateTime.Now.AddHours(-3) - data.Data.EventTime).TotalMilliseconds > 190;
+        if (tempIsOut != _isOutSpan)
+        {
+            Console.WriteLine($"{_outCounter}. {data.Data.BestAskPrice} | {data.Data.BestBidPrice} / {_bestAskPricePerf} | {_updateIdPerf} [ Thread: {Environment.CurrentManagedThreadId}, UpdateId: {data.Data.UpdateId}, DataTime: {data.DataTime:HH:mm:ss.fff} / ReceiveTime: {data.ReceiveTime:HH:mm:ss.fff} / Event Time: {data.Data.EventTime:HH:mm:ss.fff} / Now: {DateTime.Now:HH:mm:ss.fff} / TransactionTime: {data.Data.TransactionTime:HH:mm:ss.fff} / Diff: {(DateTime.Now.AddHours(-3) - data.Data.EventTime).TotalMilliseconds:0.#}ms ]");
+            if (!tempIsOut)
+            {
+                Console.WriteLine();
+                _outCounter++;
+            }
+        }
+        _isOutSpan = tempIsOut;
     }
 
     private static async void Test() // async 
     {
-        var tempCounter = 0;
-        var subResult = (await socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync("BTCUSDT", 20, 100, e => // async 
+        Console.WriteLine($"Start... [{DateTime.Now}]");
+
+        // _socketClient.UsdFuturesApi.ExchangeData.SubscribeToBookTickerUpdatesPerfAsync(["ETHUSDC"], data =>
+        /* await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToBookTickerUpdatesAsync("ETHUSDC", data =>
         {
-            ////////////////////////
-            // lock (Locker)
-            //{
-            if (tempCounter > 5) return;
-            tempCounter++;
-            // }
-            Console.WriteLine($"{tempCounter}: {e.StreamId} [ {Environment.CurrentManagedThreadId} ]");
-            // Console.WriteLine($"{tempCounter}: {e.Data} [ {Environment.CurrentManagedThreadId} ]");
-            // Console.WriteLine($"{tempCounter}: {e.Data.Asks[2].Price}/{e.Data.Asks[2].Quantity} {e.Data.Asks[1].Price}/{e.Data.Asks[1].Quantity} {e.Data.Asks[0].Price}/{e.Data.Asks[0].Quantity} | {e.Data.Bids[0].Price}/{e.Data.Bids[0].Quantity} {e.Data.Bids[1].Price}/{e.Data.Bids[1].Quantity} {e.Data.Bids[2].Price}/{e.Data.Bids[2].Quantity} [ {Environment.CurrentManagedThreadId} ]", false); // / {contractSize * bestAsk * asks[0][1]:0.###}
-            if (tempCounter >= 5)
-            {
-                var intThread = new Thread(Unsubscribe);
-                intThread.Start();
-                // Unsubscribe();Unsubscribe
-            }
-            ////////////////////////
-        })); // await Result
-        if (subResult.Success) futuresOrderBookSubscription = subResult.Data;
+            Task.Run(() => ProcessTick(data)); // to prevent "Recursive write lock acquisitions not allowed in this mode"
+        }); // 
 
-        // Console.WriteLine($"SubscribeFuturesOrderBook: {futuresOrderBookSubscription.Id} [ {Environment.CurrentManagedThreadId} ]");
-
-        /*for (var i = 0; i < 100; i++)
+        await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToBookTickerUpdatesPerfAsync(["ETHUSDC"], data =>
         {
-            // var intThread = new Thread(IncInt);
-            var intThread = new Thread(IncInt);
-            intThread.Start(i);
-            // Thread.Sleep(300);
-            // IncInt();
-        }
+            _bestAskPricePerf = data.BestAskPrice;
+            _updateIdPerf = data.UpdateId;
+            // Task.Run(() => ProcessTick(data)); // to prevent "Recursive write lock acquisitions not allowed in this mode"
+        }, new CancellationToken()); // ,*/
 
-        Console.WriteLine($"after treads: {_dummyInt}");
-
-        ar symbol = "BTCFDUSD";
-        // var symbol = "WLDFDUSD";
-        // var fundingInfo = futuresClient.UsdFuturesApi.ExchangeData.GetMarkPricesAsync().Result;
-
-        s_priceSubscription = (await _binanceDataSocket.SpotApi.ExchangeData.SubscribeToBookTickerUpdatesAsync(symbol, async update =>
+        var mexcSocketClient = new MexcSocketClient();
+        await mexcSocketClient.SpotApi.SubscribeToBookTickerUpdatesAsync("ETHUSDT", data =>
         {
-            Console.WriteLine($"{DateTime.Now:dd.MM.yyyy HH:mm:ss} {update}");
-            if (s_isSubscribedTrades) return;
-            s_isSubscribedTrades = true;
-
-            Console.WriteLine($"{DateTime.Now:dd.MM.yyyy HH:mm:ss} subscribing trades..");
-            s_tradesSubscription = (await _binanceDataSocket.SpotApi.ExchangeData.SubscribeToTradeUpdatesAsync(symbol, async update => // HBARUSDT BTCFDUSD // s_tradesSubscriptioin =  async
-            {
-                Console.WriteLine($"{DateTime.Now:dd.MM.yyyy HH:mm:ss} TRADE quantity: {update.Data.Quantity}; price: {update.Data.Price}; counter: {counter}");
-                counter++;
-                if ((counter > 2) && (s_tradesSubscription != null))
-                {
-                    Console.WriteLine($"{DateTime.Now:dd.MM.yyyy HH:mm:ss} unsubscribe: start: {s_tradesSubscription}"); // {s_tradesSubscriptioin}
-                    var tempSubscr = s_tradesSubscription;
-                    s_tradesSubscription = null;
-                    await _binanceDataSocket.UnsubscribeAsync(tempSubscr);
-                    Console.WriteLine($"{DateTime.Now:dd.MM.yyyy HH:mm:ss} unsubscribe: end: {s_tradesSubscription}");
-
-
-                    await _binanceDataSocket.UnsubscribeAsync(s_priceSubscription);
-                    // else Console.WriteLine($"{DateTime.Now:dd.MM.yyyy HH:mm:ss} s_tradesSubscriptioin = NULL :(");
-                }
-            })).Data; // .Result.Data
-            Console.WriteLine($"{DateTime.Now:dd.MM.yyyy HH:mm:ss} s_tradesSubscriptioin: {(s_tradesSubscription == null ? "NULL " : s_tradesSubscription)}");
-        })).Data;*/
+            var diffTime = (DateTime.Now.AddHours(-3) - (data.DataTime ?? DateTime.Now)).TotalMilliseconds;
+            if (diffTime < 190) return;
+            Console.WriteLine($"{_outCounter}. {data.Data.BestAskPrice} | {data.Data.BestBidPrice} / {_bestAskPricePerf} | {_updateIdPerf} [ Thread: {Environment.CurrentManagedThreadId}, DataTime: {data.DataTime:HH:mm:ss.fff} / ReceiveTime: {data.ReceiveTime:HH:mm:ss.fff} / Now: {DateTime.Now:HH:mm:ss.fff} / Diff: {diffTime:0.}ms ]");
+        });
     }
 
     private static void Orders()
@@ -375,7 +348,7 @@ internal class Program
                     var sc = new SNTPClient("time.windows.com");
                     sc.Connect(true);
                     Console.WriteLine("Done");
-                    // Environment.Exit(0);
+                    Environment.Exit(0);
                     break;
                 /* case 'b':
                     FindBestBullValue();

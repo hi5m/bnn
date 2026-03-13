@@ -131,6 +131,117 @@ namespace bnncmd.Exchanges
 
         #endregion
 
+        #region Controls Routines
+
+        public override decimal GetSpotBalance(string? coin = null)
+        {
+            coin ??= StableCoin.USDT;
+            var accountData = _apiClient.SpotApi.Account.GetAccountInfoAsync().Result;
+            if (accountData == null) throw new Exception($"{Name} returned no data for spot");
+            if (!accountData.Success) throw new Exception(accountData.Error == null ? "no data" : accountData.Error.Message);
+            // var rest = 0M;
+            foreach (var balance in accountData.Data.Balances)
+            {
+                if (coin.Equals(balance.Asset, StringComparison.CurrentCultureIgnoreCase)) return balance.Available; // return 
+            }
+            return 0;
+        }
+
+        private MexcPrice[]? _prices = null;
+
+        public override decimal GetSpotPrice(string coin, string stablecoin = EmptyString)
+        {
+            if (stablecoin == EmptyString) stablecoin = StableCoin.USDT;
+            if (_prices == null)
+            {
+                var tickerInfo = _apiClient.SpotApi.ExchangeData.GetPricesAsync().Result; // [coin + UsdtName]
+                if (!tickerInfo.Success) throw new Exception(tickerInfo.Error == null ? string.Empty : tickerInfo.Error.Message);
+                _prices = tickerInfo.Data;
+            }
+            var ourSymbol = _prices.FirstOrDefault(s => s.Symbol == coin.ToUpper() + stablecoin);
+            if (ourSymbol == null) return 0;
+            else
+            {
+                _spotPrice = ourSymbol.Price;
+                return _spotPrice;
+            };
+        }
+
+        public override decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0)
+        {
+            coin ??= StableCoin.USDT;
+            var futuresRest = GetFuturesBalance(coin);
+            Console.WriteLine($"   Futures rest: {futuresRest}");
+            Console.WriteLine($"   Earn rest: not available via Api");
+            return futuresRest;
+        }
+
+        private MexcSymbol? _spotSymbolInfo = null;
+
+        public override decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString)
+        {
+            if (isSpot)
+            {
+                var exchangeResult = _apiClient.SpotApi.ExchangeData.GetExchangeInfoAsync([coin + StableCoin.USDT]).Result;
+                if (!exchangeResult.Success) throw new Exception(exchangeResult.Error == null ? string.Empty : exchangeResult.Error.Message);
+                if (exchangeResult.Data.Symbols.Length == 0) throw new Exception($"{Name} returned no max limit for {coin}");
+                _spotSymbolInfo = exchangeResult.Data.Symbols[0];
+                return _spotSymbolInfo.MaxQuoteQuantity / _spotPrice;
+            }
+            else
+            {
+                /*  if (_contractInfo == null)
+                {
+                    var contractInfo = _apiClient.FuturesApi.ExchangeData.GetContractInformationAsync(coin + '_' + StableCoin.USDT).Result;
+                    if (!contractInfo.Success) throw new Exception(contractInfo.Error == null ? string.Empty : contractInfo.Error.Message);
+                    if (contractInfo.Data.Data == null) return 0;
+                    _contractInfo = contractInfo.Data.Data;
+                }
+                return _contractInfo.MaxVol * _contractInfo.СontractSize;*/
+                return 0;
+            }
+        }
+
+        public override decimal GetMinLimit(string coin, bool isSpot, string stablecoin = EmptyString)
+        {
+            if (!isSpot) throw new NotImplementedException();
+            if (_spotSymbolInfo == null) throw new Exception($"{Name} has no {coin} information");
+            // return _spotSymbolInfo.BaseAssetPrecision;
+            return _spotSymbolInfo.QuoteQuantityPrecision / _spotPrice;
+        }
+
+        public override decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk)
+        {
+            // Console.WriteLine($"mexc: GetOrderBookTicker");
+            WebCallResult<decimal?> priceInfo;
+            if (isSpot)
+            {
+                var spotTicker = _apiClient.SpotApi.ExchangeData.GetBookPricesAsync(coin + StableCoin.USDT).Result;
+                // Console.WriteLine($"mexc: {spotTicker}");
+                decimal? bestSpotPrice = 0;
+                if (spotTicker.Data != null) bestSpotPrice = isAsk ? spotTicker.Data.BestAskPrice : spotTicker.Data.BestBidPrice;
+                priceInfo = spotTicker.As(bestSpotPrice);
+            }
+            else
+            {
+                throw new NotImplementedException();
+                /* var futuresTicker = _apiClient.FuturesApi.ExchangeData.GetOrderBookAsync(coin + '_' + StableCoin.USDT).Result;
+                decimal? bestFuturesPrice = 0;
+                // return 0;
+                if (futuresTicker.Data.Data != null) bestFuturesPrice = isAsk ? futuresTicker.Data.Data.Asks[0].Price : futuresTicker.Data.Data.Bids[0].Price;
+                priceInfo = futuresTicker.As(bestFuturesPrice);*/
+            }
+
+            if (priceInfo.Error != null && !priceInfo.Success)
+            {
+                // if (priceInfo.Error.Code == -1121) return 0;
+                throw new Exception($"{Name} best spot price returned error: {priceInfo.Error.Message} / {priceInfo.Error.Code}");
+            }
+            return priceInfo.Data ?? 0;
+        }
+
+        #endregion
+
         #region Futures Deprecated
 
         public override HedgeInfo[] GetDayFundingRate(string symbol)
@@ -316,117 +427,6 @@ namespace bnncmd.Exchanges
 
         #endregion
 
-        #region Controls Routines
-
-        public override decimal GetSpotBalance(string? coin = null)
-        {
-            coin ??= StableCoin.USDT;
-            var accountData = _apiClient.SpotApi.Account.GetAccountInfoAsync().Result;
-            if (accountData == null) throw new Exception($"{Name} returned no data for spot");
-            if (!accountData.Success) throw new Exception(accountData.Error == null ? "no data" : accountData.Error.Message);
-            // var rest = 0M;
-            foreach (var balance in accountData.Data.Balances)
-            {
-                if (coin.Equals(balance.Asset, StringComparison.CurrentCultureIgnoreCase)) return balance.Available; // return 
-            }
-            return 0;
-        }
-
-        private MexcPrice[]? _prices = null;
-
-        public override decimal GetSpotPrice(string coin, string stablecoin = EmptyString)
-        {
-            if (stablecoin == EmptyString) stablecoin = StableCoin.USDT;
-            if (_prices == null)
-            {
-                var tickerInfo = _apiClient.SpotApi.ExchangeData.GetPricesAsync().Result; // [coin + UsdtName]
-                if (!tickerInfo.Success) throw new Exception(tickerInfo.Error == null ? string.Empty : tickerInfo.Error.Message);
-                _prices = tickerInfo.Data;
-            }
-            var ourSymbol = _prices.FirstOrDefault(s => s.Symbol == coin.ToUpper() + stablecoin);
-            if (ourSymbol == null) return 0;
-            else
-            {
-                _spotPrice = ourSymbol.Price;
-                return _spotPrice;
-            };
-        }
-
-        public override decimal FindFunds(string coin, bool forSpot = true, decimal amount = 0)
-        {
-            coin ??= StableCoin.USDT;
-            var futuresRest = GetFuturesBalance(coin);
-            Console.WriteLine($"   Futures rest: {futuresRest}");
-            Console.WriteLine($"   Earn rest: not available via Api");
-            return futuresRest;
-        }
-
-        private MexcSymbol? _spotSymbolInfo = null;
-
-        public override decimal GetMaxLimit(string coin, bool isSpot, string stablecoin = EmptyString)
-        {
-            if (isSpot)
-            {
-                var exchangeResult = _apiClient.SpotApi.ExchangeData.GetExchangeInfoAsync([coin + StableCoin.USDT]).Result;
-                if (!exchangeResult.Success) throw new Exception(exchangeResult.Error == null ? string.Empty : exchangeResult.Error.Message);
-                if (exchangeResult.Data.Symbols.Length == 0) throw new Exception($"{Name} returned no max limit for {coin}");
-                _spotSymbolInfo = exchangeResult.Data.Symbols[0];
-                return _spotSymbolInfo.MaxQuoteQuantity / _spotPrice;
-            }
-            else
-            {
-                /*  if (_contractInfo == null)
-                {
-                    var contractInfo = _apiClient.FuturesApi.ExchangeData.GetContractInformationAsync(coin + '_' + StableCoin.USDT).Result;
-                    if (!contractInfo.Success) throw new Exception(contractInfo.Error == null ? string.Empty : contractInfo.Error.Message);
-                    if (contractInfo.Data.Data == null) return 0;
-                    _contractInfo = contractInfo.Data.Data;
-                }
-                return _contractInfo.MaxVol * _contractInfo.СontractSize;*/
-                return 0;
-            }
-        }
-
-        public override decimal GetMinLimit(string coin, bool isSpot, string stablecoin = EmptyString)
-        {
-            if (!isSpot) throw new NotImplementedException();
-            if (_spotSymbolInfo == null) throw new Exception($"{Name} has no {coin} information");
-            // return _spotSymbolInfo.BaseAssetPrecision;
-            return _spotSymbolInfo.QuoteQuantityPrecision / _spotPrice;
-        }
-
-        public override decimal GetOrderBookTicker(string coin, bool isSpot, bool isAsk)
-        {
-            // Console.WriteLine($"mexc: GetOrderBookTicker");
-            WebCallResult<decimal?> priceInfo;
-            if (isSpot)
-            {
-                var spotTicker = _apiClient.SpotApi.ExchangeData.GetBookPricesAsync(coin + StableCoin.USDT).Result;
-                // Console.WriteLine($"mexc: {spotTicker}");
-                decimal? bestSpotPrice = 0;
-                if (spotTicker.Data != null) bestSpotPrice = isAsk ? spotTicker.Data.BestAskPrice : spotTicker.Data.BestBidPrice;
-                priceInfo = spotTicker.As(bestSpotPrice);
-            }
-            else
-            {
-                throw new NotImplementedException();
-                /* var futuresTicker = _apiClient.FuturesApi.ExchangeData.GetOrderBookAsync(coin + '_' + StableCoin.USDT).Result;
-                decimal? bestFuturesPrice = 0;
-                // return 0;
-                if (futuresTicker.Data.Data != null) bestFuturesPrice = isAsk ? futuresTicker.Data.Data.Asks[0].Price : futuresTicker.Data.Data.Bids[0].Price;
-                priceInfo = futuresTicker.As(bestFuturesPrice);*/
-            }
-
-            if (priceInfo.Error != null && !priceInfo.Success)
-            {
-                // if (priceInfo.Error.Code == -1121) return 0;
-                throw new Exception($"{Name} best spot price returned error: {priceInfo.Error.Message} / {priceInfo.Error.Code}");
-            }
-            return priceInfo.Data ?? 0;
-        }
-
-        #endregion
-
         #region Spot Routines
 
         private async void SubscribeUserSpotData()
@@ -575,6 +575,8 @@ namespace bnncmd.Exchanges
         #endregion
 
         #region Futures Routines
+
+        public override void SubscribeUserFuturesData(Action onOrderExecuted) => throw new NotImplementedException();
 
         public override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price) => throw new NotImplementedException();
 

@@ -426,7 +426,9 @@ namespace bnncmd.Exchanges
 
         #region Futures Routines
 
-        private void SubscribeUserFuturesData()
+        // public override async void SubscribeUserFuturesData(Action onOrderExecuted)
+
+        public override void SubscribeUserFuturesData(Action onOrderExecuted)
         {
             _socketClient.V5PrivateApi.SubscribeToOrderUpdatesAsync(e => // var listenKeyResult = 
             {
@@ -434,9 +436,9 @@ namespace bnncmd.Exchanges
                 {
                     if (o.Status == Bybit.Net.Enums.OrderStatus.Filled)
                     {
-                        ExecOrder(false);
                         BnnUtils.ClearCurrentConsoleLine();
                         Console.WriteLine($"{Name} order updated: {o.Symbol}, ID: {o.OrderId}, Status: {o.Status}");
+                        onOrderExecuted();
                     }
                 };
             });
@@ -497,7 +499,7 @@ namespace bnncmd.Exchanges
 
         protected override async void SubscribeFuturesOrderBook(string symbol)
         {
-            SubscribeUserFuturesData();
+            SubscribeUserFuturesData(() => ExecOrder(false));
 
             _isLock = false;
             var subsResult = await _socketClient.V5LinearApi.SubscribeToOrderbookUpdatesAsync(symbol, 50, e => // 50 / 1000

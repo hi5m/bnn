@@ -551,7 +551,7 @@ namespace bnncmd.Exchanges
 
         #region Futures Routines
 
-        private async void SubscribeUserFuturesData()
+        public override async void SubscribeUserFuturesData(Action onOrderExecuted)
         {
             if (IsTest || (_userFuturesDataSubscription != null)) return;
             var listenKeyResult = _apiClient.UsdFuturesApi.Account.StartUserStreamAsync().Result;
@@ -576,7 +576,7 @@ namespace bnncmd.Exchanges
                         Console.WriteLine($"Futures order updated: {data.Data.UpdateData.Symbol}, ID: {data.Data.UpdateData.OrderId}, Status: {data.Data.UpdateData.Status}");
                     }
 
-                    if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.Filled) ExecOrder(false);
+                    if (data.Data.UpdateData.Status == Binance.Net.Enums.OrderStatus.Filled) onOrderExecuted(); // ExecOrder(false);
                 }
             )).Data;
         }
@@ -595,7 +595,8 @@ namespace bnncmd.Exchanges
 
         protected override async void SubscribeFuturesOrderBook(string symbol)
         {
-            SubscribeUserFuturesData();
+            SubscribeUserFuturesData(() => ExecOrder(false));
+
             var subscribtion = await _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesAsync(symbol, 20, 100, e =>
             {
                 if (IsSpot) return;
@@ -617,10 +618,20 @@ namespace bnncmd.Exchanges
 
         public override void SubscribeBookTickerFutures(string symbol, OnBookTickerReceived onTickerReceived)
         {
-            _socketClient.UsdFuturesApi.ExchangeData.SubscribeToBookTickerUpdatesAsync(symbol, data =>
+            _socketClient.UsdFuturesApi.ExchangeData.SubscribeToPartialOrderBookUpdatesPerfAsync([symbol], 5, 100, data =>
             {
-                onTickerReceived(data.Data.BestAskPrice, data.Data.BestAskQuantity, data.Data.BestBidPrice, data.Data.BestBidQuantity);
-            });
+                onTickerReceived(data.Asks[0].Price, data.Asks[0].Quantity, data.Bids[0].Price, data.Bids[0].Quantity);
+            }, new CancellationToken());
+
+            /* _socketClient.UsdFuturesApi.ExchangeData.SubscribeToBookTickerUpdatesPerfAsync(["ETHUSDC"], data =>
+            // _socketClient.UsdFuturesApi.ExchangeData.SubscribeToBookTickerUpdatesAsync(symbol, data =>
+            {
+                // var diffTime = (DateTime.Now.AddHours(-3) - (data.DataTime ?? DateTime.Now)).TotalMilliseconds;
+                // if (diffTime > 3000) Console.WriteLine($"!!! {data.Data.BestAskPrice} | {data.Data.BestBidPrice} [ Thread: {Environment.CurrentManagedThreadId}, DataTime: {data.DataTime:HH:mm:ss.fff} / ReceiveTime: {data.ReceiveTime:HH:mm:ss.fff} / Now: {DateTime.Now:HH:mm:ss.fff} / Diff: {diffTime:0.}ms ]\n\r");
+                // Task.Run(() => onTickerReceived(data.Data.BestAskPrice, data.Data.BestAskQuantity, data.Data.BestBidPrice, data.Data.BestBidQuantity));
+                Task.Run(() => onTickerReceived(data.BestAskPrice, data.BestAskQuantity, data.BestBidPrice, data.BestBidQuantity));
+                // onTickerReceived(data.Data.BestAskPrice, data.Data.BestAskQuantity, data.Data.BestBidPrice, data.Data.BestBidQuantity);
+            }, new CancellationToken());*/
         }
 
         public override Order PlaceFuturesOrder(string symbol, decimal amount, decimal price)

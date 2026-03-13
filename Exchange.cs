@@ -453,14 +453,10 @@ namespace Bnncmd
 
         #region Futures
 
+        public abstract void SubscribeUserFuturesData(Action onOrderExecuted);
         protected abstract void SubscribeFuturesOrderBook(string symbol);
         protected abstract void UnsubscribeFuturesOrderBook();
         public abstract Order PlaceFuturesOrder(string symbol, decimal amount, decimal price);
-        /* public Order PlaceFuturesOrder(string baseCoin, string quoteCoin, decimal amount, decimal price)
-        {
-            var symbol = CombineSymbol(baseCoin, quoteCoin, false);
-            return PlaceFuturesOrder(symbol, amount, price);
-        }*/
         public abstract Order CancelFuturesOrder(Order order);
         protected void FireShortEntered() => ShortEntered?.Invoke(this);
         public abstract void EnterShort(string coin, decimal amount, string stableCoin = EmptyString);
